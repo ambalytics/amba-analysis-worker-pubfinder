@@ -1,2 +1,3 @@
 amba-event-stream
 requests
+pymongo
