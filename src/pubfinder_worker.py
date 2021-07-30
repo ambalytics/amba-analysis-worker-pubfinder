@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 import uuid
 
@@ -17,26 +18,35 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
     log = "PubFinderWorker "
     group_id = "pub-finder-worker"
 
-    mongoClient = False
-
     config = {
         'mongo_url': "mongodb://mongo_db:27017/",
         'mongo_client': "events",
         'mongo_collection': "publication",
     }
 
-    def __init__(self, id):
-        super().__init__(id)
-        # todo client for each thread
-        self.mongoClient = pymongo.MongoClient(host=self.config['mongo_url'],
+    required_fields = {
+        'type', 'doi', 'abstract', 'pubDate', 'publisher', 'citationCount', 'title', 'normalizedTitle', 'year',
+        'citations', 'refs', 'authors', 'fieldOfStudy'
+    }
+
+    # every worker needs own mongo client
+    def worker(self, queue):
+        logging.debug(self.log + "working %s" % os.getpid())
+
+        mongoClient = pymongo.MongoClient(host=self.config['mongo_url'],
                                                serverSelectionTimeoutMS=3000,  # 3 second timeout
                                                username="root",
                                                password="example"
                                                )
-        self.db = self.mongoClient[self.config['mongo_client']]
-        self.collection = self.db[self.config['mongo_collection']]
+        db = mongoClient[self.config['mongo_client']]
+        collection = db[self.config['mongo_collection']]
 
-    def on_message(self, json_msg):
+        while True:
+            item = queue.get(True)
+            logging.debug(self.log + "got %s item" % os.getpid())
+            self.on_custom_message(item, collection)
+
+    def on_custom_message(self, json_msg, collection):
         logging.warning(self.log + "on message pubfinder worker")
 
         e = Event()
@@ -51,7 +61,7 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
             try:
                 # save publication to db
                 cp['_id'] = uuid.uuid4().hex
-                self.collection.insert_one(cp)
+                collection.insert_one(cp)
             except pymongo.errors.DuplicateKeyError:
                 logging.warning("MongoDB collection/state%s, Duplicate found, continue" % json_msg['state'])
 
