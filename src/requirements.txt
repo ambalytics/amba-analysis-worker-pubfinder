@@ -1,3 +1,4 @@
 amba-event-stream
 requests
 pymongo
+lxml

@@ -1,14 +1,21 @@
+import json
 import logging
 import os
+import re
 import time
 import uuid
-
 import requests
 import pymongo
+from multiprocessing.pool import ThreadPool
+from collections import deque
 
 from event_stream.event_stream_consumer import EventStreamConsumer
 from event_stream.event_stream_producer import EventStreamProducer
 from event_stream.event import Event
+
+from .sources.crossref_source import CrossrefSource
+from .sources.amba_source import AmbaSource
+from .sources.meta_source import MetaSource
 
 
 class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
@@ -24,67 +31,154 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
         'mongo_collection': "publication",
     }
 
+    # config = {
+    #     'mongo_url': "mongodb://root:example@mongo_db:27017/",
+    #     'mongo_client': "publications",
+    #     'mongo_collection': "linked",
+    #     'mongo_collection_author': "author",
+    #     'mongo_collection_field_of_research': "fieldOfResearch",
+    #     'mongo_collection_affiliation': "affiliation",
+    # }
+
     required_fields = {
         'type', 'doi', 'abstract', 'pubDate', 'publisher', 'citationCount', 'title', 'normalizedTitle', 'year',
         'citations', 'refs', 'authors', 'fieldOfStudy'
     }
 
-    # every worker needs own mongo client
-    def worker(self, queue):
-        logging.debug(self.log + "working %s" % os.getpid())
+    collection = None
+    # 'meta': Source
+    source_order = {
+        'mongo': AmbaSource,
+        'amba': CrossrefSource,
+        'crossref': MetaSource,
+    }
 
-        mongoClient = pymongo.MongoClient(host=self.config['mongo_url'],
-                                               serverSelectionTimeoutMS=3000,  # 3 second timeout
-                                               username="root",
-                                               password="example"
-                                               )
-        db = mongoClient[self.config['mongo_client']]
-        collection = db[self.config['mongo_collection']]
+    mongo_pool = None
+    mongo_queue = deque()
 
-        while True:
-            item = queue.get(True)
-            logging.debug(self.log + "got %s item" % os.getpid())
-            self.on_custom_message(item, collection)
+    def consume(self):
+        logging.warning(self.log + "start consume")
+        self.running = True
 
-    def on_custom_message(self, json_msg, collection):
-        logging.warning(self.log + "on message pubfinder worker")
+        if not self.consumer:
+            self.create_consumer()
 
-        e = Event()
-        e.from_json(json_msg)
+        if not self.collection:
+            self.prepare_mongo_connection()
 
-        # todo set id as uuid int
-        publication = self.get_data_from_crossref(e.data['obj']['data']['doi'])
-        if publication:
-            logging.warning(self.log + "linked publication crossref")
+        if not self.mongo_pool:
+            self.mongo_pool = ThreadPool(4, self.worker_mongo, (self.mongo_queue,))
 
-            cp = publication
+        while self.running:
             try:
-                # save publication to db
-                cp['_id'] = uuid.uuid4().hex
-                collection.insert_one(cp)
-            except pymongo.errors.DuplicateKeyError:
-                logging.warning("MongoDB collection/state%s, Duplicate found, continue" % json_msg['state'])
+                for msg in self.consumer:
+                    logging.debug(self.log + 'msg in consumer ')
 
-            # set event to linked
-            e.data['obj']['data'] = publication
-            e.data['obj']['data']['doi'] = e.data['obj']['data']['DOI']  # todo
-            # event.data['obj']['pid'] = publication['id']
-            # event.set('obj_id', )
-            e.set('state', 'linked')
-            self.publish(e)
+                    e = Event()
+                    e.from_json(json.loads(msg.value.decode('utf-8')))
 
-    def get_data_from_crossref(self, doi):
-        base_url = "https://api.crossref.org/works/"
+                    self.mongo_queue.append(e)
 
-        r = requests.get(base_url + doi)
-        if r.status_code == 200:
-            json_response = r.json()
-            if 'status' in json_response:
-                if json_response['status'] == 'ok':
-                    # print(json_response)
-                    if 'message' in json_response:
-                        return json_response['message']
-        return False
+
+            except Exception as exc:
+                self.consumer.close()
+                logging.error(self.log + 'stream Consumer generated an exception: %s' % exc)
+                logging.warning(self.log + "Consumer closed")
+                break
+
+        # keep alive
+        if self.running:
+            return self.consume()
+
+        # stop all sources
+        for key, source in self.source_order.items():
+            source.stop()
+
+        self.mongo_pool.close()
+        logging.warning(self.log + "Consumer shutdown")
+
+    def worker_mongo(self, queue):
+        while self.running:
+            item = queue.pop()
+            publication = PubFinderWorker.get_publication(item)
+
+            self.get_publication_from_mongo(publication['doi'])
+
+            if PubFinderWorker.is_event(item):
+                item.data['obj'] = publication
+
+            if self.is_publication_done(publication):
+                self.finish_work(item, 'mongo')
+
+    def finish_work(self, item, source):
+        publication = PubFinderWorker.get_publication(item)
+
+        if self.is_publication_done(publication):
+
+            self.save_to_mongo(publication)
+
+            # todo go through refs
+            # foreach ref appendLeft to queue
+
+            if self.is_event(item):
+                item.set('state', 'linked')
+                self.publish(item)
+
+        else:
+            # put it in next queue or stop
+            if source in self.source_order:
+                self.source_order[source].work_queue.append(item)
+
+    def get_publication_from_mongo(self, doi):
+        if not self.collection:
+            self.prepare_mongo_connection()
+        return self.collection.find_one({"doi": doi})
+
+    def prepare_mongo_connection(self):
+        mongo_client = pymongo.MongoClient(host=self.config['mongo_url'],
+                                           serverSelectionTimeoutMS=3000,  # 3 second timeout
+                                           username="root",
+                                           password="example"
+                                           )
+        db = mongo_client[self.config['mongo_client']]
+        self.collection = db[self.config['mongo_collection']]
+
+    def save_to_mongo(self, publication):
+        try:
+            # save publication to db todo remove 'id' ?
+            publication['_id'] = uuid.uuid4().hex
+            self.collection.insert_one(publication)
+        except pymongo.errors.DuplicateKeyError:
+            logging.warning("MongoDB can't save publication %s" % publication['doi'])
+
+    @staticmethod
+    def get_publication(item):
+        publication = item
+        if PubFinderWorker.is_event(item):
+            publication = item.data['obj']['data']
+        return publication
+
+    @staticmethod
+    def is_publication_done(publication):
+        if not publication:
+            return False
+
+        # they can be empty but must me set, id should be enough?
+        if not all(k in publication for k in (
+                "type", "doi", "abstract", "pubDate", "publisher", "title", "normalizedTitle", "year",
+                "citations", "refs", "authors", "fieldsOfStudy")):
+            return False
+
+        return True
+
+    @staticmethod
+    def normalize(string):
+        # todo numbers, special characters/languages
+        return (re.sub('[^a-zA-Z ]+', '', string)).casefold().strip()
+
+    @staticmethod
+    def is_event(item):
+        return "obj_id" in item
 
 
 if __name__ == '__main__':
@@ -92,5 +186,7 @@ if __name__ == '__main__':
     time.sleep(10)
     e = PubFinderWorker(1)
     time.sleep(5)
-
+    # connection manager for api with restriction
+    # pool up dois (max?) and send them together in repeated loop
+    # have just one that needs to work with the others
     e.consume()
