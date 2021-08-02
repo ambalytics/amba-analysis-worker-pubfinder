@@ -4,29 +4,68 @@ from gql import gql, Client
 from gql.transport.aiohttp import AIOHTTPTransport
 from functools import lru_cache
 import logging
-
-from .base_source import BaseSource
+from event_stream.event import Event
 
 
 # base source, to be extended for use
-class AmbaSource(BaseSource):
+class AmbaSource(object):
     tag = 'amba'
+    log = 'SourceAmba'
+    threads = 1 # todo make client only once
+    # gql.transport.exceptions.TransportAlreadyConnected: Transport is already connected
 
     amba_client = None
     url = "https://api.ambalytics.cloud/entities"  # todo config
+    work_queue = deque()
+    work_pool = None
+    running = True
 
-    @lru_cache(maxsize=1000)
+    def __init__(self, pubfinder):
+        if not self.work_pool:
+            self.work_pool = ThreadPool(self.threads, self.worker, (self.work_queue,))
+        self.pubfinder = pubfinder
+
+    def worker(self, queue):
+        while self.running:
+            try:
+                item = queue.pop()
+            except IndexError:
+                pass
+            else:
+                if item:
+                    # logging.warning(self.log + " item " + str(item.get_json()))
+                    publication = self.pubfinder.get_publication(item)
+                    logging.warning(self.log + " work on item " + publication['doi'])
+                    # logging.warning(self.log + " q " + str(queue))x
+
+                    # todo source stuff
+                    publication_temp = self.add_data_to_publication(publication)
+
+                    if publication_temp:
+                        publication = publication_temp
+
+                    publication['source'] = self.tag
+
+                    if type(item) is Event:
+                        item.data['obj']['data'] = publication
+
+                    self.pubfinder.finish_work(item, self.tag)
+
     def add_data_to_publication(self, publication):
         amba_publication = self.get_publication_from_amba(publication['doi'])
 
         # amba is correctly formatted, just return
         if not amba_publication:
+            logging.warning('amba failed')
             return publication
         else:
+            logging.warning('amba success')
             return amba_publication
 
 
     # todo make these into the packackage to extend from
+
+    @lru_cache(maxsize=500)
     def get_publication_from_amba(self, doi):
         if not self.amba_client:
             self.prepare_amba_connection()

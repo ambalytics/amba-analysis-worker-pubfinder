@@ -13,9 +13,12 @@ from event_stream.event_stream_consumer import EventStreamConsumer
 from event_stream.event_stream_producer import EventStreamProducer
 from event_stream.event import Event
 
-from .sources.crossref_source import CrossrefSource
-from .sources.amba_source import AmbaSource
-from .sources.meta_source import MetaSource
+from crossref_source import CrossrefSource
+from amba_source import AmbaSource
+from meta_source import MetaSource
+
+from kafka import KafkaConsumer, KafkaProducer
+from kafka.vendor import six
 
 
 class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
@@ -47,14 +50,56 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
 
     collection = None
     # 'meta': Source
-    source_order = {
-        'mongo': AmbaSource,
-        'amba': CrossrefSource,
-        'crossref': MetaSource,
-    }
+    source_order = ['mongo', 'amba', 'crossref']
 
     mongo_pool = None
     mongo_queue = deque()
+
+    amba_source = None
+    crossref_source = None
+    meta_source = None
+
+    def create_consumer(self):
+        logging.warning(self.log + "rt: %s" % self.relation_type)
+
+        if self.state == 'all':
+            self.topics = self.build_topic_list()
+
+        if isinstance(self.state, six.string_types):
+            self.state = [self.state]
+
+        if isinstance(self.relation_type, six.string_types):
+            self.relation_type = [self.relation_type]
+
+        # if not self.source_order:
+        #     self.source_order = {
+        #         'mongo': AmbaSource(self),
+        #         'amba': CrossrefSource(self),
+        #         'crossref': MetaSource(self),
+        #     }
+
+        self.amba_source = AmbaSource(self)
+        self.crossref_source = CrossrefSource(self)
+        self.meta_source = MetaSource(self)
+
+        if not self.topics:
+            self.topics = list()
+            for state in self.state:
+                for relation_type in self.relation_type:
+                    self.topics.append(self.get_topic_name(state=state, relation_type=relation_type))
+
+        # self.topic_name = 'tweets'
+        logging.warning(self.log + "get consumer for topic: %s" % self.topics)
+        # consumer.topics()
+        self.consumer = KafkaConsumer(group_id=self.group_id,
+                                      bootstrap_servers=self.bootstrap_servers, api_version=self.api_version,
+                                      consumer_timeout_ms=self.consumer_timeout_ms)
+
+        for topic in self.topics:
+            logging.warning(self.log + "consumer subscribe: %s" % topic)
+            self.consumer.subscribe(topic)
+
+        logging.warning(self.log + "consumer subscribed to: %s" % self.consumer.topics())
 
     def consume(self):
         logging.warning(self.log + "start consume")
@@ -67,17 +112,18 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
             self.prepare_mongo_connection()
 
         if not self.mongo_pool:
-            self.mongo_pool = ThreadPool(4, self.worker_mongo, (self.mongo_queue,))
+            self.mongo_pool = ThreadPool(1, self.worker_mongo, (self.mongo_queue,))
 
+        logging.warning(self.log + "wait for messages")
         while self.running:
             try:
                 for msg in self.consumer:
-                    logging.debug(self.log + 'msg in consumer ')
+                    # logging.warning(self.log + 'msg in consumer ')
 
                     e = Event()
                     e.from_json(json.loads(msg.value.decode('utf-8')))
-
-                    self.mongo_queue.append(e)
+                    if e is not None:
+                        self.mongo_queue.append(e)
 
 
             except Exception as exc:
@@ -91,43 +137,73 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
             return self.consume()
 
         # stop all sources
-        for key, source in self.source_order.items():
-            source.stop()
+        # for key, source in self.source_order.items():
+        #     source.stop()
 
         self.mongo_pool.close()
         logging.warning(self.log + "Consumer shutdown")
 
     def worker_mongo(self, queue):
         while self.running:
-            item = queue.pop()
-            publication = PubFinderWorker.get_publication(item)
+            try:
+                item = queue.pop()
+            except IndexError:
+                pass
+            else:
+                publication = PubFinderWorker.get_publication(item)
+                logging.warning(self.log + "work item mongo " + publication['doi'])
 
-            self.get_publication_from_mongo(publication['doi'])
+                publication_temp = self.get_publication_from_mongo(publication['doi'])
 
-            if PubFinderWorker.is_event(item):
-                item.data['obj'] = publication
+                if publication_temp:
+                    publication = publication_temp
 
-            if self.is_publication_done(publication):
+                publication['source'] = 'mongo'
+
+                if type(item) is Event:
+                    item.data['obj']['data'] = publication
+
+                # todo non event type
+                # logging.warning(self.log + "mongo is done continues " + item.get_json())
                 self.finish_work(item, 'mongo')
 
     def finish_work(self, item, source):
         publication = PubFinderWorker.get_publication(item)
+        # logging.warning(self.log + "finish_work %s item %s" % (publication['doi'], source))
 
+        # logging.warning(self.log + "finish_work publication " + json.dumps(publication))
         if self.is_publication_done(publication):
-
+            logging.warning(self.log + "publication done " + publication['doi'])
             self.save_to_mongo(publication)
 
             # todo go through refs
             # foreach ref appendLeft to queue
-
-            if self.is_event(item):
+            # todo linking
+            if type(item) is Event:
                 item.set('state', 'linked')
                 self.publish(item)
 
         else:
             # put it in next queue or stop
             if source in self.source_order:
-                self.source_order[source].work_queue.append(item)
+
+                if source == 'mongo':
+                    logging.warning('mongo -> amba ' + publication['doi'])
+                    self.amba_source.work_queue.append(item)
+
+                if source == 'amba':
+                    logging.warning('amba -> crossref ' + publication['doi'])
+                    self.crossref_source.work_queue.append(item)
+
+                if source == 'crossref':
+                    logging.warning('crossref -> meta ' + publication['doi'])
+                    self.meta_source.work_queue.append(item)
+
+            #     logging.warning(self.log + "publication %s continues, key %s tag %s" % (
+            #         publication['doi'], source, self.source_order[source].tag))
+            #     self.source_order[source].work_queue.append(item)
+            # for source in self.source_order:
+            #     print(self.source_order[source].work_queue)
 
     def get_publication_from_mongo(self, doi):
         if not self.collection:
@@ -153,9 +229,13 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
 
     @staticmethod
     def get_publication(item):
-        publication = item
-        if PubFinderWorker.is_event(item):
+        publication = None  # todo for refs in case of publication type
+        # logging.warning("get_publication 1 " + item.get_json())
+
+        if type(item) is Event:
             publication = item.data['obj']['data']
+
+        # logging.warning("get_publication 2 " + json.dumps(publication))
         return publication
 
     @staticmethod
@@ -163,30 +243,29 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
         if not publication:
             return False
 
-        # they can be empty but must me set, id should be enough?
-        if not all(k in publication for k in (
-                "type", "doi", "abstract", "pubDate", "publisher", "title", "normalizedTitle", "year",
-                "citations", "refs", "authors", "fieldsOfStudy")):
-            return False
+        # they can be empty but must me set, id should be enough? citationCount, citations, refs
 
-        return True
+        keys = ("type", "doi", "abstract", "pubDate", "publisher", "title", "normalizedTitle", "year",
+                "authors", "fieldsOfStudy")
+        # if not (set(keys) - publication.keys()):
+        if all(key in publication for key in keys):
+            logging.warning('publication done ' + publication['doi'])
+            return True
+
+        logging.warning('publication missing ' + str(set(keys) - publication.keys()))
+        return False
 
     @staticmethod
     def normalize(string):
         # todo numbers, special characters/languages
         return (re.sub('[^a-zA-Z ]+', '', string)).casefold().strip()
 
-    @staticmethod
-    def is_event(item):
-        return "obj_id" in item
-
 
 if __name__ == '__main__':
-    logging.warning("start Mongo DB connector")
-    time.sleep(10)
+    logging.basicConfig(format="%(asctime)s.%(msecs)03d %(threadName)s:%(message)s")
+    logging.warning("start pubfinder connector")
+
+    time.sleep(11)
+
     e = PubFinderWorker(1)
-    time.sleep(5)
-    # connection manager for api with restriction
-    # pool up dois (max?) and send them together in repeated loop
-    # have just one that needs to work with the others
     e.consume()
