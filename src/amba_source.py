@@ -22,7 +22,7 @@ class AmbaSource(object):
 
     def __init__(self, pubfinder):
         if not self.work_pool:
-            self.work_pool = ThreadPool(self.threads, self.worker, (self.work_queue,))
+            self.work_pool = ThreadPool(self.threads, self.worker, (AmbaSource.work_queue,))
         self.pubfinder = pubfinder
 
     def worker(self, queue):
@@ -65,7 +65,7 @@ class AmbaSource(object):
 
     # todo make these into the packackage to extend from
 
-    @lru_cache(maxsize=500)
+    @lru_cache(maxsize=100)
     def get_publication_from_amba(self, doi):
         if not self.amba_client:
             self.prepare_amba_connection()

@@ -100,7 +100,7 @@ class MetaSource(object):
         return self.map(data, publication)
 
     # fetch response to add data to publication
-    @lru_cache(maxsize=1000)
+    @lru_cache(maxsize=100)
     def fetch(self, doi):
         session = Session()
         return self.get_response(self.base_url + doi, session)

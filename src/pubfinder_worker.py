@@ -4,6 +4,8 @@ import os
 import re
 import time
 import uuid
+from functools import lru_cache
+
 import requests
 import pymongo
 from multiprocessing.pool import ThreadPool
@@ -156,6 +158,7 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
                 publication_temp = self.get_publication_from_mongo(publication['doi'])
 
                 if publication_temp:
+                    logging.warning(self.log + " found in mongo " + publication['doi'])
                     publication = publication_temp
 
                 publication['source'] = 'mongo'
@@ -174,11 +177,13 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
         # logging.warning(self.log + "finish_work publication " + json.dumps(publication))
         if self.is_publication_done(publication):
             logging.warning(self.log + "publication done " + publication['doi'])
-            self.save_to_mongo(publication)
+
+            if source != 'mongo':
+                self.save_to_mongo(publication)
 
             # todo go through refs
             # foreach ref appendLeft to queue
-            # todo linking
+
             if type(item) is Event:
                 item.set('state', 'linked')
                 self.publish(item)
@@ -205,10 +210,12 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
             # for source in self.source_order:
             #     print(self.source_order[source].work_queue)
 
+    @lru_cache(maxsize=100)
     def get_publication_from_mongo(self, doi):
         if not self.collection:
             self.prepare_mongo_connection()
-        return self.collection.find_one({"doi": doi})
+        result = self.collection.find_one({"doi": doi})
+        return result
 
     def prepare_mongo_connection(self):
         mongo_client = pymongo.MongoClient(host=self.config['mongo_url'],
@@ -222,7 +229,8 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
     def save_to_mongo(self, publication):
         try:
             # save publication to db todo remove 'id' ?
-            publication['_id'] = uuid.uuid4().hex
+            # publication['_id'] = uuid.uuid4().hex
+            publication['_id'] = publication['doi']
             self.collection.insert_one(publication)
         except pymongo.errors.DuplicateKeyError:
             logging.warning("MongoDB can't save publication %s" % publication['doi'])

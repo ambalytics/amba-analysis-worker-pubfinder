@@ -97,7 +97,7 @@ class CrossrefSource(object):
         return self.map(response, publication)
 
     # fetch response to add data to publication
-    @lru_cache(maxsize=1000)
+    @lru_cache(maxsize=100)
     def fetch(self, doi):
         r = requests.get(self.base_url + requests.utils.quote(doi))  # check encoding
         if r.status_code == 200:
