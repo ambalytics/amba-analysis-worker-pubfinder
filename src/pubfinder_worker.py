@@ -204,6 +204,8 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
                     logging.warning('crossref -> meta ' + publication['doi'])
                     self.meta_source.work_queue.append(item)
 
+            # todo save unresolved dois with the reason (whats missing)
+
             #     logging.warning(self.log + "publication %s continues, key %s tag %s" % (
             #         publication['doi'], source, self.source_order[source].tag))
             #     self.source_order[source].work_queue.append(item)

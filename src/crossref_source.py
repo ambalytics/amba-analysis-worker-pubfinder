@@ -12,6 +12,19 @@ from multiprocessing.pool import ThreadPool
 from event_stream.event import Event
 
 
+# fetch response to add data to publication
+@lru_cache(maxsize=100)
+def fetch(doi):
+    r = requests.get(CrossrefSource.base_url + requests.utils.quote(doi))  # check encoding
+    if r.status_code == 200:
+        json_response = r.json()
+        if 'status' in json_response:
+            if json_response['status'] == 'ok':
+                if 'message' in json_response:
+                    return json_response['message']
+    return None
+
+
 # based on crossref
 class CrossrefSource(object):
     base_url = "https://api.crossref.org/works/"
@@ -60,17 +73,17 @@ class CrossrefSource(object):
     work_queue = deque()
     work_pool = None
     running = True
-    threads = 1
+    threads = 4
 
     def __init__(self, pubfinder):
         if not self.work_pool:
-            self.work_pool = ThreadPool(self.threads, self.worker, (self.work_queue,))
+            self.work_pool = ThreadPool(self.threads, self.worker, ())
         self.pubfinder = pubfinder
 
-    def worker(self, queue):
+    def worker(self):
         while self.running:
             try:
-                item = queue.pop()
+                item = self.work_queue.pop()
             except IndexError:
                 pass
             else:
@@ -92,21 +105,10 @@ class CrossrefSource(object):
                         item.data['obj']['data'] = publication
 
                     self.pubfinder.finish_work(item, self.tag)
-    def add_data_to_publication(self, publication):
-        response = self.fetch(publication['doi'])
-        return self.map(response, publication)
 
-    # fetch response to add data to publication
-    @lru_cache(maxsize=100)
-    def fetch(self, doi):
-        r = requests.get(self.base_url + requests.utils.quote(doi))  # check encoding
-        if r.status_code == 200:
-            json_response = r.json()
-            if 'status' in json_response:
-                if json_response['status'] == 'ok':
-                    if 'message' in json_response:
-                        return json_response['message']
-        return None
+    def add_data_to_publication(self, publication):
+        response = fetch(publication['doi'])
+        return self.map(response, publication)
 
     # map response data to publication
     # todo make sources extend not overwrite

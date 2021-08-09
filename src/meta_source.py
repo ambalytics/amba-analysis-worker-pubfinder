@@ -42,35 +42,55 @@ from event_stream.event import Event
 # using meta tags
 from requests import Session
 
+@lru_cache(maxsize=100)
+def get_response(url, s):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
+        'Pragma': 'no-cache'
+    }
+    s.headers.update(headers)
+    return s.get(url)
+
 
 class MetaSource(object):
     base_url = "http://doi.org/"
 
     # tag must be ordered from better to worst, as soon as a result is found it will stop
-    abstract_tags = ['og:description', 'dc.description', 'description', 'twitter:description']
-    title_tags = ['og:title', 'dc.title', 'citation_title', 'citation_journal_title', 'twitter:title']
-    date_tags = ['citation_cover_date', 'dc.date', 'citation_online_date', 'citation_date']  # which and order
-    author_tags = ['citation_author', 'dc.creator']
-    publisher_tags = ['dc.publisher', 'citation_publisher']
-    type_tag = ['og:type']
+    abstract_tags = ['dcterms.abstract', 'dcterms.description', 'prism.teaser', 'eprints.abstract', 'og:description', 'dc.description', 'description', 'twitter:description']
 
+    title_tags = ['og:title', 'dc.title', 'citation_title', 'dcterms.title', 'citation_journal_title', 'dcterms.alternative', 'twitter:title', 'prism.alternateTitle', 'prism.subtitle', 'eprints.title', 'bepress_citation_title']
+
+    date_tags = ['citation_cover_date', 'dc.date', 'citation_online_date', 'citation_date', 'citation_publication_date', 'dcterms.date', 'dcterms.issued', 'dcterms.created', 'prism.coverDate', 'prism.publicationDate', 'bepress_citation_date', 'eprints.date']  # which and order
+    # if no date use year
+    year_tag = ['citation_year', 'prism.copyrightYear']
+
+    # more author information
+    author_tags = ['citation_author', 'citation_authors', 'dcterms.creator', 'bepress_citation_author', 'eprints.creators_name', 'dc.creator']
+
+    publisher_tags = ['dc.publisher', 'citation_publisher', 'dcterms.publisher', 'citation_technical_report_institution', 'prism.corporateEntity', 'prism.distributor', 'eprints.publisher', 'bepress_citation_publisher']
+
+    type_tag = ['og:type', 'dcterms.type', 'dc.type', 'prism.contentType', 'prism.genre', 'prism.aggregationType', 'eprints.type', 'citation_dissertation_name']
+
+    keyword_tag = ['citation_keywords', 'dc.subject', 'prism.academicField', 'prism.keyword']
+
+    citation_tag = ['dcterms.bibliographicCitation', 'eprints.citation']
 
     tag = 'meta'
     log = 'SourceMeta'
     work_queue = deque()
     work_pool = None
     running = True
-    threads = 1
+    threads = 4
 
     def __init__(self, pubfinder):
         if not self.work_pool:
-            self.work_pool = ThreadPool(self.threads, self.worker, (self.work_queue,))
+            self.work_pool = ThreadPool(self.threads, self.worker, ())
         self.pubfinder = pubfinder
 
-    def worker(self, queue):
+    def worker(self):
         while self.running:
             try:
-                item = queue.pop()
+                item = self.work_queue.pop()
             except IndexError:
                 pass
             else:
@@ -100,10 +120,9 @@ class MetaSource(object):
         return self.map(data, publication)
 
     # fetch response to add data to publication
-    @lru_cache(maxsize=100)
     def fetch(self, doi):
         session = Session()
-        return self.get_response(self.base_url + doi, session)
+        return get_response(self.base_url + doi, session)
         # r = requests.get(self.base_url + doi)
         # if r.status_code == 200:
         #     try:
@@ -118,14 +137,6 @@ class MetaSource(object):
         #
         # logging.debug(self.log + " could not resolve: " + doi)
         # return None
-
-    def get_response(self, url, s):
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
-            'Pragma': 'no-cache'
-        }
-        s.headers.update(headers)
-        return s.get(url)
 
     # map response data to publication
     def map(self, response_data, publication):
