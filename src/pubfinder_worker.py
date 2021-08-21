@@ -19,11 +19,17 @@ from crossref_source import CrossrefSource
 from amba_source import AmbaSource
 from meta_source import MetaSource
 
-from kafka import KafkaConsumer, KafkaProducer
+from kafka import KafkaConsumer
 from kafka.vendor import six
 
 
-class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
+@lru_cache(maxsize=100)
+def get_publication_from_mongo(collection, doi):
+    result = collection.find_one({"doi": doi})
+    return result
+
+
+class PubFinderWorker(EventStreamProducer):
     state = "unknown"
     relation_type = "discusses"
 
@@ -50,6 +56,7 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
         'citations', 'refs', 'authors', 'fieldOfStudy'
     }
 
+    consumer = None
     collection = None
     # 'meta': Source
     source_order = ['mongo', 'amba', 'crossref']
@@ -150,12 +157,16 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
             try:
                 item = queue.pop()
             except IndexError:
+                time.sleep(0.1)
+                # logging.warning(self.log + "sleep worker mongo")
                 pass
             else:
                 publication = PubFinderWorker.get_publication(item)
                 logging.warning(self.log + "work item mongo " + publication['doi'])
 
-                publication_temp = self.get_publication_from_mongo(publication['doi'])
+                if not self.collection:
+                    self.prepare_mongo_connection()
+                publication_temp = get_publication_from_mongo(self.collection, publication['doi'])
 
                 if publication_temp:
                     logging.warning(self.log + " found in mongo " + publication['doi'])
@@ -212,12 +223,7 @@ class PubFinderWorker(EventStreamConsumer, EventStreamProducer):
             # for source in self.source_order:
             #     print(self.source_order[source].work_queue)
 
-    @lru_cache(maxsize=100)
-    def get_publication_from_mongo(self, doi):
-        if not self.collection:
-            self.prepare_mongo_connection()
-        result = self.collection.find_one({"doi": doi})
-        return result
+
 
     def prepare_mongo_connection(self):
         mongo_client = pymongo.MongoClient(host=self.config['mongo_url'],

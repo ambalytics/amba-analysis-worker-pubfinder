@@ -1,3 +1,4 @@
+import time
 from collections import deque
 from multiprocessing.pool import ThreadPool
 from gql import gql, Client
@@ -108,6 +109,8 @@ class AmbaSource(object):
             try:
                 item = self.work_queue.pop()
             except IndexError:
+                time.sleep(0.1)
+                # logging.warning(self.log + "sleep worker mongo")
                 pass
             else:
                 if item:

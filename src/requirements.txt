@@ -2,3 +2,4 @@ amba-event-stream
 requests
 pymongo
 lxml
+kafka-python

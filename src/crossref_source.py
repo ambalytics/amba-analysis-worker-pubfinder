@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+import time
 from functools import lru_cache
 # from gql import gql, Client
 # from gql.transport.aiohttp import AIOHTTPTransport
@@ -85,6 +86,8 @@ class CrossrefSource(object):
             try:
                 item = self.work_queue.pop()
             except IndexError:
+                time.sleep(0.1)
+                # logging.warning(self.log + "sleep worker mongo")
                 pass
             else:
                 if item:

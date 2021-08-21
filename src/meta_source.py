@@ -1,5 +1,6 @@
 import json
 import re
+import time
 from functools import lru_cache
 # from gql import gql, Client
 # from gql.transport.aiohttp import AIOHTTPTransport
@@ -92,6 +93,8 @@ class MetaSource(object):
             try:
                 item = self.work_queue.pop()
             except IndexError:
+                time.sleep(0.1)
+                # logging.warning(self.log + "sleep worker mongo")
                 pass
             else:
                 if item:
@@ -162,8 +165,55 @@ class MetaSource(object):
 
         logging.debug(self.log + " could not resolve: " + json.dumps(result))
 
-        for key in self.abstract_tags:
-            if key in result and not 'abstract' in data:
-                data['abstract'] = result[key]
+        if 'abstract' not in data:
+            for key in self.abstract_tags:
+                if key in result:
+                    data['abstract'] = result[key]
+
+        if 'title' not in data:
+            for key in self.title_tags:
+                if key in result:
+                    data['title'] = result[key]
+
+        if 'pubDate' not in data:
+            for key in self.date_tags:
+                if key in result:
+                    data['pubDate'] = result[key]
+
+        if 'year' not in data:
+            for key in self.year_tag:
+                if key in result:
+                    data['date'] = result[key]
+
+        if 'publisher' not in data:
+            for key in self.publisher_tags:
+                if key in result:
+                    data['publisher'] = result[key]
+
+        if 'type' not in data:
+            for key in self.type_tag:
+                if key in result:
+                    data['type'] = result[key]
+
+        if 'authors' not in data:
+            authors = []
+            for key in self.author_tags:
+                if key in result:
+                    authors.append(result[key])
+            data['authors'] = authors
+
+        if 'fieldsOfStudy' not in data:
+            keywords = []
+            for key in self.keyword_tag:
+                if key in result:
+                    keywords.append(result[key])
+            data['fieldsOfStudy'] = keywords
+
+        if 'citations' not in data:
+            citations = []
+            for key in self.citation_tag:
+                if key in result:
+                    citations.append(result[key])
+            data['citations'] = citations
 
         return data
