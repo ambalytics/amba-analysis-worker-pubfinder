@@ -281,7 +281,7 @@ if __name__ == '__main__':
     logging.basicConfig(format="%(asctime)s.%(msecs)03d %(threadName)s:%(message)s")
     logging.warning("start pubfinder connector")
 
-    time.sleep(11)
+    time.sleep(10)
 
     e = PubFinderWorker(1)
     e.consume()
