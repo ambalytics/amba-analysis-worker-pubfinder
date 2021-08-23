@@ -103,7 +103,13 @@ class CrossrefSource(object):
                         publication = publication_temp
 
                     publication['source'] = self.tag
-                    publication['obj']['source_id'] = [{'title': 'Crossref', 'url': 'https://www.crossref.org/'}]
+
+                    source_ids = publication['obj']['source_id']
+                    # todo check if actually anything was added
+                    source_ids.append({
+                        'title': 'OpenAIRE', 'url': 'https://develop.openaire.eu/overview.html'
+                    })
+                    publication['obj']['source_id'] = source_ids
 
                     if type(item) is Event:
                         item.data['obj']['data'] = publication

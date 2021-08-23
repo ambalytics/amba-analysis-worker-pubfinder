@@ -53,7 +53,7 @@ class PubFinderWorker(EventStreamProducer):
 
     required_fields = {
         'type', 'doi', 'abstract', 'pubDate', 'publisher', 'citationCount', 'title', 'normalizedTitle', 'year',
-        'citations', 'refs', 'authors', 'fieldOfStudy'
+        'citations', 'refs', 'authors', 'fieldOfStudy', 'source_id'
     }
 
     consumer = None
@@ -172,7 +172,8 @@ class PubFinderWorker(EventStreamProducer):
                     logging.warning(self.log + " found in mongo " + publication['doi'])
                     publication = publication_temp
 
-                publication['source'] = 'mongo'
+                publication['source'] = 'Mongo'
+                publication['obj']['source_id'] = []
 
                 if type(item) is Event:
                     item.data['obj']['data'] = publication
@@ -262,7 +263,7 @@ class PubFinderWorker(EventStreamProducer):
         # they can be empty but must me set, id should be enough? citationCount, citations, refs
 
         keys = ("type", "doi", "abstract", "pubDate", "publisher", "title", "normalizedTitle", "year",
-                "authors", "fieldsOfStudy")
+                "authors", "fieldsOfStudy", "source_id") # todo use required fields??
         # if not (set(keys) - publication.keys()):
         if all(key in publication for key in keys):
             logging.warning('publication done ' + publication['doi'])

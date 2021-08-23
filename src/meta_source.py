@@ -9,51 +9,25 @@ from multiprocessing.pool import ThreadPool
 import requests
 from lxml import html
 from collections import deque
-# from base_source import BaseSource
 from event_stream.event import Event
-
-# <meta name="twitter:title" content="Noncommutative integrable systems on... - Regular and Chaotic Dynamics">
-# <meta name="citation_journal_title" content="Regular and Chaotic Dynamics">
-# <meta name="citation_title" content="Non-commutative integrable systems on $b$-symplectic manifolds">
-# <meta name="dc.title" content="Noncommutative integrable systems on b -symplectic manifolds">
-# <meta property="og:title" content="Noncommutative integrable systems on b-symplectic manifolds - Regular and Chaotic Dynamics">
-
-# <meta name="dc.date" content="2016-12-18">^
-# <meta name="citation_publication_date" content="2016/11">
-# <meta name="citation_online_date" content="2016/12/18">
-# <meta name="citation_date" content="2016/06/08">
-# <meta name="citation_cover_date" content="2016/11/01">
-
-# <meta name="dc.creator" content="Anna Kiesenhofer">
-# <meta name="citation_author" content="Anna Kiesenhofer">
-
-# <meta name="citation_reference" content="citation_journal_title=Bull. London Math. Soc.; citation_title=Convexity and Commuting Hamiltonians; citation_author=M. F. Atiyah; citation_volume=14; citation_issue=1; citation_publication_date=1982; citation_pages=1-15; citation_doi=10.1112/blms/14.1.1; citation_id=CR1">+
-
-# <meta property="og:type" content="article">
-
-# <meta name="citation_publisher" content="John Wiley &amp; Sons, Ltd">
-# <meta name="dc.publisher" content="Springer">
-
-# <meta name="twitter:description" content="In this paper we study noncommutative integrable systems on b-Poisson manifolds. One important source of examples (and motivation) of such systems comes from considering noncommutative systems on...">
-# <meta name="description" content="In this paper we study noncommutative integrable systems on b-Poisson manifolds. One important source of examples (and motivation) of such systems comes fr">
-# <meta name="Description" content="Abstract The opioid epidemic in the United States has accelerated during the COVID-19 pandemic. As of 2021, roughly a third of Americans now live in a state with a recreational cannabis law (RCL). ...">
-# <meta name="dc.description" content="In this paper we study noncommutative integrable systems on b-Poisson manifolds. One important source of examples (and motivation) of such systems comes from considering noncommutative systems on manifolds with boundary having the right asymptotics on the boundary. In this paper we describe this and other examples and prove an action-angle theorem for noncommutative integrable systems on a b-symplectic manifold in a neighborhood of a Liouville torus inside the critical set of the Poisson structure associated to the b-symplectic structure.">
-# <meta property="og:description" content="In this paper we study noncommutative integrable systems on b-Poisson manifolds. One important source of examples (and motivation) of such systems comes from considering noncommutative systems on manifolds with boundary having the right asymptotics on the boundary. In this paper we describe this and other examples and prove an action-angle theorem for noncommutative integrable systems on a b-symplectic manifold in a neighborhood of a Liouville torus inside the critical set of the Poisson structure associated to the b-symplectic structure.">
 
 # using meta tags
 from requests import Session
 
 @lru_cache(maxsize=100)
 def get_response(url, s):
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
-        'Pragma': 'no-cache'
-    }
-    s.headers.update(headers)
+    """get a response from a given url using a given session s, a session can be used for headers,
+    this function is cached up to 100 elements
+
+        Arguments:
+            url: the url to get
+            s: the session to use
+    """
     return s.get(url)
 
 
 class MetaSource(object):
+    """" this source will try to append data using meta tags in the url of the resolved doi url """
     base_url = "http://doi.org/"
 
     # tag must be ordered from better to worst, as soon as a result is found it will stop
@@ -84,17 +58,24 @@ class MetaSource(object):
     threads = 4
 
     def __init__(self, pubfinder):
+        """setup a ThreadPool, don't need the cpu since requests are slow and we wan't to share data
+
+            Arguments:
+                pubfinder: the main process where we get data from and to
+        """
         if not self.work_pool:
             self.work_pool = ThreadPool(self.threads, self.worker, ())
         self.pubfinder = pubfinder
 
     def worker(self):
+        """the worker thread function will ensure that the publications in the queue are all processed,
+        it will sleep for 0.1s if no item is in the queue to reduce cpu usage
+        """
         while self.running:
             try:
                 item = self.work_queue.pop()
             except IndexError:
                 time.sleep(0.1)
-                # logging.warning(self.log + "sleep worker mongo")
                 pass
             else:
                 if item:
@@ -103,13 +84,15 @@ class MetaSource(object):
                     logging.warning(self.log + " work on item " + publication['doi'])
                     # logging.warning(self.log + " q " + str(queue))x
 
-                    # todo source stuff
+                    # source stuff
                     publication_temp = self.add_data_to_publication(publication)
 
+                    # only if we have any data we set it
                     if publication_temp:
                         publication = publication_temp
 
                     publication['source'] = self.tag
+                    # no meta since link already present
 
                     if type(item) is Event:
                         item.data['obj']['data'] = publication
@@ -118,34 +101,39 @@ class MetaSource(object):
 
 
     def add_data_to_publication(self, publication):
+        """add data to a given publication, only append, no overwriting if a value is already set
+
+        Arguments:
+            publication: the publication to add data too
+        """
         response = self.fetch(publication['doi'])
         data = self.get_lxml(response)
         return self.map(data, publication)
 
     # fetch response to add data to publication
     def fetch(self, doi):
+        """fetch data from the source using its doi
+
+        Arguments:
+            doi: the doi of the publication
+        """
         session = Session()
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
+            'Pragma': 'no-cache'
+        }
+        session.headers.update(headers)
         return get_response(self.base_url + doi, session)
-        # r = requests.get(self.base_url + doi)
-        # if r.status_code == 200:
-        #     try:
-        #         json_response = r.json()
-        #     except json.decoder.JSONDecodeError as e:
-        #         logging.warning(self.log + " could not json " + doi)
-        #     else:
-        #         if 'status' in json_response:
-        #             if json_response['status'] == 'ok':
-        #                 if 'message' in json_response:
-        #                     return json_response['message']
-        #
-        # logging.debug(self.log + " could not resolve: " + doi)
-        # return None
 
     # map response data to publication
     def map(self, response_data, publication):
-        if response_data and 'abstract' in response_data:
-            publication['abstract'] = response_data['abstract']  # todo make only update
-        return publication
+        # min length to use 50
+        if response_data and 'abstract' in response_data and len(publication['abstract']) < 50:
+            publication['abstract'] = response_data['abstract']
+
+        if response_data and 'abstract' in response_data and len(publication['abstract']) < 50:
+            publication['abstract'] = response_data['abstract']
+        return None
 
     def get_lxml(self, page):
         result = {}
@@ -155,7 +143,9 @@ class MetaSource(object):
             return None
 
         content = html.fromstring(page.content)
+        # go through all meta tags in the head
         for meta in content.xpath('//html//head//meta'):
+            # iterate through
             for name, value in sorted(meta.items()):
                 # abstracts
                 if value.strip().lower() in self.abstract_tags:
@@ -165,8 +155,9 @@ class MetaSource(object):
 
         logging.debug(self.log + " could not resolve: " + json.dumps(result))
 
-        if 'abstract' not in data:
-            for key in self.abstract_tags:
+
+        for key in self.abstract_tags:
+            if 'abstract' not in data:
                 if key in result:
                     data['abstract'] = result[key]
 
