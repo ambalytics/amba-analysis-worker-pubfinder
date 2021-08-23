@@ -1,0 +1,9 @@
+amba-event-stream
+requests
+pymongo
+lxml
+kafka-python
+
+mkdocs
+mkdocs-material
+mkdocstrings
