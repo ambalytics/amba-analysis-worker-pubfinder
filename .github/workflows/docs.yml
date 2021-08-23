@@ -19,6 +19,9 @@ jobs:
           with:
             python-version: 3.8
 
+        - name: Install gql
+          run: pip install --pre gql[all]
+
         - name: Install dependencies
           run: pip install -r docs/requirements.txt
 
