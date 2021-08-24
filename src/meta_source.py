@@ -93,6 +93,12 @@ class MetaSource(object):
 
                     publication['source'] = self.tag
                     # no meta since link already present
+                    source_ids = publication['source_id']
+                    # todo check if actually anything was added
+                    source_ids.append({
+                        'title': 'Meta'
+                    })
+                    publication['source_id'] = source_ids
 
                     if type(item) is Event:
                         item.data['obj']['data'] = publication
@@ -127,15 +133,47 @@ class MetaSource(object):
 
     # map response data to publication
     def map(self, response_data, publication):
+        """map response data and the publication
+
+        Arguments:
+            response_data: the response data
+            publication: the publication
+        """
         # min length to use 50
-        if response_data and 'abstract' in response_data and len(publication['abstract']) < 50:
+        if response_data and 'abstract' in response_data and ('abstract' not in publication or len(publication['abstract']) < 50):
             publication['abstract'] = response_data['abstract']
 
-        if response_data and 'abstract' in response_data and len(publication['abstract']) < 50:
-            publication['abstract'] = response_data['abstract']
+        if response_data and 'title' in response_data and ('title' not in publication or len(publication['title']) < 5):
+            publication['title'] = response_data['title']
+
+        if response_data and 'pubDate' in response_data and 'pubDate' not in publication:
+            publication['pubDate'] = response_data['pubDate']
+
+        if response_data and 'year' in response_data and 'year' not in publication:
+            publication['year'] = response_data['year']
+
+        if response_data and 'publisher' in response_data and 'publisher' not in publication:
+            publication['publisher'] = response_data['publisher']
+
+        if response_data and 'type' in response_data and 'type' not in publication:
+            publication['type'] = response_data['type']
+
+        if response_data and 'authors' in response_data and 'authors' not in publication:
+            publication['authors'] = response_data['authors']
+
+        if response_data and 'fieldsOfStudy' in response_data and 'fieldsOfStudy' not in publication:
+            publication['fieldsOfStudy'] = response_data['fieldsOfStudy']
+
+        if response_data and 'citations' in response_data and 'citations' not in publication:
+            publication['citations'] = response_data['citations']
         return None
 
     def get_lxml(self, page):
+        """use lxml to parse the page and create a data dict from this page
+
+        Arguments:
+            page: the page
+        """
         result = {}
         data = {}
 
@@ -151,13 +189,37 @@ class MetaSource(object):
                 if value.strip().lower() in self.abstract_tags:
                     result[value.strip().lower()] = meta.get('content')
 
-                # todo other stuff
+                if value.strip().lower() in self.title_tags:
+                    result[value.strip().lower()] = meta.get('content')
+
+                if value.strip().lower() in self.date_tags:
+                    result[value.strip().lower()] = meta.get('content')
+
+                if value.strip().lower() in self.year_tag:
+                    result[value.strip().lower()] = meta.get('content')
+
+                if value.strip().lower() in self.publisher_tags:
+                    result[value.strip().lower()] = meta.get('content')
+
+                if value.strip().lower() in self.type_tag:
+                    result[value.strip().lower()] = meta.get('content')
+
+                if value.strip().lower() in self.author_tags:
+                    result[value.strip().lower()] = meta.get('content')
+
+                if value.strip().lower() in self.author_tags:
+                    result[value.strip().lower()] = meta.get('content')
+
+                if value.strip().lower() in self.keyword_tag:
+                    result[value.strip().lower()] = meta.get('content')
+
+                if value.strip().lower() in self.citation_tag:
+                    result[value.strip().lower()] = meta.get('content')
 
         logging.debug(self.log + " could not resolve: " + json.dumps(result))
 
-
-        for key in self.abstract_tags:
-            if 'abstract' not in data:
+        if 'abstract' not in data:
+            for key in self.abstract_tags:
                 if key in result:
                     data['abstract'] = result[key]
 

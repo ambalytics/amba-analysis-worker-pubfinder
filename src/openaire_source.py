@@ -11,12 +11,13 @@ from collections import deque
 from multiprocessing.pool import ThreadPool
 # from base_source import BaseSource
 from event_stream.event import Event
+from lxml import html
 
 
 # fetch response to add data to publication
 @lru_cache(maxsize=100)
 def fetch(doi):
-    r = requests.get(CrossrefSource.base_url + requests.utils.quote(doi))  # check encoding
+    r = requests.get(OpenAireSource.base_url + requests.utils.quote(doi))  # check encoding
     if r.status_code == 200:
         json_response = r.json()
         if 'status' in json_response:
@@ -27,54 +28,17 @@ def fetch(doi):
 
 
 # based on crossref
-class CrossrefSource(object):
-    base_url = "https://api.crossref.org/works/"
-    # crossref types
-    # "book-section",
-    # "monograph",
-    # "report",
-    # "peer-review",
-    # "book-track",
-    # "journal-article",
-    # "book-part",
-    # "other",
-    # "book",
-    # "journal-volume",
-    # "book-set",
-    # "reference-entry",
-    # "proceedings-article",
-    # "journal",
-    # "component",
-    # "book-chapter",
-    # "proceedings-series",
-    # "report-series",
-    # "proceedings",
-    # "standard",
-    # "reference-book",
-    # "posted-content",
-    # "journal-issue",
-    # "dissertation",
-    # "dataset",
-    # "book-series",
-    # "edited-book",
-    # "standard-series",
-    publication_type_translation = {
-        'unknown': 'UNKNOWN',
-        'book': 'BOOK',
-        'book-chapter': 'BOOK_CHAPTER',
-        'proceedings-article': 'CONFERENCE_PAPER',
-        'dataset': 'DATASET',
-        'journal-article': 'JOURNAL_ARTICLE',
-        'patent': 'PATENT',  # doesn't exist
-        'repository': 'REPOSITORY',  # doesn't exist
-        'reference-book': 'BOOK_REFERENCE_ENTRY'  # or reference-entry
-    }
-    tag = 'crossref'
-    log = 'SourceCrossref'
+class OpenAireSource(object):
+    base_url = "https://api.openaire.eu/search/publications?doi="
+
+    tag = 'openaire'
+    log = 'SourceOpenAIRE'
     work_queue = deque()
     work_pool = None
     running = True
     threads = 4
+
+    tags = ['main title', 'creator', 'relevantdate', 'dateofacceptance', 'description', 'publisher']
 
     def __init__(self, pubfinder):
         if not self.work_pool:
@@ -196,3 +160,75 @@ class CrossrefSource(object):
             if not any(d['normalizedName'] == normalized_name for d in result):
                 result.append({'name': name, 'normalizedName': normalized_name})
         return result
+
+    def get_lxml(self, page):
+        """use lxml to parse the page and create a data dict from this page
+
+        Arguments:
+            page: the page
+        """
+        result = {}
+        data = {}
+
+        if not page:
+            return None
+
+        content = html.fromstring(page.content)
+        # go through all meta tags in the head
+        for meta in content.xpath('//html//head//meta'):
+            # iterate through
+            for name, value in sorted(meta.items()):
+                # abstracts
+                if value.strip().lower() in self.tags:
+                    result[value.strip().lower()] = meta.get('content')
+
+        # logging.debug(self.log + " could not resolve: " + json.dumps(result))
+        # /response/results/result/metadata/oaf:entity/oaf:result/description
+        if 'abstract' not in data:
+            if 'description' in result:
+                data['abstract'] = result['description']
+        # <title classid="main title" classname="main title" schemeid="dnet:dataCite_title" schemename="dnet:dataCite_title" inferred="false" provenanceaction="sysimport:crosswalk:repository" trust="0.9">The origin of extracellular fields and currents — EEG, ECoG, LFP and spikes</title>
+        # /response/results/result/metadata/oaf:entity/oaf:result/title[2]
+        if 'title' not in data:
+            for key in self.title_tags:
+                if key in result:
+                    data['title'] = result[key]
+        # /response/results/result/metadata/oaf:entity/oaf:result/dateofacceptance
+        if 'pubDate' not in data:
+            for key in self.date_tags:
+                if key in result:
+                    data['pubDate'] = result[key]
+
+        if 'year' not in data:
+            for key in self.year_tag:
+                if key in result:
+                    data['date'] = result[key]
+
+        if 'publisher' not in data:
+            for key in self.publisher_tags:
+                if key in result:
+                    data['publisher'] = result[key]
+
+        if 'type' not in data:
+            for key in self.type_tag:
+                if key in result:
+                    data['type'] = result[key]
+
+        # /response/results/result/metadata/oaf:entity/oaf:result/creator
+        if 'authors' not in data:
+            authors = []
+            for key in self.author_tags:
+                if key in result:
+                    authors.append(result[key])
+            data['authors'] = authors
+
+        # check that no trust value or context
+        # /response/results/result/metadata/oaf:entity/oaf:result/subject
+        if 'fieldsOfStudy' not in data:
+            keywords = []
+            for key in self.keyword_tag:
+                if key in result:
+                    keywords.append(result[key])
+            data['fieldsOfStudy'] = keywords
+
+        return data

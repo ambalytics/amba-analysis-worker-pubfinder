@@ -103,7 +103,11 @@ class CrossrefSource(object):
                         publication = publication_temp
 
                     publication['source'] = self.tag
-                    publication['obj']['source_id'] = [{'title': 'Crossref', 'url': 'https://www.crossref.org/'}]
+
+                    source_ids = publication['source_id']
+                    # todo check if actually anything was added
+                    source_ids.append({'title': 'Crossref', 'url': 'https://www.crossref.org/'})
+                    publication['source_id'] = source_ids
 
                     if type(item) is Event:
                         item.data['obj']['data'] = publication
@@ -115,10 +119,10 @@ class CrossrefSource(object):
         return self.map(response, publication)
 
     # map response data to publication
-    # todo make sources extend not overwrite
     def map(self, response_data, publication):
         if response_data:
             # publication['doi'] = response_data['DOI']
+            # logging.warning(response_data)
 
             if response_data['type'] in self.publication_type_translation:
                 publication['type'] = self.publication_type_translation[response_data['type']]
@@ -126,7 +130,7 @@ class CrossrefSource(object):
                 publication['type'] = self.publication_type_translation['unknown']
 
             if 'published' in response_data and 'date-parts' in response_data['published']:
-                if len(response_data['published']['date-parts']) == 3:
+                if len(response_data['published']['date-parts'][0]) == 3:
                     publication['pubDate'] = '{0}-{1}-{2}'.format(str(response_data['published']['date-parts'][0][0]),
                                                                   str(response_data['published']['date-parts'][0][1]),
                                                                   str(response_data['published']['date-parts'][0][2]))
@@ -153,7 +157,6 @@ class CrossrefSource(object):
 
         return publication
 
-    # todo own collection?
     def map_author(self, authors):
         result = []
         for author in authors:

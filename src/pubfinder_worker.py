@@ -173,7 +173,7 @@ class PubFinderWorker(EventStreamProducer):
                     publication = publication_temp
 
                 publication['source'] = 'Mongo'
-                publication['obj']['source_id'] = []
+                publication['source_id'] = [{'title': 'Mongo'}]
 
                 if type(item) is Event:
                     item.data['obj']['data'] = publication

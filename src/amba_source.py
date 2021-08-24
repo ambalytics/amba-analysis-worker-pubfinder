@@ -125,6 +125,12 @@ class AmbaSource(object):
                         publication = publication_temp
 
                     publication['source'] = self.tag
+                    source_ids = publication['source_id']
+                    # todo check if actually anything was added
+                    source_ids.append({
+                        'title': 'Amba'
+                    })
+                    publication['source_id'] = source_ids
 
                     if type(item) is Event:
                         item.data['obj']['data'] = publication
