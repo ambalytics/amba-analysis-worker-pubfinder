@@ -13,9 +13,14 @@ from multiprocessing.pool import ThreadPool
 from event_stream.event import Event
 
 
-# fetch response to add data to publication
 @lru_cache(maxsize=100)
 def fetch(doi):
+    """fetch response to add data to publication
+    cache up to 100 since we should not have doi be occurring multiple times
+
+    Arguments:
+        doi: the doi to be fetched
+    """
     r = requests.get(CrossrefSource.base_url + requests.utils.quote(doi))  # check encoding
     if r.status_code == 200:
         json_response = r.json()
@@ -24,6 +29,10 @@ def fetch(doi):
                 if 'message' in json_response:
                     return json_response['message']
     return None
+
+
+def cleanhtml(raw_html, cleanr):
+    return re.sub(cleanr, '', raw_html)
 
 
 # based on crossref
@@ -80,6 +89,7 @@ class CrossrefSource(object):
         if not self.work_pool:
             self.work_pool = ThreadPool(self.threads, self.worker, ())
         self.pubfinder = pubfinder
+        self.cleanr = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
 
     def worker(self):
         while self.running:
@@ -148,6 +158,16 @@ class CrossrefSource(object):
 
             if 'reference' in response_data:
                 publication['refs'] = self.map_refs(response_data['reference'])
+
+            if 'abstract' in response_data and len(response_data['abstract']) > 50:
+
+                clean_abstract = cleanhtml(response_data['abstract'], self.cleanr)
+                # print('original ', response_data['abstract'])
+                # print('clean1 ', clean_abstract)
+                # use stop words? Background? -> use also for html only for the first word
+                clean_abstract = re.sub(r'(\s*)Abstract(\s*)', '', clean_abstract, flags=re.IGNORECASE)
+                # print('clean2 ', clean_abstract)
+                publication['abstract'] = clean_abstract
 
             if 'author' in response_data:
                 publication['authors'] = self.map_author(response_data['author'])

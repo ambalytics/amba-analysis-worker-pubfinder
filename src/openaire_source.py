@@ -230,5 +230,5 @@ class OpenAireSource(object):
                 if key in result:
                     keywords.append(result[key])
             data['fieldsOfStudy'] = keywords
-
+        # try and find top level existing field of study and put their levels under it
         return data

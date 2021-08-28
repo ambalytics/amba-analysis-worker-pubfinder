@@ -58,6 +58,7 @@ class PubFinderWorker(EventStreamProducer):
 
     consumer = None
     collection = None
+    collectionFailed = None
     # 'meta': Source
     source_order = ['mongo', 'amba', 'crossref']
 
@@ -216,6 +217,8 @@ class PubFinderWorker(EventStreamProducer):
                     logging.warning('crossref -> meta ' + publication['doi'])
                     self.meta_source.work_queue.append(item)
 
+            if type(item) is Event:
+                self.save_not_found(item)
             # todo save unresolved dois with the reason (whats missing)
 
             #     logging.warning(self.log + "publication %s continues, key %s tag %s" % (
@@ -224,7 +227,19 @@ class PubFinderWorker(EventStreamProducer):
             # for source in self.source_order:
             #     print(self.source_order[source].work_queue)
 
+    # todo make one util
+    def save_not_found(self, event: Event):
+        """ save thea not found event for debug
 
+        Arguments:
+            event: the event to save
+        """
+        logging.debug('save publication to mongo')
+        try:
+            event.data['_id'] = event.data['id']
+            self.collectionFailed.insert_one(event.data)
+        except pymongo.errors.DuplicateKeyError:
+            logging.warning("MongoDB, not found event")
 
     def prepare_mongo_connection(self):
         mongo_client = pymongo.MongoClient(host=self.config['mongo_url'],
@@ -234,6 +249,7 @@ class PubFinderWorker(EventStreamProducer):
                                            )
         db = mongo_client[self.config['mongo_client']]
         self.collection = db[self.config['mongo_collection']]
+        self.collectionFailed = db['not_found']  # todo only debug?
 
     def save_to_mongo(self, publication):
         try:
@@ -263,9 +279,10 @@ class PubFinderWorker(EventStreamProducer):
         # they can be empty but must me set, id should be enough? citationCount, citations, refs
 
         keys = ("type", "doi", "abstract", "pubDate", "publisher", "title", "normalizedTitle", "year",
-                "authors", "fieldsOfStudy", "source_id") # todo use required fields??
+                "authors", "fieldsOfStudy", "source_id")  # todo use required fields??
         # if not (set(keys) - publication.keys()):
         if all(key in publication for key in keys):
+            # add check for length of title/abstract etc, content check not just existence?
             logging.warning('publication done ' + publication['doi'])
             return True
 

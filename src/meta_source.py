@@ -164,6 +164,9 @@ class MetaSource(object):
         if response_data and 'fieldsOfStudy' in response_data and 'fieldsOfStudy' not in publication:
             publication['fieldsOfStudy'] = response_data['fieldsOfStudy']
 
+        if response_data and 'citations' in response_data and 'citationCount' not in publication:
+            publication['citationCount'] = len(response_data['citations'])
+
         if response_data and 'citations' in response_data and 'citations' not in publication:
             publication['citations'] = response_data['citations']
         return None
@@ -231,7 +234,8 @@ class MetaSource(object):
         if 'pubDate' not in data:
             for key in self.date_tags:
                 if key in result:
-                    data['pubDate'] = result[key]
+                    dateTemp = result[key].replace("/", "-")
+                    data['pubDate'] = dateTemp
 
         if 'year' not in data:
             for key in self.year_tag:
