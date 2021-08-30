@@ -70,10 +70,10 @@ class PubFinderWorker(EventStreamProducer):
     crossref_source = None
     meta_source = None
 
-    db = None
+    dao = None
 
     def create_consumer(self):
-        logging.warning(self.log + "rt: %s" % self.relation_type)
+        # logging.warning(self.log + "rt: %s" % self.relation_type)
 
         if self.state == 'all':
             self.topics = self.build_topic_list()
@@ -84,8 +84,8 @@ class PubFinderWorker(EventStreamProducer):
         if isinstance(self.relation_type, six.string_types):
             self.relation_type = [self.relation_type]
 
-        if not self.db:
-            self.db = DB()
+        if not self.dao:
+            self.dao = DAO()
         # if not self.source_order:
         #     self.source_order = {
         #         'mongo': AmbaSource(self),
@@ -257,7 +257,7 @@ class PubFinderWorker(EventStreamProducer):
         self.collectionFailed = db['not_found']  # todo only debug?
 
     def save_to_mongo(self, publication):
-        self.db.save_publication(publication)
+        self.dao.save_publication(publication)
         try:
             # save publication to db todo remove 'id' ?
             # publication['_id'] = uuid.uuid4().hex
