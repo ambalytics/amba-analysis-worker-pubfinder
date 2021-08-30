@@ -11,6 +11,7 @@ import pymongo
 from multiprocessing.pool import ThreadPool
 from collections import deque
 
+from event_stream.dao import DAO
 from event_stream.event_stream_consumer import EventStreamConsumer
 from event_stream.event_stream_producer import EventStreamProducer
 from event_stream.event import Event
@@ -69,6 +70,8 @@ class PubFinderWorker(EventStreamProducer):
     crossref_source = None
     meta_source = None
 
+    db = None
+
     def create_consumer(self):
         logging.warning(self.log + "rt: %s" % self.relation_type)
 
@@ -81,6 +84,8 @@ class PubFinderWorker(EventStreamProducer):
         if isinstance(self.relation_type, six.string_types):
             self.relation_type = [self.relation_type]
 
+        if not self.db:
+            self.db = DB()
         # if not self.source_order:
         #     self.source_order = {
         #         'mongo': AmbaSource(self),
@@ -252,6 +257,7 @@ class PubFinderWorker(EventStreamProducer):
         self.collectionFailed = db['not_found']  # todo only debug?
 
     def save_to_mongo(self, publication):
+        self.db.save_publication(publication)
         try:
             # save publication to db todo remove 'id' ?
             # publication['_id'] = uuid.uuid4().hex

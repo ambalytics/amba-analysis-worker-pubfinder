@@ -185,7 +185,7 @@ class MetaSource(object):
 
         content = html.fromstring(page.content)
         # go through all meta tags in the head
-        for meta in content.xpath('//html//head//meta'):
+        for meta in content.xpath('//html//meta'):
             # iterate through
             for name, value in sorted(meta.items()):
                 # abstracts
