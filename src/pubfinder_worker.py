@@ -11,7 +11,7 @@ import pymongo
 from multiprocessing.pool import ThreadPool
 from collections import deque
 
-from event_stream.dao import DAO
+# from event_stream.dao import DAO
 from event_stream.event_stream_consumer import EventStreamConsumer
 from event_stream.event_stream_producer import EventStreamProducer
 from event_stream.event import Event
@@ -70,7 +70,7 @@ class PubFinderWorker(EventStreamProducer):
     crossref_source = None
     meta_source = None
 
-    dao = None
+    # dao = None
 
     def create_consumer(self):
         # logging.warning(self.log + "rt: %s" % self.relation_type)
@@ -127,8 +127,8 @@ class PubFinderWorker(EventStreamProducer):
         if not self.mongo_pool:
             self.mongo_pool = ThreadPool(1, self.worker_mongo, (self.mongo_queue,))
 
-        if not self.dao:
-            self.dao = DAO()
+        # if not self.dao:
+        #     self.dao = DAO()
 
         logging.warning(self.log + "wait for messages")
         while self.running:
@@ -259,7 +259,7 @@ class PubFinderWorker(EventStreamProducer):
         self.collectionFailed = db['not_found']  # todo only debug?
 
     def save_to_mongo(self, publication):
-        self.dao.save_publication(publication)
+        # self.dao.save_publication(publication)
         try:
             # save publication to db todo remove 'id' ?
             # publication['_id'] = uuid.uuid4().hex
