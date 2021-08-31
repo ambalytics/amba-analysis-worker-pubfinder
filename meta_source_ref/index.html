@@ -1033,7 +1033,9 @@ it will sleep for 0.1s if no item is in the queue to reduce cpu usage</p>
                 <span class="n">source_ids</span> <span class="o">=</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span>
                 <span class="c1"># todo check if actually anything was added</span>
                 <span class="n">source_ids</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-                    <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Meta&#39;</span>
+                    <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Meta&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://doi.org/&#39;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">],</span>
+                    <span class="s1">&#39;license&#39;</span><span class="p">:</span> <span class="s1">&#39;TODO&#39;</span>
                 <span class="p">})</span>
                 <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source_ids</span>
 
