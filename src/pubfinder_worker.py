@@ -84,8 +84,6 @@ class PubFinderWorker(EventStreamProducer):
         if isinstance(self.relation_type, six.string_types):
             self.relation_type = [self.relation_type]
 
-        if not self.dao:
-            self.dao = DAO()
         # if not self.source_order:
         #     self.source_order = {
         #         'mongo': AmbaSource(self),
@@ -128,6 +126,9 @@ class PubFinderWorker(EventStreamProducer):
 
         if not self.mongo_pool:
             self.mongo_pool = ThreadPool(1, self.worker_mongo, (self.mongo_queue,))
+
+        if not self.dao:
+            self.dao = DAO()
 
         logging.warning(self.log + "wait for messages")
         while self.running:
@@ -179,7 +180,8 @@ class PubFinderWorker(EventStreamProducer):
                     publication = publication_temp
 
                 publication['source'] = 'Mongo'
-                publication['source_id'] = [{'title': 'Mongo'}]
+                publication['source_id'] = [{'title': 'MongoDB', 'url': 'https://analysis.ambalytics.cloud/',
+                                             'license': 'MIT'}]
 
                 if type(item) is Event:
                     item.data['obj']['data'] = publication

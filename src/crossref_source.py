@@ -116,7 +116,7 @@ class CrossrefSource(object):
 
                     source_ids = publication['source_id']
                     # todo check if actually anything was added
-                    source_ids.append({'title': 'Crossref', 'url': 'https://www.crossref.org/'})
+                    source_ids.append({'title': 'Crossref', 'url': 'https://www.crossref.org/', 'license': 'TODO'})
                     publication['source_id'] = source_ids
 
                     if type(item) is Event:

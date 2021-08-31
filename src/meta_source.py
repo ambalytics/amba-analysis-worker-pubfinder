@@ -96,7 +96,9 @@ class MetaSource(object):
                     source_ids = publication['source_id']
                     # todo check if actually anything was added
                     source_ids.append({
-                        'title': 'Meta'
+                        'title': 'Meta',
+                        'url': 'https://doi.org/' + publication['doi'],
+                        'license': 'TODO'
                     })
                     publication['source_id'] = source_ids
 

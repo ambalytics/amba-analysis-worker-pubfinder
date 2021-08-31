@@ -89,7 +89,7 @@ def get_publication_from_amba(doi, amba_client):
 class AmbaSource(object):
     tag = 'amba'
     log = 'SourceAmba'
-    threads = 4 # todo make client only once
+    threads = 4  # todo make client only once
     # gql.transport.exceptions.TransportAlreadyConnected: Transport is already connected
 
     url = "https://api.ambalytics.cloud/entities"  # todo config
@@ -128,7 +128,9 @@ class AmbaSource(object):
                     source_ids = publication['source_id']
                     # todo check if actually anything was added
                     source_ids.append({
-                        'title': 'Amba'
+                        'title': 'Amba',
+                        'url': 'https://analysis.ambalytics.cloud/',
+                        'license': 'MIT'
                     })
                     publication['source_id'] = source_ids
 
