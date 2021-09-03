@@ -13,7 +13,7 @@ from multiprocessing.pool import ThreadPool
 from event_stream.event import Event
 
 
-@lru_cache(maxsize=100)
+@lru_cache(maxsize=10)
 def fetch(doi):
     """fetch response to add data to publication
     cache up to 100 since we should not have doi be occurring multiple times

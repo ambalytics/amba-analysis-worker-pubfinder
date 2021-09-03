@@ -15,6 +15,7 @@ from event_stream.dao import DAO
 from event_stream.event_stream_consumer import EventStreamConsumer
 from event_stream.event_stream_producer import EventStreamProducer
 from event_stream.event import Event
+from event_stream.dao import DAO
 
 from crossref_source import CrossrefSource
 from amba_source import AmbaSource
@@ -24,7 +25,6 @@ from kafka import KafkaConsumer
 from kafka.vendor import six
 
 
-@lru_cache(maxsize=100)
 def get_publication_from_mongo(collection, doi):
     result = collection.find_one({"doi": doi})
     return result
@@ -71,6 +71,7 @@ class PubFinderWorker(EventStreamProducer):
     meta_source = None
 
     dao = None
+    process_number = 2
 
     def create_consumer(self):
         # logging.warning(self.log + "rt: %s" % self.relation_type)
@@ -161,6 +162,7 @@ class PubFinderWorker(EventStreamProducer):
 
     def worker_mongo(self, queue):
         while self.running:
+            time.sleep(0.001)
             try:
                 item = queue.pop()
             except IndexError:
@@ -260,8 +262,6 @@ class PubFinderWorker(EventStreamProducer):
 
     def save_to_mongo(self, publication):
         pub = self.dao.save_publication(publication)
-        logging.warning('pub')
-        logging.warning(pub)
         try:
             # save publication to db todo remove 'id' ?
             # publication['_id'] = uuid.uuid4().hex

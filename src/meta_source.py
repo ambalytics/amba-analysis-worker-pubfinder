@@ -14,7 +14,8 @@ from event_stream.event import Event
 # using meta tags
 from requests import Session
 
-@lru_cache(maxsize=100)
+
+@lru_cache(maxsize=10)
 def get_response(url, s):
     """get a response from a given url using a given session s, a session can be used for headers,
     this function is cached up to 100 elements
@@ -31,20 +32,29 @@ class MetaSource(object):
     base_url = "http://doi.org/"
 
     # tag must be ordered from better to worst, as soon as a result is found it will stop
-    abstract_tags = ['dcterms.abstract', 'dcterms.description', 'prism.teaser', 'eprints.abstract', 'og:description', 'dc.description', 'description', 'twitter:description']
+    abstract_tags = ['dcterms.abstract', 'dcterms.description', 'prism.teaser', 'eprints.abstract', 'og:description',
+                     'dc.description', 'description', 'twitter:description']
 
-    title_tags = ['og:title', 'dc.title', 'citation_title', 'dcterms.title', 'citation_journal_title', 'dcterms.alternative', 'twitter:title', 'prism.alternateTitle', 'prism.subtitle', 'eprints.title', 'bepress_citation_title']
+    title_tags = ['og:title', 'dc.title', 'citation_title', 'dcterms.title', 'citation_journal_title',
+                  'dcterms.alternative', 'twitter:title', 'prism.alternateTitle', 'prism.subtitle', 'eprints.title',
+                  'bepress_citation_title']
 
-    date_tags = ['citation_cover_date', 'dc.date', 'citation_online_date', 'citation_date', 'citation_publication_date', 'dcterms.date', 'dcterms.issued', 'dcterms.created', 'prism.coverDate', 'prism.publicationDate', 'bepress_citation_date', 'eprints.date']  # which and order
+    date_tags = ['citation_cover_date', 'dc.date', 'citation_online_date', 'citation_date', 'citation_publication_date',
+                 'dcterms.date', 'dcterms.issued', 'dcterms.created', 'prism.coverDate', 'prism.publicationDate',
+                 'bepress_citation_date', 'eprints.date']  # which and order
     # if no date use year
     year_tag = ['citation_year', 'prism.copyrightYear']
 
     # more author information
-    author_tags = ['citation_author', 'citation_authors', 'dcterms.creator', 'bepress_citation_author', 'eprints.creators_name', 'dc.creator']
+    author_tags = ['citation_author', 'citation_authors', 'dcterms.creator', 'bepress_citation_author',
+                   'eprints.creators_name', 'dc.creator']
 
-    publisher_tags = ['dc.publisher', 'citation_publisher', 'dcterms.publisher', 'citation_technical_report_institution', 'prism.corporateEntity', 'prism.distributor', 'eprints.publisher', 'bepress_citation_publisher']
+    publisher_tags = ['dc.publisher', 'citation_publisher', 'dcterms.publisher',
+                      'citation_technical_report_institution', 'prism.corporateEntity', 'prism.distributor',
+                      'eprints.publisher', 'bepress_citation_publisher']
 
-    type_tag = ['og:type', 'dcterms.type', 'dc.type', 'prism.contentType', 'prism.genre', 'prism.aggregationType', 'eprints.type', 'citation_dissertation_name']
+    type_tag = ['og:type', 'dcterms.type', 'dc.type', 'prism.contentType', 'prism.genre', 'prism.aggregationType',
+                'eprints.type', 'citation_dissertation_name']
 
     keyword_tag = ['citation_keywords', 'dc.subject', 'prism.academicField', 'prism.keyword']
 
@@ -107,7 +117,6 @@ class MetaSource(object):
 
                     self.pubfinder.finish_work(item, self.tag)
 
-
     def add_data_to_publication(self, publication):
         """add data to a given publication, only append, no overwriting if a value is already set
 
@@ -142,7 +151,8 @@ class MetaSource(object):
             publication: the publication
         """
         # min length to use 50
-        if response_data and 'abstract' in response_data and ('abstract' not in publication or len(publication['abstract']) < 50):
+        if response_data and 'abstract' in response_data and (
+                'abstract' not in publication or len(publication['abstract']) < 50):
             publication['abstract'] = response_data['abstract']
 
         if response_data and 'title' in response_data and ('title' not in publication or len(publication['title']) < 5):

@@ -8,7 +8,6 @@ import logging
 from event_stream.event import Event
 
 
-@lru_cache(maxsize=100)
 def get_publication_from_amba(doi, amba_client):
     query = gql(
         """
