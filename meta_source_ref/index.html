@@ -329,13 +329,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#meta_source.MetaSource.__init__" class="md-nav__link">
-    __init__()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#meta_source.MetaSource.add_data_to_publication" class="md-nav__link">
     add_data_to_publication()
   </a>
@@ -345,6 +338,13 @@
           <li class="md-nav__item">
   <a href="#meta_source.MetaSource.fetch" class="md-nav__link">
     fetch()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meta_source.MetaSource.format_date" class="md-nav__link">
+    format_date()
   </a>
   
 </li>
@@ -459,13 +459,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#meta_source.MetaSource.__init__" class="md-nav__link">
-    __init__()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#meta_source.MetaSource.add_data_to_publication" class="md-nav__link">
     add_data_to_publication()
   </a>
@@ -475,6 +468,13 @@
           <li class="md-nav__item">
   <a href="#meta_source.MetaSource.fetch" class="md-nav__link">
     fetch()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meta_source.MetaSource.format_date" class="md-nav__link">
+    format_date()
   </a>
   
 </li>
@@ -591,60 +591,6 @@
 
 
 
-  <div class="doc doc-object doc-method">
-
-
-
-<h3 id="meta_source.MetaSource.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pubfinder</span><span class="p">)</span></code>
-
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-special"><code>special</code></small>
-  </span>
-
-</h3>
-
-    <div class="doc doc-contents ">
-
-      <p>setup a ThreadPool, don't need the cpu since requests are slow and we wan't to share data</p>
-
-<p><strong>Parameters:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>pubfinder</code></td>
-        <td><code></code></td>
-        <td><p>the main process where we get data from and to</p></td>
-        <td><em>required</em></td>
-      </tr>
-  </tbody>
-</table>
-        <details class="quote">
-          <summary>Source code in <code>src/meta_source.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pubfinder</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;setup a ThreadPool, don&#39;t need the cpu since requests are slow and we wan&#39;t to share data</span>
-
-<span class="sd">        Arguments:</span>
-<span class="sd">            pubfinder: the main process where we get data from and to</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">work_pool</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">work_pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="p">,</span> <span class="p">())</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">pubfinder</span> <span class="o">=</span> <span class="n">pubfinder</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
 
   <div class="doc doc-object doc-method">
 
@@ -746,6 +692,59 @@
     <span class="p">}</span>
     <span class="n">session</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">get_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">+</span> <span class="n">doi</span><span class="p">,</span> <span class="n">session</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="meta_source.MetaSource.format_date" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">format_date</span><span class="p">(</span><span class="n">date_text</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>format a date to end up in our preferred format %Y-%m-%d
+possible input formats
+15 Oct 2014
+1969-12-01
+2003-07
+2014-9-11
+July 2021
+Example Output
+2021-02-01</p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/meta_source.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">format_date</span><span class="p">(</span><span class="n">date_text</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;format a date to end up in our preferred format %Y-%m-%d</span>
+<span class="sd">    possible input formats</span>
+<span class="sd">    15 Oct 2014</span>
+<span class="sd">    1969-12-01</span>
+<span class="sd">    2003-07</span>
+<span class="sd">    2014-9-11</span>
+<span class="sd">    July 2021</span>
+<span class="sd">    Example Output</span>
+<span class="sd">    2021-02-01</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">date_text</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;unable to parse date string </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">date_text</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -955,9 +954,10 @@
 
     <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;title&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;title&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">):</span>
         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span>
+        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;normalizedTitle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;pubDate&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;pubDate&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
-        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;pubDate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;pubDate&#39;</span><span class="p">]</span>
+        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;pubDate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MetaSource</span><span class="o">.</span><span class="n">format_date</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;pubDate&#39;</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;year&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;year&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
@@ -1018,7 +1018,7 @@ it will sleep for 0.1s if no item is in the queue to reduce cpu usage</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
                 <span class="c1"># logging.warning(self.log + &quot; item &quot; + str(item.get_json()))</span>
-                <span class="n">publication</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pubfinder</span><span class="o">.</span><span class="n">get_publication</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="n">publication</span> <span class="o">=</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">get_publication</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot; work on item &quot;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
                 <span class="c1"># logging.warning(self.log + &quot; q &quot; + str(queue))x</span>
 
@@ -1043,7 +1043,8 @@ it will sleep for 0.1s if no item is in the queue to reduce cpu usage</p>
                 <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Event</span><span class="p">:</span>
                     <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publication</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">pubfinder</span><span class="o">.</span><span class="n">finish_work</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span> <span class="s1">&#39;tag&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result_deque</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -1093,7 +1094,21 @@ this function is cached up to 100 elements</p>
 <span class="sd">            url: the url to get</span>
 <span class="sd">            s: the session to use</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">try</span> <span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ConnectionRefusedError</span><span class="p">,</span> <span class="n">SSLError</span><span class="p">,</span> <span class="n">ReadTimeoutError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">TooManyRedirects</span><span class="p">,</span>
+            <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ReadTimeout</span><span class="p">,</span> <span class="n">NewConnectionError</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Meta Source - Pubfinder&#39;</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+        <span class="c1"># get the response for the provided url</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Pragma&#39;</span><span class="p">:</span> <span class="s1">&#39;no-cache&#39;</span>
+        <span class="p">}</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div>
         </details>
     </div>
