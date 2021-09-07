@@ -1,13 +1,7 @@
 import json
 import logging
-import os
 import re
 import time
-import uuid
-from functools import lru_cache
-
-import requests
-import pymongo
 from multiprocessing.pool import ThreadPool
 from collections import deque
 
