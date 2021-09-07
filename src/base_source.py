@@ -5,7 +5,7 @@ from multiprocessing.pool import ThreadPool
 from event_stream.event import Event
 
 
-# from pubfinder_worker import PubFinderWorker
+import pubfinder_worker
 
 
 # base source, to be extended for use
@@ -17,10 +17,10 @@ class BaseSource(object):
     log = 'Source ' + tag
     threads = 1
 
-    def __init__(self, pubfinder):
+    def __init__(self, result_deque):
         if not self.work_pool:
-            self.work_pool = ThreadPool(self.threads, self.worker, (self.work_queue,))
-        self.pubfinder = pubfinder
+            self.work_pool = ThreadPool(self.threads, self.worker, ())
+        self.result_deque = result_deque
 
     def worker(self, queue):
         while self.running:
@@ -31,7 +31,7 @@ class BaseSource(object):
             else:
                 if item:
                     # logging.warning(self.log + " item " + str(item.get_json()))
-                    publication = self.pubfinder.get_publication(item)
+                    publication = PubFinderWorker.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
                     # logging.warning(self.log + " q " + str(queue))x
 
@@ -46,7 +46,8 @@ class BaseSource(object):
                     if type(item) is Event:
                         item.data['obj']['data'] = publication
 
-                    self.pubfinder.finish_work(item, self.tag)
+                    result = {'item': item, 'tag': self.tag}
+                    self.result_deque.append(result)
 
     # todo cache?
     def add_data_to_publication(self, publication):

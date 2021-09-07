@@ -10,9 +10,11 @@ import requests
 from lxml import html
 from collections import deque
 from event_stream.event import Event
+import pubfinder_worker
 
 # using meta tags
 from requests import Session
+from urllib3.exceptions import ReadTimeoutError
 
 
 @lru_cache(maxsize=10)
@@ -24,7 +26,20 @@ def get_response(url, s):
             url: the url to get
             s: the session to use
     """
-    return s.get(url)
+    try :
+        result = s.get(url, timeout=5)
+    except (ConnectionRefusedError, ReadTimeoutError):
+        logging.warning('Meta Source - Pubfinder')
+        s = Session()
+        # get the response for the provided url
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
+            'Pragma': 'no-cache'
+        }
+        s.headers.update(headers)
+    else:
+        return result
+    return None
 
 
 class MetaSource(object):
@@ -67,15 +82,10 @@ class MetaSource(object):
     running = True
     threads = 4
 
-    def __init__(self, pubfinder):
-        """setup a ThreadPool, don't need the cpu since requests are slow and we wan't to share data
-
-            Arguments:
-                pubfinder: the main process where we get data from and to
-        """
+    def __init__(self, result_deque):
         if not self.work_pool:
             self.work_pool = ThreadPool(self.threads, self.worker, ())
-        self.pubfinder = pubfinder
+        self.result_deque = result_deque
 
     def worker(self):
         """the worker thread function will ensure that the publications in the queue are all processed,
@@ -90,7 +100,7 @@ class MetaSource(object):
             else:
                 if item:
                     # logging.warning(self.log + " item " + str(item.get_json()))
-                    publication = self.pubfinder.get_publication(item)
+                    publication = pubfinder_worker.PubFinderWorker.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
                     # logging.warning(self.log + " q " + str(queue))x
 
@@ -115,7 +125,8 @@ class MetaSource(object):
                     if type(item) is Event:
                         item.data['obj']['data'] = publication
 
-                    self.pubfinder.finish_work(item, self.tag)
+                    result = {'item': item, 'tag': self.tag}
+                    self.result_deque.append(result)
 
     def add_data_to_publication(self, publication):
         """add data to a given publication, only append, no overwriting if a value is already set
@@ -157,6 +168,7 @@ class MetaSource(object):
 
         if response_data and 'title' in response_data and ('title' not in publication or len(publication['title']) < 5):
             publication['title'] = response_data['title']
+            publication['normalizedTitle'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
 
         if response_data and 'pubDate' in response_data and 'pubDate' not in publication:
             publication['pubDate'] = response_data['pubDate']

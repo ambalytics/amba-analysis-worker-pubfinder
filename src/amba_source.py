@@ -6,7 +6,7 @@ from gql.transport.aiohttp import AIOHTTPTransport
 from functools import lru_cache
 import logging
 from event_stream.event import Event
-
+import pubfinder_worker
 
 def get_publication_from_amba(doi, amba_client):
     query = gql(
@@ -96,10 +96,10 @@ class AmbaSource(object):
     work_pool = None
     running = True
 
-    def __init__(self, pubfinder):
+    def __init__(self, result_deque):
         if not self.work_pool:
             self.work_pool = ThreadPool(self.threads, self.worker, ())
-        self.pubfinder = pubfinder
+        self.result_deque = result_deque
 
     def worker(self):
         amba_client = self.prepare_amba_connection()
@@ -114,7 +114,7 @@ class AmbaSource(object):
             else:
                 if item:
                     # logging.warning(self.log + " item " + str(item.get_json()))
-                    publication = self.pubfinder.get_publication(item)
+                    publication = pubfinder_worker.PubFinderWorker.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
                     # logging.warning(self.log + " q " + str(queue))x
 
@@ -136,7 +136,8 @@ class AmbaSource(object):
                     if type(item) is Event:
                         item.data['obj']['data'] = publication
 
-                    self.pubfinder.finish_work(item, self.tag)
+                    result = {'item': item, 'tag': self.tag}
+                    self.result_deque.append(result)
 
     def add_data_to_publication(self, publication, ac):
         amba_publication = self.get_publication_wrapper(publication['doi'], ac)
