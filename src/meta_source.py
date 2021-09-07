@@ -1,3 +1,4 @@
+import datetime
 import json
 import re
 import time
@@ -7,6 +8,7 @@ from functools import lru_cache
 import logging
 from multiprocessing.pool import ThreadPool
 import requests
+from dateutil.parser import parse
 from lxml import html
 from collections import deque
 from event_stream.event import Event
@@ -14,7 +16,7 @@ import pubfinder_worker
 
 # using meta tags
 from requests import Session
-from urllib3.exceptions import ReadTimeoutError, SSLError
+from urllib3.exceptions import ReadTimeoutError, SSLError, NewConnectionError
 
 
 @lru_cache(maxsize=10)
@@ -28,7 +30,8 @@ def get_response(url, s):
     """
     try :
         result = s.get(url, timeout=5)
-    except (ConnectionRefusedError, SSLError, ReadTimeoutError):
+    except (ConnectionRefusedError, SSLError, ReadTimeoutError, requests.exceptions.TooManyRedirects,
+            requests.exceptions.ReadTimeout, NewConnectionError):
         logging.warning('Meta Source - Pubfinder')
         s = Session()
         # get the response for the provided url
@@ -171,7 +174,7 @@ class MetaSource(object):
             publication['normalizedTitle'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
 
         if response_data and 'pubDate' in response_data and 'pubDate' not in publication:
-            publication['pubDate'] = response_data['pubDate']
+            publication['pubDate'] = MetaSource.format_date(response_data['pubDate'])
 
         if response_data and 'year' in response_data and 'year' not in publication:
             publication['year'] = response_data['year']
@@ -194,6 +197,25 @@ class MetaSource(object):
         if response_data and 'citations' in response_data and 'citations' not in publication:
             publication['citations'] = response_data['citations']
         return None
+
+    @staticmethod
+    def format_date(date_text):
+        """format a date to end up in our preferred format %Y-%m-%d
+        possible input formats
+        15 Oct 2014
+        1969-12-01
+        2003-07
+        2014-9-11
+        July 2021
+        Example Output
+        2021-02-01
+        """
+        try:
+            date = parse(date_text)
+        except ValueError:
+            logging.warning("unable to parse date string %s" % date_text)
+        else:
+            return date.strftime('%Y-%m-%d')
 
     def get_lxml(self, page):
         """use lxml to parse the page and create a data dict from this page

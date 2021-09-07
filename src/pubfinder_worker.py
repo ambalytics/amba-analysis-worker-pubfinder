@@ -192,6 +192,7 @@ class PubFinderWorker(EventStreamProducer):
 
             if type(item) is Event:
                 item.set('state', 'linked')
+                # logging.warning(item.data['obj']['data']['source_id'])
                 self.publish(item)
 
         else:

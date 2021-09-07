@@ -124,8 +124,10 @@ class AmbaSource(object):
                         publication = publication_temp
 
                     publication['source'] = self.tag
-                    source_ids = publication['source_id']
+                    source_ids = []
                     # todo check if actually anything was added
+                    if 'source_id' in publication:
+                        source_ids = publication['source_id']
                     source_ids.append({
                         'title': 'Amba',
                         'url': 'https://analysis.ambalytics.cloud/',
