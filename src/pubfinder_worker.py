@@ -161,10 +161,8 @@ class PubFinderWorker(EventStreamProducer):
                 publication = PubFinderWorker.get_publication(item)
                 logging.warning(self.log + "work item mongo " + publication['doi'])
 
-                # todo
                 publication_temp = self.dao.get_publication(publication['doi'])
-
-                if publication_temp:
+                if publication_temp and isinstance(publication, dict):
                     logging.warning(self.log + " found in db " + publication['doi'])
                     publication = publication_temp
 
