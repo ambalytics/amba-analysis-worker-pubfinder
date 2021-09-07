@@ -14,7 +14,7 @@ import pubfinder_worker
 
 # using meta tags
 from requests import Session
-from urllib3.exceptions import ReadTimeoutError
+from urllib3.exceptions import ReadTimeoutError, SSLError
 
 
 @lru_cache(maxsize=10)
@@ -28,7 +28,7 @@ def get_response(url, s):
     """
     try :
         result = s.get(url, timeout=5)
-    except (ConnectionRefusedError, ReadTimeoutError):
+    except (ConnectionRefusedError, SSLError, ReadTimeoutError):
         logging.warning('Meta Source - Pubfinder')
         s = Session()
         # get the response for the provided url
