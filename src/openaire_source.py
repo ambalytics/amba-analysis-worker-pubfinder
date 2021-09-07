@@ -40,10 +40,11 @@ class OpenAireSource(object):
 
     tags = ['main title', 'creator', 'relevantdate', 'dateofacceptance', 'description', 'publisher']
 
-    def __init__(self, pubfinder):
+    def __init__(self, pubfinder_get_publication, pubfinder_finish_work):
         if not self.work_pool:
             self.work_pool = ThreadPool(self.threads, self.worker, ())
-        self.pubfinder = pubfinder
+        self.pubfinder_get_publication = pubfinder_get_publication
+        self.pubfinder_finish_work = pubfinder_finish_work
 
     def worker(self):
         while self.running:
@@ -56,7 +57,7 @@ class OpenAireSource(object):
             else:
                 if item:
                     # logging.warning(self.log + " item " + str(item.get_json()))
-                    publication = self.pubfinder.get_publication(item)
+                    publication = self.pubfinder_get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
                     # logging.warning(self.log + " q " + str(queue))x
 
@@ -78,7 +79,7 @@ class OpenAireSource(object):
                     if type(item) is Event:
                         item.data['obj']['data'] = publication
 
-                    self.pubfinder.finish_work(item, self.tag)
+                    self.pubfinder_finish_work(item, self.tag)
 
     def add_data_to_publication(self, publication):
         response = fetch(publication['doi'])
