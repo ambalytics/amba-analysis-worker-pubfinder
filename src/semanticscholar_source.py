@@ -14,7 +14,6 @@ from multiprocessing import Value
 # from base_source import BaseSource
 from event_stream.event import Event
 import pubfinder_worker
-from lxml import html
 
 
 @lru_cache(maxsize=10)
@@ -25,30 +24,32 @@ def fetch(doi):
     Arguments:
         doi: the doi to be fetched
     """
-    return requests.get(OpenAireSource.base_url + requests.utils.quote(doi))  # check encoding
+    r = requests.get(SemanticScholarSource.base_url + requests.utils.quote(doi))  # check encoding
+    if r.status_code == 200:
+        json_response = r.json()
+        if 'error' not in json_response:
+            return json_response
+    return None
 
 
 def reset_api_limit(v, time_delta):
-    logging.warning('reset openaire api limit ' + str(v.value))
+    logging.warning('reset semanticscholar api limit ' + str(v.value))
     with v.get_lock():
         v.value = 0
     threading.Timer(time_delta, reset_api_limit, args=[v, time_delta]).start()
 
 
-# based on crossref
-class OpenAireSource(object):
-    base_url = "https://api.openaire.eu/search/publications?doi="
+class SemanticScholarSource(object):
+    base_url = "https://api.semanticscholar.org/v1/paper/"
 
-    tag = 'openaire'
-    log = 'SourceOpenAIRE'
+    tag = 'semanticscholar'
+    log = 'SemanticScholar'
     work_queue = deque()
     work_pool = None
     running = True
     threads = 4
-    api_limit = 3550
-    api_time = 3600
-
-    tags = ['main title', 'creator', 'relevantdate', 'dateofacceptance', 'description', 'publisher']
+    api_limit = 95
+    api_time = 300
 
     def __init__(self, result_deque):
         if not self.work_pool:
@@ -84,8 +85,16 @@ class OpenAireSource(object):
 
     def add_data_to_publication(self, publication):
         response = self.api_limit_watcher(publication['doi'])
-        data = self.get_lxml(response)
-        return self.map(data, publication)
+        return self.map(response, publication)
+
+    def map_fields_of_study(self, fields):
+        result = []
+        for field in fields:
+            name = field
+            normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
+            if not any(d['normalizedName'] == normalized_name for d in result):
+                result.append({'name': name, 'normalizedName': normalized_name})
+        return result
 
     # map response data to publication
     def map(self, response_data, publication):
@@ -98,42 +107,50 @@ class OpenAireSource(object):
                 added_data = True
 
             if pubfinder_worker.PubFinderWorker.should_update('year', response_data, publication):
-                publication['year'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['year'])
+                publication['year'] = response_data['year']
                 added_data = True
 
-            if pubfinder_worker.PubFinderWorker.should_update('pubDate', response_data, publication):
-                publication['pubDate'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['pubDate'])
+            if 'venue' in response_data and 'publisher' not in publication:
+                publication['publisher'] = response_data['venue']
                 added_data = True
 
-            if pubfinder_worker.PubFinderWorker.should_update('publisher', response_data, publication):
-                publication['publisher'] = response_data['publisher']
+            if 'numCitedBy' in response_data and 'citationCount' not in publication:
+                publication['citationCount'] = response_data['numCitedBy']
                 added_data = True
 
-            if 'abstract' in response_data and \
-                    ('abstract' not in publication
-                     or not pubfinder_worker.PubFinderWorker.valid_abstract(publication['abstract'])):
+            if pubfinder_worker.PubFinderWorker.should_update('authors', response_data, publication):
+                publication['authors'] = self.map_author(response_data['authors'])
+                added_data = True
+
+            # todo + citations
+            # if 'reference' in response_data and 'refs' not in publication:
+            #     publication['refs'] = self.map_refs(response_data['reference'])
+            #     added_data = True
+
+            if 'abstract' in response_data and (
+                    'abstract' not in publication
+                    or not pubfinder_worker.PubFinderWorker.valid_abstract(publication['abstract'])):
                 abstract = pubfinder_worker.PubFinderWorker.clean_abstract(response_data['abstract'])
                 if pubfinder_worker.PubFinderWorker.valid_abstract(abstract):
                     publication['abstract'] = abstract
                     added_data = True
 
-            if pubfinder_worker.PubFinderWorker.should_update('authors', response_data, publication):
-                publication['authors'] = response_data['authors']
-                added_data = True
-
             if pubfinder_worker.PubFinderWorker.should_update('fieldsOfStudy', response_data, publication):
                 # logging.warning("response_data['fieldsOfStudy']")
                 # logging.warning(response_data['fieldsOfStudy'])
+                # if len(response_data['fieldsOfStudy']) == 1:
+                #     publication['fieldsOfStudy'] = [response_data['fieldsOfStudy']]
+                # else:
                 publication['fieldsOfStudy'] = self.map_fields_of_study(response_data['fieldsOfStudy'])
                 added_data = True
 
         if added_data:
             source_ids = publication['source_id']
             source_ids.append(
-                {'title': 'OpenAIRE', 'url': 'https://develop.openaire.eu/overview.html', 'license': 'TODO'})
+                {'title': 'SemanticScholar', 'url': 'https://api.semanticscholar.org', 'license': 'TODO'})
             publication['source_id'] = source_ids
 
-        return publication
+            return publication
 
     def api_limit_watcher(self, doi):
         if self.fetched_counter.value < self.api_limit:
@@ -146,65 +163,16 @@ class OpenAireSource(object):
             time.sleep(wt)
             self.api_limit_watcher(doi)
 
-
-    def map_fields_of_study(self, fields):
+    def map_author(self, authors):
         result = []
-        for field in fields:
-            name = field
-            normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
-            if not any(d['normalizedName'] == normalized_name for d in result):
-                result.append({'name': name, 'normalizedName': normalized_name})
-        return result
-
-
-    def get_lxml(self, page):
-        """use lxml to parse the page and create a data dict from this page
-
-        Arguments:
-            page: the page
-        """
-        result = {}
-
-        if not page:
-            return None
-
-        content = html.fromstring(page.content)
-
-        d = content.xpath('//description')
-        if len(d) > 0:
-            description = d[0].text
-            result['abstract'] = description
-
-        pu = content.xpath('//publisher')
-        if len(pu) > 0:
-            publisher = pu[0].text
-            result['publisher'] = publisher
-
-        t = content.xpath("//title[@classid='main title']")
-        if len(t) > 0:
-            title = t[0].text
-            result['title'] = title
-
-        p = content.xpath(
-            "/response/results/result/metadata/*[name()='oaf:entity']/*[name()='oaf:result']/dateofacceptance")
-        if len(p) > 0:
-            pubDate = p[0].text
-            result['pubDate'] = pubDate
-            result['year'] = pubDate.split('-')[0]
-
-        a = content.xpath("/response/results/result/metadata/*[name()='oaf:entity']/*[name()='oaf:result']/creator")
-        if len(a) > 0:
-            authors = []
-            for author in a:
-                authors.append(author.text)
-            result['authors'] = authors
-
-        f = content.xpath(
-            "/response/results/result/metadata/*[name()='oaf:entity']/*[name()='oaf:result']/subject[not(@trust)]")
-        if len(f) > 0:
-            fos = []
-            for fs in f:
-                fos.append(fs.text)
-            result['fieldsOfStudy'] = fos
-
+        for author in authors:
+            if 'name' in author:
+                name = author['name']
+                normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
+                result.append({
+                    'name': name,
+                    'normalizedName': normalized_name
+                })
+            else:
+                logging.warning(self.log + ' no author name ' + json.dumps(author))
         return result

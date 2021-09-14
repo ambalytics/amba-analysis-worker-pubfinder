@@ -14,6 +14,8 @@ from event_stream.dao import DAO
 import crossref_source
 import amba_source
 import meta_source
+import openaire_source
+import semanticscholar_source
 
 from kafka import KafkaConsumer
 from kafka.vendor import six
@@ -34,8 +36,8 @@ class PubFinderWorker(EventStreamProducer):
     consumer = None
     collection = None
     collectionFailed = None
-    # 'meta': Source
-    source_order = ['db', 'amba', 'crossref']
+
+    sources = ['db', 'amba', 'crossref', 'meta', 'openaire', 'semanticscholar']
 
     db_pool = None
     db_queue = deque()
@@ -46,6 +48,8 @@ class PubFinderWorker(EventStreamProducer):
     amba_source = None
     crossref_source = None
     meta_source = None
+    openaire_source = None
+    semanticscholar_source = None
 
     dao = None
     process_number = 2
@@ -62,13 +66,15 @@ class PubFinderWorker(EventStreamProducer):
         if isinstance(self.relation_type, six.string_types):
             self.relation_type = [self.relation_type]
 
-        results = deque()
+        self.results = deque()
         if not self.result_pool:
             self.result_pool = ThreadPool(1, self.worker_results, (self.results,))
 
         self.amba_source = amba_source.AmbaSource(self.results)
         self.crossref_source = crossref_source.CrossrefSource(self.results)
         self.meta_source = meta_source.MetaSource(self.results)
+        self.openaire_source = openaire_source.OpenAireSource(self.results)
+        self.semanticscholar_source = semanticscholar_source.SemanticScholarSource(self.results)
 
         if not self.topics:
             self.topics = list()
@@ -76,9 +82,7 @@ class PubFinderWorker(EventStreamProducer):
                 for relation_type in self.relation_type:
                     self.topics.append(self.get_topic_name(state=state, relation_type=relation_type))
 
-        # self.topic_name = 'tweets'
         logging.debug(self.log + "get consumer for topic: %s" % self.topics)
-        # consumer.topics()
         self.consumer = KafkaConsumer(group_id=self.group_id,
                                       bootstrap_servers=self.bootstrap_servers, api_version=self.api_version,
                                       consumer_timeout_ms=self.consumer_timeout_ms)
@@ -191,7 +195,7 @@ class PubFinderWorker(EventStreamProducer):
 
         else:
             # put it in next queue or stop
-            if source in self.source_order:
+            if source in self.sources:
 
                 if source == 'db':
                     logging.warning('db -> amba ' + publication['doi'])
@@ -202,12 +206,21 @@ class PubFinderWorker(EventStreamProducer):
                     self.crossref_source.work_queue.append(item)
 
                 if source == 'crossref':
-                    logging.warning('crossref -> meta ' + publication['doi'])
+                    logging.warning('crossref -> openaire ' + publication['doi'])
+                    self.openaire_source.work_queue.append(item)
+
+                if source == 'openaire':
+                    logging.warning('openaire -> semanticscholar ' + publication['doi'])
+                    self.semanticscholar_source.work_queue.append(item)
+
+                if source == 'semanticscholar':
+                    logging.warning('semanticscholar -> meta ' + publication['doi'])
                     self.meta_source.work_queue.append(item)
 
             # if type(item) is Event:
             #     self.save_not_found(item)
             # todo save unresolved dois with the reason (whats missing)
+            logging.warning('unable to find publication data for ' + publication['doi'])
 
     @staticmethod
     def get_publication(item):
@@ -228,8 +241,12 @@ class PubFinderWorker(EventStreamProducer):
         # they can be empty but must me set, id should be enough? citationCount, citations, refs
 
         keys = ("type", "doi", "abstract", "pubDate", "publisher", "title", "normalizedTitle", "year",
-                "authors", "fieldsOfStudy", "source_id")  # todo use required fields??
+                "authors", "fieldsOfStudy", "source_id", "citationCount")  # todo use required fields??
         # if not (set(keys) - publication.keys()):
+
+        if 'abstract' not in publication or not PubFinderWorker.valid_abstract(publication['abstract']):
+            return False
+
         if all(key in publication for key in keys):
             # add check for length of title/abstract etc, content check not just existence?
             logging.warning('publication done ' + publication['doi'])
@@ -239,9 +256,57 @@ class PubFinderWorker(EventStreamProducer):
         return False
 
     @staticmethod
+    def clean_title(title):
+        """cleans the title and removes unnecessary spaces and line breaks
+        """
+        title.replace('\n', ' ')
+        return re.sub(' +', ' ', title).strip()
+
+    @staticmethod
+    def clean_abstract(abstract):
+        """cleans the title and removes unnecessary spaces and line breaks
+        """
+        try:
+            abstract = re.sub('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});', '', abstract)
+        except TypeError:
+            # logging.exception(abstract)
+            return ''
+        else:
+            abstract = abstract.strip()
+
+            remove_words = ['abstract', 'background', 'background:', 'introduction', 'objective', 'nature']
+            # logging.warning('dirty %s', abstract[:100])
+
+            while True:
+                removed_word = False
+                for word in remove_words:
+                    if re.match(word, abstract, re.I):
+                        abstract = abstract[len(word):]
+                        removed_word = True
+                if not removed_word:
+                    break
+
+            abstract = re.sub(r' +', ' ', abstract)
+            abstract = re.sub(r' \. ', ' ', abstract)
+            abstract = re.sub(r' *: ', ' ', abstract)
+            abstract = re.sub(r' - ', ' ', abstract)
+
+            # clean_abstract = re.sub(r'(\s*)Abstract(\s*)', '', clean_abstract, flags=re.IGNORECASE)
+            # logging.warning('clean %s', abstract[:100])
+            return abstract.strip() + '\n\n © by the authors'
+
+    @staticmethod
+    def valid_abstract(abstract):
+        return abstract and len(abstract) > 100 and not abstract.endswith('...')
+
+    @staticmethod
     def normalize(string):
         # todo numbers, special characters/languages
         return (re.sub('[^a-zA-Z ]+', '', string)).casefold().strip()
+
+    @staticmethod
+    def should_update(field, data, publication):
+        return data and field in data and field not in publication
 
     @staticmethod
     def start(i=0):
