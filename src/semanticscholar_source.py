@@ -92,8 +92,8 @@ class SemanticScholarSource(object):
         for field in fields:
             name = field
             normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
-            if not any(d['normalizedName'] == normalized_name for d in result):
-                result.append({'name': name, 'normalizedName': normalized_name})
+            if not any(d['normalized_name'] == normalized_name for d in result):
+                result.append({'name': name, 'normalized_name': normalized_name})
         return result
 
     # map response data to publication
@@ -103,7 +103,7 @@ class SemanticScholarSource(object):
 
             if pubfinder_worker.PubFinderWorker.should_update('title', response_data, publication):
                 publication['title'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['title'])
-                publication['normalizedTitle'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
+                publication['normalized_title'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
                 added_data = True
 
             if pubfinder_worker.PubFinderWorker.should_update('year', response_data, publication):
@@ -114,8 +114,8 @@ class SemanticScholarSource(object):
                 publication['publisher'] = response_data['venue']
                 added_data = True
 
-            if 'numCitedBy' in response_data and 'citationCount' not in publication:
-                publication['citationCount'] = response_data['numCitedBy']
+            if 'numCitedBy' in response_data and 'citation_count' not in publication:
+                publication['citation_count'] = response_data['numCitedBy']
                 added_data = True
 
             if pubfinder_worker.PubFinderWorker.should_update('authors', response_data, publication):
@@ -135,13 +135,13 @@ class SemanticScholarSource(object):
                     publication['abstract'] = abstract
                     added_data = True
 
-            if pubfinder_worker.PubFinderWorker.should_update('fieldsOfStudy', response_data, publication):
-                # logging.warning("response_data['fieldsOfStudy']")
-                # logging.warning(response_data['fieldsOfStudy'])
-                # if len(response_data['fieldsOfStudy']) == 1:
-                #     publication['fieldsOfStudy'] = [response_data['fieldsOfStudy']]
+            if pubfinder_worker.PubFinderWorker.should_update('fields_of_study', response_data, publication):
+                # logging.warning("response_data['fields_of_study']")
+                # logging.warning(response_data['fields_of_study'])
+                # if len(response_data['fields_of_study']) == 1:
+                #     publication['fields_of_study'] = [response_data['fields_of_study']]
                 # else:
-                publication['fieldsOfStudy'] = self.map_fields_of_study(response_data['fieldsOfStudy'])
+                publication['fields_of_study'] = self.map_fields_of_study(response_data['fields_of_study'])
                 added_data = True
 
         if added_data:
@@ -171,7 +171,7 @@ class SemanticScholarSource(object):
                 normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
                 result.append({
                     'name': name,
-                    'normalizedName': normalized_name
+                    'normalized_name': normalized_name
                 })
             else:
                 logging.warning(self.log + ' no author name ' + json.dumps(author))

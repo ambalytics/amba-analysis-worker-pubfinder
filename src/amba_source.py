@@ -24,49 +24,16 @@ def get_publication_from_amba(doi, amba_client):
           title,
           normalizedTitle,
           year,
-          citations {
-              id,
-              type,
-              doi,
-              abstract,
-              pubDate,
-              publisher,
-              rank,
-              citationCount,
-              title,
-              normalizedTitle,
-              year
-          },
-          refs  {
-              id,
-              type,
-              doi,
-              abstract,
-              pubDate,
-              publisher,
-              rank,
-              citationCount,
-              title,
-              normalizedTitle,
-              year
-          },
           authors {
-              id,
               name,
               normalizedName,
-              pubCount,
-              citationCount,
-              rank
           },
           fieldsOfStudy {
-              score,
               name,
               normalizedName,
               level,
-              rank,
-              citationCount
           }
-        }
+        } 
     }
 
     """)
@@ -78,10 +45,18 @@ def get_publication_from_amba(doi, amba_client):
     params = {"doi": doi}
     result = amba_client.execute(query, variable_values=params)
     if 'publicationsByDoi' in result and len(result['publicationsByDoi']) > 0:
-        # todo better way?
         publication = result['publicationsByDoi'][0]
-        return publication
-    return None
+        # todo unset
+        publication['pub_date'] = publication['pubDate']
+        publication['citation_count'] = publication['citationCount']
+        publication['normalized_title'] = publication['normalizedTitle']
+
+        for a in publication['authors']:
+            a['normalized_name'] = a['normalizedName']
+
+        for f in publication['fieldsOfStudy']:
+            f['normalized_name'] = f['normalizedName']
+        publication['field_of_study'] = publication['fieldsOfStudy']
 
 
 # base source, to be extended for use

@@ -94,15 +94,15 @@ class OpenAireSource(object):
 
             if pubfinder_worker.PubFinderWorker.should_update('title', response_data, publication):
                 publication['title'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['title'])
-                publication['normalizedTitle'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
+                publication['normalized_title'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
                 added_data = True
 
             if pubfinder_worker.PubFinderWorker.should_update('year', response_data, publication):
                 publication['year'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['year'])
                 added_data = True
 
-            if pubfinder_worker.PubFinderWorker.should_update('pubDate', response_data, publication):
-                publication['pubDate'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['pubDate'])
+            if pubfinder_worker.PubFinderWorker.should_update('pub_date', response_data, publication):
+                publication['pub_date'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['pub_date'])
                 added_data = True
 
             if pubfinder_worker.PubFinderWorker.should_update('publisher', response_data, publication):
@@ -121,10 +121,10 @@ class OpenAireSource(object):
                 publication['authors'] = response_data['authors']
                 added_data = True
 
-            if pubfinder_worker.PubFinderWorker.should_update('fieldsOfStudy', response_data, publication):
-                # logging.warning("response_data['fieldsOfStudy']")
-                # logging.warning(response_data['fieldsOfStudy'])
-                publication['fieldsOfStudy'] = self.map_fields_of_study(response_data['fieldsOfStudy'])
+            if pubfinder_worker.PubFinderWorker.should_update('fields_of_study', response_data, publication):
+                # logging.warning("response_data['fields_of_study']")
+                # logging.warning(response_data['fields_of_study'])
+                publication['fields_of_study'] = self.map_fields_of_study(response_data['fields_of_study'])
                 added_data = True
 
         if added_data:
@@ -152,8 +152,8 @@ class OpenAireSource(object):
         for field in fields:
             name = field
             normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
-            if not any(d['normalizedName'] == normalized_name for d in result):
-                result.append({'name': name, 'normalizedName': normalized_name})
+            if not any(d['normalized_name'] == normalized_name for d in result):
+                result.append({'name': name, 'normalized_name': normalized_name})
         return result
 
 
@@ -188,9 +188,9 @@ class OpenAireSource(object):
         p = content.xpath(
             "/response/results/result/metadata/*[name()='oaf:entity']/*[name()='oaf:result']/dateofacceptance")
         if len(p) > 0:
-            pubDate = p[0].text
-            result['pubDate'] = pubDate
-            result['year'] = pubDate.split('-')[0]
+            pub_date = p[0].text
+            result['pub_date'] = pub_date
+            result['year'] = pub_date.split('-')[0]
 
         a = content.xpath("/response/results/result/metadata/*[name()='oaf:entity']/*[name()='oaf:result']/creator")
         if len(a) > 0:
@@ -205,6 +205,6 @@ class OpenAireSource(object):
             fos = []
             for fs in f:
                 fos.append(fs.text)
-            result['fieldsOfStudy'] = fos
+            result['fields_of_study'] = fos
 
         return result

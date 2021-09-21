@@ -173,10 +173,10 @@ class MetaSource(object):
 
         if response_data and 'title' in response_data and ('title' not in publication or len(publication['title']) < 5):
             publication['title'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['title'])
-            publication['normalizedTitle'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
+            publication['normalized_title'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
 
-        if pubfinder_worker.PubFinderWorker.should_update('pubDate', response_data, publication):
-            publication['pubDate'] = MetaSource.format_date(response_data['pubDate'])
+        if pubfinder_worker.PubFinderWorker.should_update('pub_date', response_data, publication):
+            publication['pub_date'] = MetaSource.format_date(response_data['pub_date'])
 
         if pubfinder_worker.PubFinderWorker.should_update('year', response_data, publication):
             publication['year'] = response_data['year']
@@ -191,11 +191,11 @@ class MetaSource(object):
         if pubfinder_worker.PubFinderWorker.should_update('authors', response_data, publication):
             publication['authors'] = response_data['authors']
 
-        if pubfinder_worker.PubFinderWorker.should_update('fieldsOfStudy', response_data, publication):
-            publication['fieldsOfStudy'] = self.map_fields_of_study(response_data['fieldsOfStudy'])
+        if pubfinder_worker.PubFinderWorker.should_update('fields_of_study', response_data, publication):
+            publication['fields_of_study'] = self.map_fields_of_study(response_data['fields_of_study'])
 
-        if response_data and 'citations' in response_data and 'citationCount' not in publication:
-            publication['citationCount'] = len(response_data['citations'])
+        if response_data and 'citations' in response_data and 'citation_count' not in publication:
+            publication['citation_count'] = len(response_data['citations'])
 
         if pubfinder_worker.PubFinderWorker.should_update('citations', response_data, publication):
             publication['citations'] = response_data['citations']
@@ -206,8 +206,8 @@ class MetaSource(object):
         for field in fields:
             name = field
             normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
-            if not any(d['normalizedName'] == normalized_name for d in result):
-                result.append({'name': name, 'normalizedName': normalized_name})
+            if not any(d['normalized_name'] == normalized_name for d in result):
+                result.append({'name': name, 'normalized_name': normalized_name})
         return result
 
     @staticmethod
@@ -289,11 +289,11 @@ class MetaSource(object):
                 if key in result:
                     data['title'] = result[key]
 
-        if 'pubDate' not in data:
+        if 'pub_date' not in data:
             for key in self.date_tags:
                 if key in result:
                     dateTemp = result[key].replace("/", "-")
-                    data['pubDate'] = dateTemp
+                    data['pub_date'] = dateTemp
 
         if 'year' not in data:
             for key in self.year_tag:
@@ -317,12 +317,12 @@ class MetaSource(object):
                     authors.append(result[key].strip())
             data['authors'] = authors
 
-        if 'fieldsOfStudy' not in data:
+        if 'fields_of_study' not in data:
             keywords = []
             for key in self.keyword_tag:
                 if key in result:
                     keywords.append(result[key])
-            data['fieldsOfStudy'] = keywords
+            data['fields_of_study'] = keywords
 
         if 'citations' not in data:
             citations = []

@@ -138,9 +138,9 @@ class CrossrefSource(object):
                 added_data = True
 
             if 'published' in response_data and 'date-parts' in response_data[
-                'published'] and 'pubDate' not in publication:
+                'published'] and 'pub_date' not in publication:
                 if len(response_data['published']['date-parts'][0]) == 3:
-                    publication['pubDate'] = '{0}-{1}-{2}'.format(str(response_data['published']['date-parts'][0][0]),
+                    publication['pub_date'] = '{0}-{1}-{2}'.format(str(response_data['published']['date-parts'][0][0]),
                                                                   str(response_data['published']['date-parts'][0][1]),
                                                                   str(response_data['published']['date-parts'][0][2]))
                 publication['year'] = response_data['published']['date-parts'][0][0]
@@ -148,13 +148,13 @@ class CrossrefSource(object):
             if pubfinder_worker.PubFinderWorker.should_update('publisher', response_data, publication):
                 publication['publisher'] = response_data['publisher']
 
-            if 'is-referenced-by-count' in response_data and 'citationCount' not in publication:
-                publication['citationCount'] = response_data['is-referenced-by-count']
+            if 'is-referenced-by-count' in response_data and 'citation_count' not in publication:
+                publication['citation_count'] = response_data['is-referenced-by-count']
 
             if pubfinder_worker.PubFinderWorker.should_update('title', response_data, publication):
                 if len(response_data['title']) > 0:
                     publication['title'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['title'][0])
-                    publication['normalizedTitle'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
+                    publication['normalized_title'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
 
             if 'reference' in response_data and 'refs' not in publication:
                 publication['refs'] = self.map_refs(response_data['reference'])
@@ -172,8 +172,8 @@ class CrossrefSource(object):
                 publication['authors'] = self.map_author(response_data['author'])
                 added_data = True
 
-            if 'subject' in response_data and 'fieldsOfStudy' not in publication:
-                publication['fieldsOfStudy'] = self.map_fields_of_study(response_data['subject'])
+            if 'subject' in response_data and 'fields_of_study' not in publication:
+                publication['fields_of_study'] = self.map_fields_of_study(response_data['subject'])
                 added_data = True
 
         if added_data:
@@ -200,7 +200,7 @@ class CrossrefSource(object):
             normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
             result.append({
                 'name': name,
-                'normalizedName': normalized_name
+                'normalized_name': normalized_name
             })
         return result
 
@@ -216,6 +216,6 @@ class CrossrefSource(object):
         for field in fields:
             name = re.sub(r"[\(\[].*?[\)\]]", "", field)
             normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
-            if not any(d['normalizedName'] == normalized_name for d in result):
-                result.append({'name': name, 'normalizedName': normalized_name})
+            if not any(d['normalized_name'] == normalized_name for d in result):
+                result.append({'name': name, 'normalized_name': normalized_name})
         return result

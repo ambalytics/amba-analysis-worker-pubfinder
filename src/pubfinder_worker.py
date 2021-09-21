@@ -29,7 +29,7 @@ class PubFinderWorker(EventStreamProducer):
     group_id = "pub-finder-worker"
 
     required_fields = {
-        'type', 'doi', 'abstract', 'pubDate', 'publisher', 'citationCount', 'title', 'normalizedTitle', 'year',
+        'type', 'doi', 'abstract', 'pub_date', 'publisher', 'citation_count', 'title', 'normalized_title', 'year',
         'citations', 'refs', 'authors', 'fieldOfStudy', 'source_id'
     }
 
@@ -238,10 +238,10 @@ class PubFinderWorker(EventStreamProducer):
         if not publication:
             return False
 
-        # they can be empty but must me set, id should be enough? citationCount, citations, refs
+        # they can be empty but must me set, id should be enough? citation_count, citations, refs
 
-        keys = ("type", "doi", "abstract", "pubDate", "publisher", "title", "normalizedTitle", "year",
-                "authors", "fieldsOfStudy", "source_id", "citationCount")  # todo use required fields??
+        keys = ("type", "doi", "abstract", "pub_date", "publisher", "title", "normalized_title", "year",
+                "authors", "fields_of_study", "source_id", "citation_count")  # todo use required fields??
         # if not (set(keys) - publication.keys()):
 
         if 'abstract' not in publication or not PubFinderWorker.valid_abstract(publication['abstract']):
@@ -254,6 +254,21 @@ class PubFinderWorker(EventStreamProducer):
 
         logging.debug('publication missing ' + str(set(keys) - publication.keys()))
         return False
+
+    @staticmethod
+    def clean_fos(fos):
+        # todo where
+        """cleans the title and removes unnecessary spaces and line breaks
+        """
+        results = []
+        for f in fos:
+            if ';' in f:
+                d = f.split('f')
+                results.extend(d)
+            else:
+                results.append(f)
+
+        return results
 
     @staticmethod
     def clean_title(title):
