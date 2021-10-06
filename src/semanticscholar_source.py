@@ -131,7 +131,9 @@ class SemanticScholarSource(object):
                     'abstract' not in publication
                     or not pubfinder_worker.PubFinderWorker.valid_abstract(publication['abstract'])):
                 abstract = pubfinder_worker.PubFinderWorker.clean_abstract(response_data['abstract'])
+                # logging.warning('semantic abstract try')
                 if pubfinder_worker.PubFinderWorker.valid_abstract(abstract):
+                    # logging.warning('semantic abstract')
                     publication['abstract'] = abstract
                     added_data = True
 

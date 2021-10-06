@@ -37,7 +37,7 @@ class PubFinderWorker(EventStreamProducer):
     collection = None
     collectionFailed = None
 
-    sources = ['db', 'amba', 'crossref', 'meta', 'openaire', 'semanticscholar']
+    sources = ['db', 'amba', 'crossref', 'openaire', 'semanticscholar']
 
     db_pool = None
     db_queue = deque()
@@ -157,7 +157,6 @@ class PubFinderWorker(EventStreamProducer):
                 pass
             else:
                 publication = PubFinderWorker.get_publication(item)
-                logging.warning(self.log + "work item mongo " + publication['doi'])
 
                 publication_temp = self.dao.get_publication(publication['doi'])
                 if publication_temp and isinstance(publication, dict):
@@ -179,7 +178,8 @@ class PubFinderWorker(EventStreamProducer):
         # logging.warning(self.log + "finish_work %s item %s" % (publication['doi'], source))
 
         # logging.warning(self.log + "finish_work publication " + json.dumps(publication))
-        if self.is_publication_done(publication):
+        pub_is_done = self.is_publication_done(publication)
+        if pub_is_done is True:
             logging.warning(self.log + "publication done " + publication['doi'])
 
             if source != 'db':
@@ -188,6 +188,7 @@ class PubFinderWorker(EventStreamProducer):
             # todo go through refs
             # foreach ref appendLeft to queue
 
+            # todo if only pubfinder event stop
             if type(item) is Event:
                 item.set('state', 'linked')
                 # logging.warning(item.data['obj']['data']['source_id'])
@@ -217,10 +218,9 @@ class PubFinderWorker(EventStreamProducer):
                     logging.warning('semanticscholar -> meta ' + publication['doi'])
                     self.meta_source.work_queue.append(item)
 
-            # if type(item) is Event:
-            #     self.save_not_found(item)
-            # todo save unresolved dois with the reason (whats missing)
-            logging.warning('unable to find publication data for ' + publication['doi'])
+            else:
+                self.dao.save_publication_not_found(publication['doi'], pub_is_done)
+                logging.warning('unable to find publication data for ' + publication['doi'])
 
     @staticmethod
     def get_publication(item):
@@ -240,12 +240,14 @@ class PubFinderWorker(EventStreamProducer):
 
         # they can be empty but must me set, id should be enough? citation_count, citations, refs
 
-        keys = ("type", "doi", "abstract", "pub_date", "publisher", "title", "normalized_title", "year",
+        keys = ("type", "doi", "abstract", "publisher", "title", "normalized_title", "year",
                 "authors", "fields_of_study", "source_id", "citation_count")  # todo use required fields??
         # if not (set(keys) - publication.keys()):
 
-        if 'abstract' not in publication or not PubFinderWorker.valid_abstract(publication['abstract']):
-            return False
+        if 'abstract' not in publication:
+            return 'abstract error'
+        if not PubFinderWorker.valid_abstract(publication['abstract']):
+            return 'abstract not valid error'
 
         if all(key in publication for key in keys):
             # add check for length of title/abstract etc, content check not just existence?
@@ -253,7 +255,7 @@ class PubFinderWorker(EventStreamProducer):
             return True
 
         logging.debug('publication missing ' + str(set(keys) - publication.keys()))
-        return False
+        return str(set(keys) - publication.keys())
 
     @staticmethod
     def clean_fos(fos):
@@ -308,11 +310,11 @@ class PubFinderWorker(EventStreamProducer):
 
             # clean_abstract = re.sub(r'(\s*)Abstract(\s*)', '', clean_abstract, flags=re.IGNORECASE)
             # logging.warning('clean %s', abstract[:100])
-            return abstract.strip() + '\n\n © by the authors'
+            return abstract.strip()
 
     @staticmethod
     def valid_abstract(abstract):
-        return abstract and len(abstract) > 100 and not abstract.endswith('...')
+        return abstract and len(abstract) > 100  # and not abstract.endswith('...')
 
     @staticmethod
     def normalize(string):
