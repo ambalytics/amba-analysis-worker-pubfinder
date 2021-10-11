@@ -194,7 +194,8 @@ class MetaSource(object):
         if pubfinder_worker.PubFinderWorker.should_update('fields_of_study', response_data, publication):
             publication['fields_of_study'] = self.map_fields_of_study(response_data['fields_of_study'])
 
-        if response_data and 'citations' in response_data and 'citation_count' not in publication:
+        if response_data and 'citations' in response_data and (
+                    'citation_count' not in publication or publication['citation_count'] == 0):
             publication['citation_count'] = len(response_data['citations'])
 
         if pubfinder_worker.PubFinderWorker.should_update('citations', response_data, publication):

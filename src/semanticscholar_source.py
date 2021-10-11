@@ -114,7 +114,8 @@ class SemanticScholarSource(object):
                 publication['publisher'] = response_data['venue']
                 added_data = True
 
-            if 'numCitedBy' in response_data and 'citation_count' not in publication:
+            if 'numCitedBy' in response_data and (
+                    'citation_count' not in publication or publication['citation_count'] == 0):
                 publication['citation_count'] = response_data['numCitedBy']
                 added_data = True
 

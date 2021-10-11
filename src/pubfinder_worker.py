@@ -4,7 +4,8 @@ import re
 import time
 from multiprocessing.pool import ThreadPool
 from collections import deque
-
+import os
+import sentry_sdk
 from event_stream.dao import DAO
 from event_stream.event_stream_consumer import EventStreamConsumer
 from event_stream.event_stream_producer import EventStreamProducer
@@ -252,6 +253,7 @@ class PubFinderWorker(EventStreamProducer):
         if all(key in publication for key in keys):
             # add check for length of title/abstract etc, content check not just existence?
             logging.warning('publication done ' + publication['doi'])
+            publication['pub_date'] = None
             return True
 
         logging.debug('publication missing ' + str(set(keys) - publication.keys()))
@@ -335,4 +337,11 @@ class PubFinderWorker(EventStreamProducer):
 
 
 if __name__ == '__main__':
+    SENTRY_DSN = os.environ.get('SENTRY_DSN')
+    SENTRY_TRACE_SAMPLE_RATE = os.environ.get('SENTRY_TRACE_SAMPLE_RATE')
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        traces_sample_rate=SENTRY_TRACE_SAMPLE_RATE
+    )
+
     PubFinderWorker.start(1)

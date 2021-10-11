@@ -141,14 +141,15 @@ class CrossrefSource(object):
                 'published'] and 'pub_date' not in publication:
                 if len(response_data['published']['date-parts'][0]) == 3:
                     publication['pub_date'] = '{0}-{1}-{2}'.format(str(response_data['published']['date-parts'][0][0]),
-                                                                  str(response_data['published']['date-parts'][0][1]),
-                                                                  str(response_data['published']['date-parts'][0][2]))
+                                                                   str(response_data['published']['date-parts'][0][1]),
+                                                                   str(response_data['published']['date-parts'][0][2]))
                 publication['year'] = response_data['published']['date-parts'][0][0]
 
             if pubfinder_worker.PubFinderWorker.should_update('publisher', response_data, publication):
                 publication['publisher'] = response_data['publisher']
 
-            if 'is-referenced-by-count' in response_data and 'citation_count' not in publication:
+            if 'is-referenced-by-count' in response_data and (
+                    'citation_count' not in publication or publication['citation_count'] == 0):
                 publication['citation_count'] = response_data['is-referenced-by-count']
 
             if pubfinder_worker.PubFinderWorker.should_update('title', response_data, publication):
