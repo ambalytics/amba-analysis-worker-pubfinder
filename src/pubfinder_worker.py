@@ -253,7 +253,10 @@ class PubFinderWorker(EventStreamProducer):
         if all(key in publication for key in keys):
             # add check for length of title/abstract etc, content check not just existence?
             logging.warning('publication done ' + publication['doi'])
-            publication['pub_date'] = None
+
+            # todo make sure we dont have erros saving
+            if 'pub_date' not in publication:
+                publication['pub_date'] = None
             return True
 
         logging.debug('publication missing ' + str(set(keys) - publication.keys()))
