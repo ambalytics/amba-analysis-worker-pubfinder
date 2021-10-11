@@ -28,7 +28,7 @@ def get_response(url, s):
             url: the url to get
             s: the session to use
     """
-    try :
+    try:
         result = s.get(url, timeout=5)
     except (ConnectionRefusedError, SSLError, ReadTimeoutError, requests.exceptions.TooManyRedirects,
             requests.exceptions.ReadTimeout, NewConnectionError, requests.exceptions.SSLError, ConnectionError):
@@ -164,39 +164,52 @@ class MetaSource(object):
             response_data: the response data
             publication: the publication
         """
-        # min length to use 50
-        if response_data and 'abstract' in response_data and (
-                'abstract' not in publication or len(publication['abstract']) < 50):
-            publication['abstract'] = response_data['abstract']
+        if 'abstract' in response_data and \
+                ('abstract' not in publication
+                 or not pubfinder_worker.PubFinderWorker.valid_abstract(publication['abstract'])):
+            abstract = pubfinder_worker.PubFinderWorker.clean_abstract(response_data['abstract'])
+            if pubfinder_worker.PubFinderWorker.valid_abstract(abstract):
+                publication['abstract'] = abstract
 
         if response_data and 'title' in response_data and ('title' not in publication or len(publication['title']) < 5):
-            publication['title'] = response_data['title']
-            publication['normalizedTitle'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
+            publication['title'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['title'])
+            publication['normalized_title'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
 
-        if response_data and 'pubDate' in response_data and 'pubDate' not in publication:
-            publication['pubDate'] = MetaSource.format_date(response_data['pubDate'])
+        if pubfinder_worker.PubFinderWorker.should_update('pub_date', response_data, publication):
+            publication['pub_date'] = MetaSource.format_date(response_data['pub_date'])
 
-        if response_data and 'year' in response_data and 'year' not in publication:
+        if pubfinder_worker.PubFinderWorker.should_update('year', response_data, publication):
             publication['year'] = response_data['year']
 
-        if response_data and 'publisher' in response_data and 'publisher' not in publication:
+        if pubfinder_worker.PubFinderWorker.should_update('publisher', response_data, publication):
             publication['publisher'] = response_data['publisher']
 
-        if response_data and 'type' in response_data and 'type' not in publication:
-            publication['type'] = response_data['type']
+        # todo mappings
+        # if pubfinder_worker.PubFinderWorker.should_update('type', response_data, publication):
+        #     publication['type'] = response_data['type']
 
-        if response_data and 'authors' in response_data and 'authors' not in publication:
+        if pubfinder_worker.PubFinderWorker.should_update('authors', response_data, publication):
             publication['authors'] = response_data['authors']
 
-        if response_data and 'fieldsOfStudy' in response_data and 'fieldsOfStudy' not in publication:
-            publication['fieldsOfStudy'] = response_data['fieldsOfStudy']
+        if pubfinder_worker.PubFinderWorker.should_update('fields_of_study', response_data, publication):
+            publication['fields_of_study'] = self.map_fields_of_study(response_data['fields_of_study'])
 
-        if response_data and 'citations' in response_data and 'citationCount' not in publication:
-            publication['citationCount'] = len(response_data['citations'])
+        if response_data and 'citations' in response_data and (
+                    'citation_count' not in publication or publication['citation_count'] == 0):
+            publication['citation_count'] = len(response_data['citations'])
 
-        if response_data and 'citations' in response_data and 'citations' not in publication:
+        if pubfinder_worker.PubFinderWorker.should_update('citations', response_data, publication):
             publication['citations'] = response_data['citations']
         return None
+
+    def map_fields_of_study(self, fields):
+        result = []
+        for field in fields:
+            name = field
+            normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
+            if not any(d['normalized_name'] == normalized_name for d in result):
+                result.append({'name': name, 'normalized_name': normalized_name})
+        return result
 
     @staticmethod
     def format_date(date_text):
@@ -231,7 +244,7 @@ class MetaSource(object):
 
         content = html.fromstring(page.content)
         # go through all meta tags in the head
-        for meta in content.xpath('//html//meta'):
+        for meta in content.xpath('//meta'):
             # iterate through
             for name, value in sorted(meta.items()):
                 # abstracts
@@ -277,11 +290,11 @@ class MetaSource(object):
                 if key in result:
                     data['title'] = result[key]
 
-        if 'pubDate' not in data:
+        if 'pub_date' not in data:
             for key in self.date_tags:
                 if key in result:
                     dateTemp = result[key].replace("/", "-")
-                    data['pubDate'] = dateTemp
+                    data['pub_date'] = dateTemp
 
         if 'year' not in data:
             for key in self.year_tag:
@@ -301,16 +314,16 @@ class MetaSource(object):
         if 'authors' not in data:
             authors = []
             for key in self.author_tags:
-                if key in result:
-                    authors.append(result[key])
+                if key in result and len(result[key].strip()) > 1:
+                    authors.append(result[key].strip())
             data['authors'] = authors
 
-        if 'fieldsOfStudy' not in data:
+        if 'fields_of_study' not in data:
             keywords = []
             for key in self.keyword_tag:
                 if key in result:
                     keywords.append(result[key])
-            data['fieldsOfStudy'] = keywords
+            data['fields_of_study'] = keywords
 
         if 'citations' not in data:
             citations = []

@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+import threading
 import time
 from functools import lru_cache
 # from gql import gql, Client
@@ -9,11 +10,10 @@ from functools import lru_cache
 import requests
 from collections import deque
 from multiprocessing.pool import ThreadPool
+from multiprocessing import Value
 # from base_source import BaseSource
 from event_stream.event import Event
 import pubfinder_worker
-
-
 
 
 @lru_cache(maxsize=10)
@@ -115,13 +115,6 @@ class CrossrefSource(object):
                     if publication_temp:
                         publication = publication_temp
 
-                    publication['source'] = self.tag
-
-                    source_ids = publication['source_id']
-                    # todo check if actually anything was added
-                    source_ids.append({'title': 'Crossref', 'url': 'https://www.crossref.org/', 'license': 'TODO'})
-                    publication['source_id'] = source_ids
-
                     if type(item) is Event:
                         item.data['obj']['data'] = publication
 
@@ -134,50 +127,60 @@ class CrossrefSource(object):
 
     # map response data to publication
     def map(self, response_data, publication):
+        added_data = False
         if response_data:
-            # publication['doi'] = response_data['DOI']
-            # logging.warning(response_data)
 
-            if response_data['type'] in self.publication_type_translation:
-                publication['type'] = self.publication_type_translation[response_data['type']]
-            else:
-                publication['type'] = self.publication_type_translation['unknown']
+            if 'type' not in publication:
+                if response_data['type'] in self.publication_type_translation:
+                    publication['type'] = self.publication_type_translation[response_data['type']]
+                else:
+                    publication['type'] = self.publication_type_translation['unknown']
+                added_data = True
 
-            if 'published' in response_data and 'date-parts' in response_data['published']:
+            if 'published' in response_data and 'date-parts' in response_data[
+                'published'] and 'pub_date' not in publication:
                 if len(response_data['published']['date-parts'][0]) == 3:
-                    publication['pubDate'] = '{0}-{1}-{2}'.format(str(response_data['published']['date-parts'][0][0]),
-                                                                  str(response_data['published']['date-parts'][0][1]),
-                                                                  str(response_data['published']['date-parts'][0][2]))
+                    publication['pub_date'] = '{0}-{1}-{2}'.format(str(response_data['published']['date-parts'][0][0]),
+                                                                   str(response_data['published']['date-parts'][0][1]),
+                                                                   str(response_data['published']['date-parts'][0][2]))
                 publication['year'] = response_data['published']['date-parts'][0][0]
 
-            if 'publisher' in response_data:
+            if pubfinder_worker.PubFinderWorker.should_update('publisher', response_data, publication):
                 publication['publisher'] = response_data['publisher']
 
-            if 'is-referenced-by-count' in response_data:
-                publication['citationCount'] = response_data['is-referenced-by-count']
+            if 'is-referenced-by-count' in response_data and (
+                    'citation_count' not in publication or publication['citation_count'] == 0):
+                publication['citation_count'] = response_data['is-referenced-by-count']
 
-            if 'title' in response_data:
-                publication['title'] = response_data['title'][0]
-                publication['normalizedTitle'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
+            if pubfinder_worker.PubFinderWorker.should_update('title', response_data, publication):
+                if len(response_data['title']) > 0:
+                    publication['title'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['title'][0])
+                    publication['normalized_title'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
 
-            if 'reference' in response_data:
+            if 'reference' in response_data and 'refs' not in publication:
                 publication['refs'] = self.map_refs(response_data['reference'])
+                added_data = True
 
-            if 'abstract' in response_data and len(response_data['abstract']) > 50:
+            if 'abstract' in response_data and (
+                    'abstract' not in publication or not pubfinder_worker.PubFinderWorker.valid_abstract(
+                publication['abstract'])):
+                abstract = pubfinder_worker.PubFinderWorker.clean_abstract(response_data['abstract'])
+                if pubfinder_worker.PubFinderWorker.valid_abstract(abstract):
+                    publication['abstract'] = abstract
+                    added_data = True
 
-                clean_abstract = cleanhtml(response_data['abstract'], self.cleanr)
-                # print('original ', response_data['abstract'])
-                # print('clean1 ', clean_abstract)
-                # use stop words? Background? -> use also for html only for the first word
-                clean_abstract = re.sub(r'(\s*)Abstract(\s*)', '', clean_abstract, flags=re.IGNORECASE)
-                # print('clean2 ', clean_abstract)
-                publication['abstract'] = clean_abstract
-
-            if 'author' in response_data:
+            if 'author' in response_data and 'authors' not in publication:
                 publication['authors'] = self.map_author(response_data['author'])
+                added_data = True
 
-            if 'subject' in response_data:
-                publication['fieldsOfStudy'] = self.map_fields_of_study(response_data['subject'])
+            if 'subject' in response_data and 'fields_of_study' not in publication:
+                publication['fields_of_study'] = self.map_fields_of_study(response_data['subject'])
+                added_data = True
+
+        if added_data:
+            source_ids = publication['source_id']
+            source_ids.append({'title': 'Crossref', 'url': 'https://www.crossref.org/', 'license': 'TODO'})
+            publication['source_id'] = source_ids
 
         return publication
 
@@ -198,7 +201,7 @@ class CrossrefSource(object):
             normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
             result.append({
                 'name': name,
-                'normalizedName': normalized_name
+                'normalized_name': normalized_name
             })
         return result
 
@@ -214,6 +217,6 @@ class CrossrefSource(object):
         for field in fields:
             name = re.sub(r"[\(\[].*?[\)\]]", "", field)
             normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
-            if not any(d['normalizedName'] == normalized_name for d in result):
-                result.append({'name': name, 'normalizedName': normalized_name})
+            if not any(d['normalized_name'] == normalized_name for d in result):
+                result.append({'name': name, 'normalized_name': normalized_name})
         return result
