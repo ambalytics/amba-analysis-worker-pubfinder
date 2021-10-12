@@ -278,58 +278,56 @@ class MetaSource(object):
                 if value.strip().lower() in self.citation_tag:
                     result[value.strip().lower()] = meta.get('content')
 
-        logging.debug(self.log + " could not resolve: " + json.dumps(result))
+        # logging.debug(self.log + " could not resolve: " + json.dumps(result))
 
-        if 'abstract' not in data:
-            for key in self.abstract_tags:
-                if key in result:
+        for key in self.abstract_tags:
+            if key in result:
+                abstract = pubfinder_worker.PubFinderWorker.clean_abstract(result[key])
+                if len(abstract) > len(data['abstract']):
                     data['abstract'] = result[key]
 
-        if 'title' not in data:
-            for key in self.title_tags:
+        for key in self.title_tags:
+            if 'title' not in data:
                 if key in result:
                     data['title'] = result[key]
 
-        if 'pub_date' not in data:
-            for key in self.date_tags:
+        for key in self.date_tags:
+            if 'pub_date' not in data:
                 if key in result:
                     dateTemp = result[key].replace("/", "-")
                     data['pub_date'] = dateTemp
 
-        if 'year' not in data:
-            for key in self.year_tag:
+        for key in self.year_tag:
+            if 'year' not in data:
                 if key in result:
                     data['date'] = result[key]
 
-        if 'publisher' not in data:
-            for key in self.publisher_tags:
+        for key in self.publisher_tags:
+            if 'publisher' not in data:
                 if key in result:
                     data['publisher'] = result[key]
 
-        if 'type' not in data:
-            for key in self.type_tag:
+        for key in self.type_tag:
+            if 'type' not in data:
                 if key in result:
                     data['type'] = result[key]
 
-        if 'authors' not in data:
-            authors = []
-            for key in self.author_tags:
-                if key in result and len(result[key].strip()) > 1:
-                    authors.append(result[key].strip())
-            data['authors'] = authors
+        authors = []
+        for key in self.author_tags:
+            if key in result and len(result[key].strip()) > 1:
+                authors.append(result[key].strip())
+        data['authors'] = authors
 
-        if 'fields_of_study' not in data:
-            keywords = []
-            for key in self.keyword_tag:
-                if key in result:
-                    keywords.append(result[key])
-            data['fields_of_study'] = keywords
+        keywords = []
+        for key in self.keyword_tag:
+            if key in result:
+                keywords.append(result[key])
+        data['fields_of_study'] = keywords
 
-        if 'citations' not in data:
-            citations = []
-            for key in self.citation_tag:
-                if key in result:
-                    citations.append(result[key])
-            data['citations'] = citations
+        citations = []
+        for key in self.citation_tag:
+            if key in result:
+                citations.append(result[key])
+        data['citations'] = citations
 
         return data
