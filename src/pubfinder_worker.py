@@ -220,8 +220,14 @@ class PubFinderWorker(EventStreamProducer):
                     self.meta_source.work_queue.append(item)
 
             else:
-                self.dao.save_publication_not_found(publication['doi'], pub_is_done)
-                logging.warning('unable to find publication data for ' + publication['doi'])
+                if self.is_publication_done(publication, True) is True:
+                    logging.warning(self.log + "publication done " + publication['doi'])
+
+                    if source != 'db':
+                        self.dao.save_publication(publication)
+                else:
+                    self.dao.save_publication_not_found(publication['doi'], pub_is_done)
+                    logging.warning('unable to find publication data for ' + publication['doi'])
 
     @staticmethod
     def get_publication(item):
@@ -235,15 +241,18 @@ class PubFinderWorker(EventStreamProducer):
         return publication
 
     @staticmethod
-    def is_publication_done(publication):
+    def is_publication_done(publication, save_mode=False):
         if not publication:
             return False
 
         # they can be empty but must me set, id should be enough? citation_count, citations, refs
 
-        keys = ("type", "doi", "abstract", "publisher", "title", "normalized_title", "year",
-                "authors", "fields_of_study", "source_id", "citation_count")  # todo use required fields??
-        # if not (set(keys) - publication.keys()):
+        if save_mode:
+            keys = ("type", "doi", "abstract", "publisher", "title", "normalized_title", "year", "pub_date",
+                    "authors", "fields_of_study", "source_id", "citation_count")
+        else:
+            keys = ("type", "doi", "abstract", "publisher", "title", "normalized_title", "year",
+                    "authors", "fields_of_study", "source_id")
 
         if 'abstract' not in publication:
             return 'abstract error'

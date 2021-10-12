@@ -187,7 +187,6 @@ class CrossrefSource(object):
     def map_author(self, authors):
         result = []
         for author in authors:
-            # todo sequence check, affiliation
             name = ''
             if 'given' in author:
                 name = author['given'] + ' '
@@ -198,11 +197,12 @@ class CrossrefSource(object):
             else:
                 logging.warning(self.log + ' no author family ' + json.dumps(author))
 
-            normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
-            result.append({
-                'name': name,
-                'normalized_name': normalized_name
-            })
+            if len(name.strip()) > 1:
+                normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
+                result.append({
+                    'name': name,
+                    'normalized_name': normalized_name
+                })
         return result
 
     def map_refs(self, refs):
