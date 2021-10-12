@@ -14,7 +14,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.6">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.3">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.802231af.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.5143246d.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -80,7 +80,9 @@
       
     </div>
     
-      <header class="md-header" data-md-component="header">
+      
+
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="Amba Analysis Worker Pubfinder" class="md-header__button md-logo" aria-label="Amba Analysis Worker Pubfinder" data-md-component="logo">
       
@@ -159,11 +161,14 @@
       </div>
     
   </nav>
+  
 </header>
     
     <div class="md-container" data-md-component="container">
       
       
+        
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -233,10 +238,14 @@
       
         <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
       
-      <label class="md-nav__link" for="__nav_2">
-        Code Reference
-        <span class="md-nav__icon md-icon"></span>
-      </label>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Code Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <nav class="md-nav" aria-label="Code Reference" data-md-level="1">
         <label class="md-nav__title" for="__nav_2">
           <span class="md-nav__icon md-icon"></span>
@@ -245,6 +254,7 @@
         <ul class="md-nav__list" data-md-scrollfix>
           
             
+              
   
   
   
@@ -255,8 +265,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -267,8 +279,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -279,8 +293,10 @@
     </li>
   
 
+            
           
             
+              
   
   
     
@@ -389,8 +405,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -401,8 +419,24 @@
     </li>
   
 
+            
           
             
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../semanticscholar_source_ref/" class="md-nav__link">
+        semanticscholar source
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
   
   
   
@@ -413,6 +447,7 @@
     </li>
   
 
+            
           
         </ul>
       </nav>
@@ -552,7 +587,8 @@
 
 
 <h2 id="meta_source.MetaSource" class="doc doc-heading">
-        <code>MetaSource</code>
+        <code>
+MetaSource        </code>
 
 
 
@@ -619,7 +655,7 @@
   <tbody>
       <tr>
         <td><code>publication</code></td>
-        <td><code></code></td>
+        <td></td>
         <td><p>the publication to add data too</p></td>
         <td><em>required</em></td>
       </tr>
@@ -671,7 +707,7 @@
   <tbody>
       <tr>
         <td><code>doi</code></td>
-        <td><code></code></td>
+        <td></td>
         <td><p>the doi of the publication</p></td>
         <td><em>required</em></td>
       </tr>
@@ -780,7 +816,7 @@ Example Output
   <tbody>
       <tr>
         <td><code>page</code></td>
-        <td><code></code></td>
+        <td></td>
         <td><p>the page</p></td>
         <td><em>required</em></td>
       </tr>
@@ -802,7 +838,7 @@ Example Output
 
     <span class="n">content</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
     <span class="c1"># go through all meta tags in the head</span>
-    <span class="k">for</span> <span class="n">meta</span> <span class="ow">in</span> <span class="n">content</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;//html//meta&#39;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">meta</span> <span class="ow">in</span> <span class="n">content</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;//meta&#39;</span><span class="p">):</span>
         <span class="c1"># iterate through</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">meta</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
             <span class="c1"># abstracts</span>
@@ -848,11 +884,11 @@ Example Output
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
                 <span class="n">data</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="s1">&#39;pubDate&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">&#39;pub_date&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_tags</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
                 <span class="n">dateTemp</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
-                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;pubDate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dateTemp</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;pub_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dateTemp</span>
 
     <span class="k">if</span> <span class="s1">&#39;year&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">year_tag</span><span class="p">:</span>
@@ -872,16 +908,16 @@ Example Output
     <span class="k">if</span> <span class="s1">&#39;authors&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
         <span class="n">authors</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">author_tags</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
-                <span class="n">authors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">authors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="n">data</span><span class="p">[</span><span class="s1">&#39;authors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">authors</span>
 
-    <span class="k">if</span> <span class="s1">&#39;fieldsOfStudy&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">&#39;fields_of_study&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
         <span class="n">keywords</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keyword_tag</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
                 <span class="n">keywords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;fieldsOfStudy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">keywords</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;fields_of_study&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">keywords</span>
 
     <span class="k">if</span> <span class="s1">&#39;citations&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
         <span class="n">citations</span> <span class="o">=</span> <span class="p">[]</span>
@@ -926,13 +962,13 @@ Example Output
   <tbody>
       <tr>
         <td><code>response_data</code></td>
-        <td><code></code></td>
+        <td></td>
         <td><p>the response data</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>publication</code></td>
-        <td><code></code></td>
+        <td></td>
         <td><p>the publication</p></td>
         <td><em>required</em></td>
       </tr>
@@ -947,37 +983,41 @@ Example Output
 <span class="sd">        response_data: the response data</span>
 <span class="sd">        publication: the publication</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># min length to use 50</span>
-    <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;abstract&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="p">(</span>
-            <span class="s1">&#39;abstract&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">50</span><span class="p">):</span>
-        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s1">&#39;abstract&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> \
+            <span class="p">(</span><span class="s1">&#39;abstract&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span>
+             <span class="ow">or</span> <span class="ow">not</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">valid_abstract</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">])):</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">clean_abstract</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">valid_abstract</span><span class="p">(</span><span class="n">abstract</span><span class="p">):</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">abstract</span>
 
     <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;title&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;title&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">):</span>
-        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span>
-        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;normalizedTitle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
+        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">clean_title</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
+        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;normalized_title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;pubDate&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;pubDate&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
-        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;pubDate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MetaSource</span><span class="o">.</span><span class="n">format_date</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;pubDate&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;pub_date&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;pub_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MetaSource</span><span class="o">.</span><span class="n">format_date</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;pub_date&#39;</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;year&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;year&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;publisher&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;publisher&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;publisher&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;publisher&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;publisher&#39;</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;type&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;type&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
-        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+    <span class="c1"># todo mappings</span>
+    <span class="c1"># if pubfinder_worker.PubFinderWorker.should_update(&#39;type&#39;, response_data, publication):</span>
+    <span class="c1">#     publication[&#39;type&#39;] = response_data[&#39;type&#39;]</span>
 
-    <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;authors&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;authors&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;authors&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;authors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;authors&#39;</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;fieldsOfStudy&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;fieldsOfStudy&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
-        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;fieldsOfStudy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;fieldsOfStudy&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;fields_of_study&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;fields_of_study&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_fields_of_study</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;fields_of_study&#39;</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;citations&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;citationCount&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
-        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;citationCount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;citations&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;citations&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="s1">&#39;citation_count&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span> <span class="ow">or</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;citation_count&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;citation_count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;citations&#39;</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;citations&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;citations&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;citations&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;citations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;citations&#39;</span><span class="p">]</span>
     <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div>
@@ -985,6 +1025,7 @@ Example Output
     </div>
 
   </div>
+
 
 
 
@@ -1094,7 +1135,7 @@ this function is cached up to 100 elements</p>
 <span class="sd">            url: the url to get</span>
 <span class="sd">            s: the session to use</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span> <span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">ConnectionRefusedError</span><span class="p">,</span> <span class="n">SSLError</span><span class="p">,</span> <span class="n">ReadTimeoutError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">TooManyRedirects</span><span class="p">,</span>
             <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ReadTimeout</span><span class="p">,</span> <span class="n">NewConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">SSLError</span><span class="p">,</span> <span class="ne">ConnectionError</span><span class="p">):</span>
@@ -1180,10 +1221,12 @@ this function is cached up to 100 elements</p>
     <div class="md-footer-meta__inner md-grid">
       <div class="md-footer-copyright">
         
-        Made with
-        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-          Material for MkDocs
-        </a>
+        
+          Made with
+          <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+            Material for MkDocs
+          </a>
+        
         
       </div>
       
@@ -1195,10 +1238,10 @@ this function is cached up to 100 elements</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.409db549.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.756773cc.min.js"></script>
+      <script src="../assets/javascripts/bundle.f89c2efe.min.js"></script>
       
     
   </body>
