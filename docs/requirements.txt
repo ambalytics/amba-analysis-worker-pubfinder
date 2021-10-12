@@ -1,9 +1,9 @@
+python-dateutil
 amba-event-stream
 requests
-pymongo
 lxml
 kafka-python
-
+sentry_sdk
 mkdocs
 mkdocs-material
 mkdocstrings

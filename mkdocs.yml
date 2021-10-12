@@ -12,6 +12,7 @@ nav:
         crossref source: crossref_source_ref.md
         meta source: meta_source_ref.md
         openaire source: openaire_source_ref.md
+        semanticscholar source: semanticscholar_source_ref.md
         pubfinder worker: pubfinder_worker_ref.md
 
 theme:
