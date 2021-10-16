@@ -188,7 +188,7 @@ class MetaSource(object):
         if pubfinder_worker.PubFinderWorker.should_update('publisher', response_data, publication):
             publication['publisher'] = response_data['publisher']
 
-        # todo mappings
+        # todo mappings, license?
         # if pubfinder_worker.PubFinderWorker.should_update('type', response_data, publication):
         #     publication['type'] = response_data['type']
 
@@ -211,7 +211,7 @@ class MetaSource(object):
         for field in fields:
             name = field
             normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
-            if not any(d['normalized_name'] == normalized_name for d in result):
+            if not any(d['normalized_name'] == normalized_name for d in result) and len(normalized_name) < 150:
                 result.append({'name': name, 'normalized_name': normalized_name})
         return result
 

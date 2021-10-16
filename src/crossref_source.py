@@ -177,8 +177,10 @@ class CrossrefSource(object):
                 publication['fields_of_study'] = self.map_fields_of_study(response_data['subject'])
                 added_data = True
 
-            if 'license' in response_data and 'license' not in publication: #content-version
-                publication['license'] = self.map_fields_of_study(response_data['license']['URL'])
+            # content-version
+            if 'license' in response_data:
+                publication['license'] = response_data['license'][0]['URL']
+                logging.warning(publication['license'])
                 added_data = True
 
         if added_data:
