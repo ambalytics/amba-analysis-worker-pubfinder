@@ -14,7 +14,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.3">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.3">
     
     
       
@@ -981,6 +981,9 @@ Example Output
 <span class="sd">        response_data: the response data</span>
 <span class="sd">        publication: the publication</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">response_data</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
     <span class="k">if</span> <span class="s1">&#39;abstract&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> \
             <span class="p">(</span><span class="s1">&#39;abstract&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span>
              <span class="ow">or</span> <span class="ow">not</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">valid_abstract</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">])):</span>
@@ -1001,7 +1004,7 @@ Example Output
     <span class="k">if</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;publisher&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;publisher&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;publisher&#39;</span><span class="p">]</span>
 
-    <span class="c1"># todo mappings</span>
+    <span class="c1"># todo mappings, license?</span>
     <span class="c1"># if pubfinder_worker.PubFinderWorker.should_update(&#39;type&#39;, response_data, publication):</span>
     <span class="c1">#     publication[&#39;type&#39;] = response_data[&#39;type&#39;]</span>
 
@@ -1135,8 +1138,9 @@ this function is cached up to 100 elements</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-    <span class="k">except</span> <span class="p">(</span><span class="ne">ConnectionRefusedError</span><span class="p">,</span> <span class="n">SSLError</span><span class="p">,</span> <span class="n">ReadTimeoutError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">TooManyRedirects</span><span class="p">,</span>
-            <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ReadTimeout</span><span class="p">,</span> <span class="n">NewConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">SSLError</span><span class="p">,</span> <span class="ne">ConnectionError</span><span class="p">):</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ConnectionRefusedError</span><span class="p">,</span> <span class="n">SSLError</span><span class="p">,</span> <span class="n">ReadTimeoutError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">TooManyRedirects</span><span class="p">,</span> <span class="n">ConnectTimeout</span><span class="p">,</span>
+            <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ReadTimeout</span><span class="p">,</span> <span class="n">NewConnectionError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">SSLError</span><span class="p">,</span> <span class="ne">ConnectionError</span><span class="p">,</span>
+            <span class="ne">TimeoutError</span><span class="p">,</span> <span class="ne">ConnectionResetError</span><span class="p">):</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Meta Source - Pubfinder&#39;</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
         <span class="c1"># get the response for the provided url</span>
