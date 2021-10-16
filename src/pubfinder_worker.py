@@ -248,11 +248,11 @@ class PubFinderWorker(EventStreamProducer):
         # they can be empty but must me set, id should be enough? citation_count, citations, refs
 
         if save_mode:
+            keys = ("type", "doi", "publisher", "title", "normalized_title", "year",
+                    "authors", "fields_of_study", "source_id")
+        else:
             keys = ("type", "doi", "abstract", "publisher", "title", "normalized_title", "year", "pub_date",
                     "authors", "fields_of_study", "source_id", "citation_count")
-        else:
-            keys = ("type", "doi", "abstract", "publisher", "title", "normalized_title", "year",
-                    "authors", "fields_of_study", "source_id")
 
         if 'abstract' not in publication:
             return 'abstract error'
@@ -266,6 +266,12 @@ class PubFinderWorker(EventStreamProducer):
             # todo make sure we dont have erros saving
             if 'pub_date' not in publication:
                 publication['pub_date'] = None
+            if 'abstract' not in publication:
+                publication['abstract'] = None
+            if 'citation_count' not in publication:
+                publication['citation_count'] = 0
+            if 'license' not in publication:
+                publication['license'] = None
             return True
 
         logging.debug('publication missing ' + str(set(keys) - publication.keys()))

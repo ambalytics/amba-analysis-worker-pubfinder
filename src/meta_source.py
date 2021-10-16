@@ -15,7 +15,7 @@ from event_stream.event import Event
 import pubfinder_worker
 
 # using meta tags
-from requests import Session
+from requests import Session, ConnectTimeout
 from urllib3.exceptions import ReadTimeoutError, SSLError, NewConnectionError
 
 
@@ -30,8 +30,9 @@ def get_response(url, s):
     """
     try:
         result = s.get(url, timeout=5)
-    except (ConnectionRefusedError, SSLError, ReadTimeoutError, requests.exceptions.TooManyRedirects,
-            requests.exceptions.ReadTimeout, NewConnectionError, requests.exceptions.SSLError, ConnectionError):
+    except (ConnectionRefusedError, SSLError, ReadTimeoutError, requests.exceptions.TooManyRedirects, ConnectTimeout,
+            requests.exceptions.ReadTimeout, NewConnectionError, requests.exceptions.SSLError, ConnectionError,
+            TimeoutError, ConnectionResetError):
         logging.warning('Meta Source - Pubfinder')
         s = Session()
         # get the response for the provided url
@@ -164,6 +165,9 @@ class MetaSource(object):
             response_data: the response data
             publication: the publication
         """
+        if not response_data:
+            return None
+
         if 'abstract' in response_data and \
                 ('abstract' not in publication
                  or not pubfinder_worker.PubFinderWorker.valid_abstract(publication['abstract'])):
@@ -184,7 +188,7 @@ class MetaSource(object):
         if pubfinder_worker.PubFinderWorker.should_update('publisher', response_data, publication):
             publication['publisher'] = response_data['publisher']
 
-        # todo mappings
+        # todo mappings, license?
         # if pubfinder_worker.PubFinderWorker.should_update('type', response_data, publication):
         #     publication['type'] = response_data['type']
 
@@ -207,7 +211,7 @@ class MetaSource(object):
         for field in fields:
             name = field
             normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
-            if not any(d['normalized_name'] == normalized_name for d in result):
+            if not any(d['normalized_name'] == normalized_name for d in result) and len(normalized_name) < 150:
                 result.append({'name': name, 'normalized_name': normalized_name})
         return result
 
