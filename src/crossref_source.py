@@ -177,6 +177,10 @@ class CrossrefSource(object):
                 publication['fields_of_study'] = self.map_fields_of_study(response_data['subject'])
                 added_data = True
 
+            if 'license' in response_data and 'license' not in publication: #content-version
+                publication['license'] = self.map_fields_of_study(response_data['license']['URL'])
+                added_data = True
+
         if added_data:
             source_ids = publication['source_id']
             source_ids.append({'title': 'Crossref', 'url': 'https://www.crossref.org/', 'license': 'TODO'})
