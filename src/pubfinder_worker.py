@@ -349,7 +349,6 @@ class PubFinderWorker(EventStreamProducer):
     def start(i=0):
         """start the consumer
         """
-        poweroff
         pfw = PubFinderWorker(i)
         logging.debug(PubFinderWorker.log + 'Start %s' % str(i))
         pfw.consume()
