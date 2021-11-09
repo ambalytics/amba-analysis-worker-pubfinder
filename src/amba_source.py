@@ -104,8 +104,8 @@ class AmbaSource(object):
                     if 'source_id' in publication:
                         source_ids = publication['source_id']
                     source_ids.append({
-                        'title': 'Amba',
-                        'url': 'https://analysis.ambalytics.cloud/',
+                        'title': 'Ambalytics',
+                        'url': 'https://ambalytics.com',
                         'license': 'MIT'
                     })
                     publication['source_id'] = source_ids

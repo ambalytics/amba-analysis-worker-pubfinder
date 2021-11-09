@@ -165,7 +165,7 @@ class PubFinderWorker(EventStreamProducer):
                     publication = publication_temp
 
                 publication['source'] = 'db'
-                publication['source_id'] = [{'title': 'DB', 'url': 'https://analysis.ambalytics.cloud/',
+                publication['source_id'] = [{'title': 'DB', 'url': 'https://ambalytics.com/',
                                              'license': 'MIT'}]
 
                 if type(item) is Event:
