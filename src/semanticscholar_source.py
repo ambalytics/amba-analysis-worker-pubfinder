@@ -150,7 +150,7 @@ class SemanticScholarSource(object):
         if added_data:
             source_ids = publication['source_id']
             source_ids.append(
-                {'title': 'SemanticScholar', 'url': 'https://api.semanticscholar.org', 'license': 'TODO'})
+                {'title': 'SemanticScholar', 'url': 'https://www.semanticscholar.org?utm_source=api', 'license': 'TODO'})
             publication['source_id'] = source_ids
 
             return publication
