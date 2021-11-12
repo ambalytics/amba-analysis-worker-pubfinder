@@ -199,27 +199,26 @@ class PubFinderWorker(EventStreamProducer):
             if source in self.sources:
 
                 if source == 'db':
-                    logging.warning('db -> amba ' + publication['doi'])
+                    logging.debug('db -> amba ' + publication['doi'])
                     self.amba_source.work_queue.append(item)
 
                 if source == 'amba':
-                    logging.warning('amba -> crossref ' + publication['doi'])
+                    logging.debug('amba -> crossref ' + publication['doi'])
                     self.crossref_source.work_queue.append(item)
 
                 if source == 'crossref':
-                    logging.warning('crossref -> openaire ' + publication['doi'])
+                    logging.debug('crossref -> openaire ' + publication['doi'])
                     self.openaire_source.work_queue.append(item)
 
                 if source == 'openaire':
-                    logging.warning('openaire -> semanticscholar ' + publication['doi'])
+                    logging.debug('openaire -> semanticscholar ' + publication['doi'])
                     self.semanticscholar_source.work_queue.append(item)
 
                 if source == 'semanticscholar':
-                    logging.warning('semanticscholar -> meta ' + publication['doi'])
+                    logging.debug('semanticscholar -> meta ' + publication['doi'])
                     self.meta_source.work_queue.append(item)
 
             else:
-                logging.warning(self.log + "save mode")
                 done_now = self.is_publication_done(publication, True)
                 if done_now is True:
                     logging.warning(self.log + "publication done " + publication['doi'])
@@ -249,7 +248,7 @@ class PubFinderWorker(EventStreamProducer):
         # they can be empty but must me set, id should be enough? citation_count, citations, refs
 
         if save_mode:
-            keys = ("doi", "publisher", "title", "normalized_title", "year",
+            keys = ("doi", "publisher","abstract", "title", "normalized_title", "year",
                     "authors", "fields_of_study", "source_id")
         else:
             keys = ("type", "doi", "abstract", "publisher", "title", "normalized_title", "year", "pub_date",
@@ -257,7 +256,7 @@ class PubFinderWorker(EventStreamProducer):
 
         if all(key in publication for key in keys):
             # add check for length of title/abstract etc, content check not just existence?
-            logging.warning('publication done ' + publication['doi'])
+            logging.debug('publication done ' + publication['doi'])
 
             if 'pub_date' not in publication:
                 publication['pub_date'] = None
