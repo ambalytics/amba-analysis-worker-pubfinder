@@ -53,7 +53,6 @@ class PubFinderWorker(EventStreamProducer):
     semanticscholar_source = None
 
     dao = None
-    process_number = 2
 
     def create_consumer(self):
         # logging.warning(self.log + "rt: %s" % self.relation_type)
@@ -116,6 +115,7 @@ class PubFinderWorker(EventStreamProducer):
                     e = Event()
                     e.from_json(json.loads(msg.value.decode('utf-8')))
                     if e is not None:
+                        logging.warning('event_in')
                         self.db_queue.append(e)
 
             except Exception as exc:
@@ -192,7 +192,7 @@ class PubFinderWorker(EventStreamProducer):
             # todo if only pubfinder event stop
             if type(item) is Event:
                 item.set('state', 'linked')
-                # logging.warning(item.data['obj']['data']['source_id'])
+                logging.warning(publication['doi'])
                 self.publish(item)
 
         else:
@@ -220,14 +220,16 @@ class PubFinderWorker(EventStreamProducer):
                     self.meta_source.work_queue.append(item)
 
             else:
-                if self.is_publication_done(publication, True) is True:
+                logging.warning(self.log + "save mode")
+                done_now = self.is_publication_done(publication, True)
+                if done_now is True:
                     logging.warning(self.log + "publication done " + publication['doi'])
 
                     if source != 'db':
                         self.dao.save_publication(publication)
                 else:
                     self.dao.save_publication_not_found(publication['doi'], pub_is_done)
-                    logging.warning('unable to find publication data for ' + publication['doi'])
+                    logging.warning('unable to find publication data for ' + publication['doi'] + ' - ' + str(done_now))
 
     @staticmethod
     def get_publication(item):
@@ -254,16 +256,10 @@ class PubFinderWorker(EventStreamProducer):
             keys = ("type", "doi", "abstract", "publisher", "title", "normalized_title", "year", "pub_date",
                     "authors", "fields_of_study", "source_id", "citation_count")
 
-        if 'abstract' not in publication:
-            return 'abstract error'
-        if not PubFinderWorker.valid_abstract(publication['abstract']):
-            return 'abstract not valid error'
-
         if all(key in publication for key in keys):
             # add check for length of title/abstract etc, content check not just existence?
             logging.warning('publication done ' + publication['doi'])
 
-            # todo make sure we dont have erros saving
             if 'pub_date' not in publication:
                 publication['pub_date'] = None
             if 'abstract' not in publication:
