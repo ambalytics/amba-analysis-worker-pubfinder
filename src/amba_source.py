@@ -121,10 +121,8 @@ class AmbaSource(object):
 
         # amba is correctly formatted, just return
         if not amba_publication:
-            logging.warning('amba failed')
             return publication
         else:
-            logging.warning('amba success')
             return amba_publication
 
     @staticmethod
