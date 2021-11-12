@@ -249,7 +249,7 @@ class PubFinderWorker(EventStreamProducer):
         # they can be empty but must me set, id should be enough? citation_count, citations, refs
 
         if save_mode:
-            keys = ("doi", "publisher", "title", "normalized_title", "year",
+            keys = ("doi", "publisher","abstract", "title", "normalized_title", "year",
                     "authors", "fields_of_study", "source_id")
         else:
             keys = ("type", "doi", "abstract", "publisher", "title", "normalized_title", "year", "pub_date",
