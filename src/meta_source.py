@@ -197,10 +197,10 @@ class MetaSource(object):
         #     publication['type'] = response_data['type']
 
         if pubfinder_worker.PubFinderWorker.should_update('authors', response_data, publication):
-            publication['authors'] = response_data['authors']
+            publication['authors'] = self.map_object(response_data['authors'])
 
         if pubfinder_worker.PubFinderWorker.should_update('fields_of_study', response_data, publication):
-            publication['fields_of_study'] = self.map_fields_of_study(response_data['fields_of_study'])
+            publication['fields_of_study'] = self.map_object(response_data['fields_of_study'])
 
         if response_data and 'citations' in response_data and (
                 'citation_count' not in publication or publication['citation_count'] == 0):
@@ -210,7 +210,7 @@ class MetaSource(object):
             publication['citations'] = response_data['citations']
         return None
 
-    def map_fields_of_study(self, fields):
+    def map_object(self, fields):
         result = []
         for field in fields:
             name = field
