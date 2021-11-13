@@ -182,8 +182,10 @@ class MetaSource(object):
             publication['normalized_title'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
 
         if pubfinder_worker.PubFinderWorker.should_update('pub_date', response_data, publication):
-            publication['pub_date'] = MetaSource.format_date(response_data['pub_date'])
-            publication['year'] = publication['pub_date'].split('-')[0]
+            pub = MetaSource.format_date(response_data['pub_date'])
+            if pub:
+                publication['pub_date'] = pub
+                publication['year'] = pub.split('-')[0]
         elif pubfinder_worker.PubFinderWorker.should_update('year', response_data, publication):
             publication['year'] = response_data['year']
 
