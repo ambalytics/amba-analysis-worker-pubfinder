@@ -41,35 +41,7 @@ def cleanhtml(raw_html, cleanr):
 # based on crossref
 class CrossrefSource(object):
     base_url = "https://api.crossref.org/works/"
-    # crossref types
-    # "book-section",
-    # "monograph",
-    # "report",
-    # "peer-review",
-    # "book-track",
-    # "journal-article",
-    # "book-part",
-    # "other",
-    # "book",
-    # "journal-volume",
-    # "book-set",
-    # "reference-entry",
-    # "proceedings-article",
-    # "journal",
-    # "component",
-    # "book-chapter",
-    # "proceedings-series",
-    # "report-series",
-    # "proceedings",
-    # "standard",
-    # "reference-book",
-    # "posted-content",
-    # "journal-issue",
-    # "dissertation",
-    # "dataset",
-    # "book-series",
-    # "edited-book",
-    # "standard-series",
+
     publication_type_translation = {
         'unknown': 'UNKNOWN',
         'book': 'BOOK',
@@ -81,6 +53,7 @@ class CrossrefSource(object):
         'repository': 'REPOSITORY',  # doesn't exist
         'reference-book': 'BOOK_REFERENCE_ENTRY'  # or reference-entry
     }
+
     tag = 'crossref'
     log = 'SourceCrossref'
     work_queue = deque()

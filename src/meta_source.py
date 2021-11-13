@@ -52,7 +52,7 @@ class MetaSource(object):
 
     # tag must be ordered from better to worst, as soon as a result is found it will stop
     abstract_tags = ['dcterms.abstract', 'dcterms.description', 'prism.teaser', 'eprints.abstract', 'og:description',
-                     'dc.description', 'description', 'twitter:description']
+                     'dc.description', 'description', 'twitter:description', 'citation_abstract']
 
     title_tags = ['og:title', 'dc.title', 'citation_title', 'dcterms.title', 'citation_journal_title',
                   'dcterms.alternative', 'twitter:title', 'prism.alternateTitle', 'prism.subtitle', 'eprints.title',
@@ -60,7 +60,9 @@ class MetaSource(object):
 
     date_tags = ['citation_cover_date', 'dc.date', 'citation_online_date', 'citation_date', 'citation_publication_date',
                  'dcterms.date', 'dcterms.issued', 'dcterms.created', 'prism.coverDate', 'prism.publicationDate',
-                 'bepress_citation_date', 'eprints.date']  # which and order
+                 'bepress_citation_date', 'eprints.date', 'dcterms.date', 'dcterms.dateSubmitted',
+                 'dcterms.dateAccepted', 'dcterms.available', 'dcterms.dateCopyrighted', 'prism.creationDate',
+                 'prism.dateReceived', 'eprints.datestamp', 'bepress_citation_online_date']  # which and order
     # if no date use year
     year_tag = ['citation_year', 'prism.copyrightYear']
 
@@ -181,8 +183,8 @@ class MetaSource(object):
 
         if pubfinder_worker.PubFinderWorker.should_update('pub_date', response_data, publication):
             publication['pub_date'] = MetaSource.format_date(response_data['pub_date'])
-
-        if pubfinder_worker.PubFinderWorker.should_update('year', response_data, publication):
+            publication['year'] = publication['pub_date'].split('-')[0]
+        elif pubfinder_worker.PubFinderWorker.should_update('year', response_data, publication):
             publication['year'] = response_data['year']
 
         if pubfinder_worker.PubFinderWorker.should_update('publisher', response_data, publication):
@@ -304,7 +306,7 @@ class MetaSource(object):
         for key in self.year_tag:
             if 'year' not in data:
                 if key in result:
-                    data['date'] = result[key]
+                    data['year'] = result[key]
 
         for key in self.publisher_tags:
             if 'publisher' not in data:
