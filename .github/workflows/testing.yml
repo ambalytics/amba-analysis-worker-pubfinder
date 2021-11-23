@@ -26,5 +26,5 @@ jobs:
           pip install -r src/requirements.txt
       - name: Run Tests
         run: python -m unittest test/test_pubfinder.py
-     - name: "Convert coverage"
+      - name: "Convert coverage"
         run: "python -m coverage xml"
