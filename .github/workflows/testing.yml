@@ -26,5 +26,5 @@ jobs:
           pip install -r src/requirements.txt
       - name: Run Tests
         run: |
-          coverage run src/test_pubfinder.py unittest
+          coverage run unittest discover
           coverage report
