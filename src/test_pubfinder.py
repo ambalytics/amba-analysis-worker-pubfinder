@@ -4,12 +4,11 @@ import unittest
 from collections import deque
 
 from event_stream.event import Event
-
-from amba_source import AmbaSource
-from crossref_source import  CrossrefSource
-from meta_source import MetaSource
-from openaire_source import OpenAireSource
-from semanticscholar_source import SemanticScholarSource
+from . import openaire_source
+from . import semanticscholar_source
+from . import crossref_source
+from . import meta_source
+from . import amba_source
 
 
 class TestPubfinder(unittest.TestCase):
@@ -17,7 +16,7 @@ class TestPubfinder(unittest.TestCase):
     def test_open_aire_source(self):
         logging.warning('start testing open aire')
         result_queue = deque()
-        os = OpenAireSource(result_queue)
+        os = openaire_source.OpenAireSource(result_queue)
         e = Event()
         e.data['obj']['data'] = {'doi': '10.1038/nrn3241', 'source_id': [{'title': 'test'}]}
         os.work_queue.append(e)
@@ -55,7 +54,7 @@ class TestPubfinder(unittest.TestCase):
     def test_semanticscholar_source(self):
         logging.warning('start testing semantic scholar')
         result_queue = deque()
-        os = SemanticScholarSource(result_queue)
+        os = semanticscholar_source.SemanticScholarSource(result_queue)
         e = Event()
         e.data['obj']['data'] = {'doi': '10.1038/nrn3241', 'source_id': [{'title': 'test'}]}
         os.work_queue.append(e)
@@ -96,7 +95,7 @@ class TestPubfinder(unittest.TestCase):
     def test_crossref_source(self):
         logging.warning('start testing crossref')
         result_queue = deque()
-        os = CrossrefSource(result_queue)
+        os = crossref_source.CrossrefSource(result_queue)
         e = Event()
         e.data['obj']['data'] = {'doi': '10.1038/nrn3241', 'source_id': [{'title': 'test'}]}
         os.work_queue.append(e)
@@ -127,7 +126,7 @@ class TestPubfinder(unittest.TestCase):
     def test_meta_source(self):
         logging.warning('start testing meta')
         result_queue = deque()
-        os = MetaSource(result_queue)
+        os = meta_source.MetaSource(result_queue)
         e = Event()
         e.data['obj']['data'] = {'doi': '10.1038/d41586-021-03470-x', 'source_id': [{'title': 'test'}]}
         os.work_queue.append(e)
@@ -161,7 +160,7 @@ class TestPubfinder(unittest.TestCase):
     def test_amba_source(self):
         logging.warning('start testing amba')
         result_queue = deque()
-        os = AmbaSource(result_queue)
+        os = amba_source.AmbaSource(result_queue)
         e = Event()
         e.data['obj']['data'] = {'doi': '10.1145/2330784.2330822', 'source_id': [{'title': 'test'}]}
         os.work_queue.append(e)
