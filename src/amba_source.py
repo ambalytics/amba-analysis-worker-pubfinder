@@ -38,6 +38,8 @@ def get_publication_from_amba(doi, amba_client):
     """)
 
     params = {"doi": doi}
+    logging.warning(query)
+    logging.warning(params)
     result = amba_client.execute(query, variable_values=params)
     if 'publicationsByDoi' in result and len(result['publicationsByDoi']) > 0:
         publication = result['publicationsByDoi'][0]
@@ -85,7 +87,6 @@ class AmbaSource(object):
                 if item:
                     publication = PubFinderWorker.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
-                    # logging.warning(self.log + " q " + str(queue))x
 
                     publication_temp = self.add_data_to_publication(publication, amba_client)
 
