@@ -123,27 +123,15 @@ class SemanticScholarSource(object):
                 publication['authors'] = self.map_author(response_data['authors'])
                 added_data = True
 
-            # todo + citations
-            # if 'reference' in response_data and 'refs' not in publication:
-            #     publication['refs'] = self.map_refs(response_data['reference'])
-            #     added_data = True
-
             if 'abstract' in response_data and (
                     'abstract' not in publication
                     or not pubfinder_worker.PubFinderWorker.valid_abstract(publication['abstract'])):
                 abstract = pubfinder_worker.PubFinderWorker.clean_abstract(response_data['abstract'])
-                # logging.warning('semantic abstract try')
                 if pubfinder_worker.PubFinderWorker.valid_abstract(abstract):
-                    # logging.warning('semantic abstract')
                     publication['abstract'] = abstract
                     added_data = True
 
             if pubfinder_worker.PubFinderWorker.should_update('fields_of_study', response_data, publication):
-                # logging.warning("response_data['fields_of_study']")
-                # logging.warning(response_data['fields_of_study'])
-                # if len(response_data['fields_of_study']) == 1:
-                #     publication['fields_of_study'] = [response_data['fields_of_study']]
-                # else:
                 publication['fields_of_study'] = self.map_fields_of_study(response_data['fields_of_study'])
                 added_data = True
 

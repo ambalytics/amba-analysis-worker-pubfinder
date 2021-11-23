@@ -55,7 +55,7 @@ class PubFinderWorker(EventStreamProducer):
     dao = None
 
     def create_consumer(self):
-        # logging.warning(self.log + "rt: %s" % self.relation_type)
+        """ create and setup all needed sources and connectinos"""
 
         if self.state == 'all':
             self.topics = self.build_topic_list()
@@ -94,6 +94,7 @@ class PubFinderWorker(EventStreamProducer):
         logging.warning(self.log + "consumer subscribed to: %s" % self.consumer.topics())
 
     def consume(self):
+        """ consume new events from kafka using a thread pool"""
         logging.warning(self.log + "start consume")
         self.running = True
 
@@ -110,8 +111,6 @@ class PubFinderWorker(EventStreamProducer):
         while self.running:
             try:
                 for msg in self.consumer:
-                    # logging.warning(self.log + 'msg in consumer ')
-
                     e = Event()
                     e.from_json(json.loads(msg.value.decode('utf-8')))
                     if e is not None:
@@ -127,28 +126,25 @@ class PubFinderWorker(EventStreamProducer):
         if self.running:
             return self.consume()
 
-        # stop all sources
-        # for key, source in self.source_order.items():
-        #     source.stop()
-
         self.result_pool.close()
         self.db_pool.close()
         logging.warning(self.log + "Consumer shutdown")
 
     def worker_results(self, queue):
+        """ worker functions to handle resulting  """
         logging.warning(self.log + "worker results")
         while self.running:
             try:
                 result = queue.pop()
             except IndexError:
                 time.sleep(0.1)
-                # logging.warning(self.log + "sleep worker results")
                 pass
             else:
                 if result and 'item' in result and 'tag' in result:
                     self.finish_work(result['item'], result['tag'])
 
     def worker_db(self, queue):
+        """ worker function to retrieve publication data from the postgreSQL """
         while self.running:
             try:
                 item = queue.pop()
@@ -170,14 +166,16 @@ class PubFinderWorker(EventStreamProducer):
                 if type(item) is Event:
                     item.data['obj']['data'] = publication
 
-                # todo non event type
                 self.finish_work(item, 'db')
 
     def finish_work(self, item, source):
+        """ check if a publication is finished or needs further processing
+         Arguments:
+             item: the item to work on (publication)
+             source: the source specifies the last used source
+         """
         publication = PubFinderWorker.get_publication(item)
-        # logging.warning(self.log + "finish_work %s item %s" % (publication['doi'], source))
 
-        # logging.warning(self.log + "finish_work publication " + json.dumps(publication))
         pub_is_done = self.is_publication_done(publication)
         if pub_is_done is True:
             logging.warning(self.log + "publication done " + publication['doi'])
@@ -185,10 +183,6 @@ class PubFinderWorker(EventStreamProducer):
             if source != 'db':
                 self.dao.save_publication(publication)
 
-            # todo go through refs
-            # foreach ref appendLeft to queue
-
-            # todo if only pubfinder event stop
             if type(item) is Event:
                 item.set('state', 'linked')
                 logging.warning(publication['doi'])
@@ -231,21 +225,19 @@ class PubFinderWorker(EventStreamProducer):
 
     @staticmethod
     def get_publication(item):
-        publication = None  # todo for refs in case of publication type
-        # logging.warning("get_publication 1 " + item.get_json())
+        """return the publication from an event"""
+        publication = None
 
         if type(item) is Event:
             publication = item.data['obj']['data']
 
-        # logging.warning("get_publication 2 " + json.dumps(publication))
         return publication
 
     @staticmethod
     def is_publication_done(publication, save_mode=False):
+        """check if a publication is either done or at least worth to be saved"""
         if not publication:
             return False
-
-        # they can be empty but must me set, id should be enough? citation_count, citations, refs
 
         if save_mode:
             keys = ("doi", "publisher","abstract", "title", "normalized_title", "year",
@@ -255,7 +247,6 @@ class PubFinderWorker(EventStreamProducer):
                     "authors", "fields_of_study", "source_id", "citation_count")
 
         if all(key in publication for key in keys):
-            # add check for length of title/abstract etc, content check not just existence?
             logging.debug('publication done ' + publication['doi'])
 
             if 'pub_date' not in publication:
@@ -275,7 +266,6 @@ class PubFinderWorker(EventStreamProducer):
 
     @staticmethod
     def clean_fos(fos):
-        # todo where
         """cleans the title and removes unnecessary spaces and line breaks
         """
         results = []
@@ -302,13 +292,11 @@ class PubFinderWorker(EventStreamProducer):
         try:
             abstract = re.sub('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});', '', abstract)
         except TypeError:
-            # logging.exception(abstract)
             return ''
         else:
             abstract = abstract.strip()
 
             remove_words = ['abstract', 'background', 'background:', 'introduction', 'objective', 'nature']
-            # logging.warning('dirty %s', abstract[:100])
 
             while True:
                 removed_word = False
@@ -324,21 +312,21 @@ class PubFinderWorker(EventStreamProducer):
             abstract = re.sub(r' *: ', ' ', abstract)
             abstract = re.sub(r' - ', ' ', abstract)
 
-            # clean_abstract = re.sub(r'(\s*)Abstract(\s*)', '', clean_abstract, flags=re.IGNORECASE)
-            # logging.warning('clean %s', abstract[:100])
             return abstract.strip()
 
     @staticmethod
     def valid_abstract(abstract):
-        return abstract and len(abstract) > 100  # and not abstract.endswith('...')
+        """ check if an abstract is valid depending on its length """
+        return abstract and len(abstract) > 100
 
     @staticmethod
     def normalize(string):
-        # todo numbers, special characters/languages
+        """ normalize a given string"""
         return (re.sub('[^a-zA-Z ]+', '', string)).casefold().strip()
 
     @staticmethod
     def should_update(field, data, publication):
+        """ check if field is in need of an update"""
         return data and field in data and field not in publication
 
     @staticmethod

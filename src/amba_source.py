@@ -35,18 +35,12 @@ def get_publication_from_amba(doi, amba_client):
           }
         } 
     }
-
     """)
-
-    # todo  affiliation: Affiliation author
-    #   parents: [FieldOfStudy!]
-    #   children: [FieldOfStudy!]
 
     params = {"doi": doi}
     result = amba_client.execute(query, variable_values=params)
     if 'publicationsByDoi' in result and len(result['publicationsByDoi']) > 0:
         publication = result['publicationsByDoi'][0]
-        # todo unset
         publication['pub_date'] = publication['pubDate']
         publication['citation_count'] = publication['citationCount']
         publication['normalized_title'] = publication['normalizedTitle']
@@ -63,10 +57,9 @@ def get_publication_from_amba(doi, amba_client):
 class AmbaSource(object):
     tag = 'amba'
     log = 'SourceAmba'
-    threads = 4  # todo make client only once
-    # gql.transport.exceptions.TransportAlreadyConnected: Transport is already connected
+    threads = 4
 
-    url = "https://api.ambalytics.cloud/entities"  # todo config
+    url = "https://api.ambalytics.cloud/entities"
     work_queue = deque()
     work_pool = None
     running = True
@@ -77,6 +70,9 @@ class AmbaSource(object):
         self.result_deque = result_deque
 
     def worker(self):
+        """
+        worker function run in thread pool adding publication data
+        """
         amba_client = self.prepare_amba_connection()
 
         while self.running:
@@ -84,11 +80,9 @@ class AmbaSource(object):
                 item = self.work_queue.pop()
             except IndexError:
                 time.sleep(0.1)
-                # logging.warning(self.log + "sleep worker mongo")
                 pass
             else:
                 if item:
-                    # logging.warning(self.log + " item " + str(item.get_json()))
                     publication = pubfinder_worker.PubFinderWorker.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
                     # logging.warning(self.log + " q " + str(queue))x
@@ -98,17 +92,16 @@ class AmbaSource(object):
                     if publication_temp:
                         publication = publication_temp
 
-                    publication['source'] = self.tag
-                    source_ids = []
-                    # todo check if actually anything was added
-                    if 'source_id' in publication:
-                        source_ids = publication['source_id']
-                    source_ids.append({
-                        'title': 'Ambalytics',
-                        'url': 'https://ambalytics.com',
-                        'license': 'MIT'
-                    })
-                    publication['source_id'] = source_ids
+                        publication['source'] = self.tag
+                        source_ids = []
+                        if 'source_id' in publication:
+                            source_ids = publication['source_id']
+                        source_ids.append({
+                            'title': 'Ambalytics',
+                            'url': 'https://ambalytics.com',
+                            'license': 'MIT'
+                        })
+                        publication['source_id'] = source_ids
 
                     if type(item) is Event:
                         item.data['obj']['data'] = publication
@@ -117,9 +110,8 @@ class AmbaSource(object):
                     self.result_deque.append(result)
 
     def add_data_to_publication(self, publication, ac):
+        """ add data to publication """
         amba_publication = self.get_publication_wrapper(publication['doi'], ac)
-
-        # amba is correctly formatted, just return
         if not amba_publication:
             return publication
         else:
@@ -127,8 +119,10 @@ class AmbaSource(object):
 
     @staticmethod
     def get_publication_wrapper(doi, ac):
+        """just a wrapper"""
         return get_publication_from_amba(doi, ac)
 
     def prepare_amba_connection(self):
+        """prepare the connection to amba"""
         transport = AIOHTTPTransport(url=self.url)
         return Client(transport=transport, fetch_schema_from_transport=True)

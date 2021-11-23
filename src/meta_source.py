@@ -117,16 +117,15 @@ class MetaSource(object):
                     if publication_temp:
                         publication = publication_temp
 
-                    publication['source'] = self.tag
-                    # no meta since link already present
-                    source_ids = publication['source_id']
-                    # todo check if actually anything was added
-                    source_ids.append({
-                        'title': 'Meta',
-                        'url': 'https://doi.org/' + publication['doi'],
-                        'license': 'TODO'
-                    })
-                    publication['source_id'] = source_ids
+                        publication['source'] = self.tag
+                        # no meta since link already present
+                        source_ids = publication['source_id']
+                        source_ids.append({
+                            'title': 'Meta',
+                            'url': 'https://doi.org/' + publication['doi'],
+                            'license': 'TODO'
+                        })
+                        publication['source_id'] = source_ids
 
                     if type(item) is Event:
                         item.data['obj']['data'] = publication
@@ -191,10 +190,6 @@ class MetaSource(object):
 
         if pubfinder_worker.PubFinderWorker.should_update('publisher', response_data, publication):
             publication['publisher'] = response_data['publisher']
-
-        # todo mappings, license?
-        # if pubfinder_worker.PubFinderWorker.should_update('type', response_data, publication):
-        #     publication['type'] = response_data['type']
 
         if pubfinder_worker.PubFinderWorker.should_update('authors', response_data, publication):
             publication['authors'] = self.map_object(response_data['authors'])

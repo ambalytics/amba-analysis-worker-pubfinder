@@ -82,7 +82,6 @@ class CrossrefSource(object):
                     logging.warning(self.log + " work on item " + publication['doi'])
                     # logging.warning(self.log + " q " + str(queue))x
 
-                    # todo source stuff
                     publication_temp = self.add_data_to_publication(publication)
 
                     if publication_temp:
