@@ -4,10 +4,10 @@ import unittest
 from collections import deque
 
 from event_stream.event import Event
-# from src import openaire_source
-# from src import semanticscholar_source
-# from src import crossref_source
-# from src import meta_source
+from src import openaire_source
+from src import semanticscholar_source
+from src import crossref_source
+from src import meta_source
 from src import amba_source
 
 
