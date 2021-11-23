@@ -273,7 +273,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base_source_ref/" class="md-nav__link">
+      <a href="../base_source_ref.md" class="md-nav__link">
         base source
       </a>
     </li>
@@ -367,6 +367,61 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#semanticscholar_source.SemanticScholarSource" class="md-nav__link">
+    SemanticScholarSource
+  </a>
+  
+    <nav class="md-nav" aria-label="SemanticScholarSource">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#semanticscholar_source.SemanticScholarSource.add_data_to_publication" class="md-nav__link">
+    add_data_to_publication()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#semanticscholar_source.SemanticScholarSource.api_limit_watcher" class="md-nav__link">
+    api_limit_watcher()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#semanticscholar_source.SemanticScholarSource.map" class="md-nav__link">
+    map()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#semanticscholar_source.SemanticScholarSource.map_author" class="md-nav__link">
+    map_author()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#semanticscholar_source.SemanticScholarSource.map_fields_of_study" class="md-nav__link">
+    map_fields_of_study()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#semanticscholar_source.SemanticScholarSource.worker" class="md-nav__link">
+    worker()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#semanticscholar_source.fetch" class="md-nav__link">
     fetch()
   </a>
@@ -390,6 +445,20 @@
     <li class="md-nav__item">
       <a href="../pubfinder_worker_ref/" class="md-nav__link">
         pubfinder worker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pubfinder_helper_ref/" class="md-nav__link">
+        pubfinder helper
       </a>
     </li>
   
@@ -435,6 +504,61 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#semanticscholar_source.SemanticScholarSource" class="md-nav__link">
+    SemanticScholarSource
+  </a>
+  
+    <nav class="md-nav" aria-label="SemanticScholarSource">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#semanticscholar_source.SemanticScholarSource.add_data_to_publication" class="md-nav__link">
+    add_data_to_publication()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#semanticscholar_source.SemanticScholarSource.api_limit_watcher" class="md-nav__link">
+    api_limit_watcher()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#semanticscholar_source.SemanticScholarSource.map" class="md-nav__link">
+    map()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#semanticscholar_source.SemanticScholarSource.map_author" class="md-nav__link">
+    map_author()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#semanticscholar_source.SemanticScholarSource.map_fields_of_study" class="md-nav__link">
+    map_fields_of_study()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#semanticscholar_source.SemanticScholarSource.worker" class="md-nav__link">
+    worker()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#semanticscholar_source.fetch" class="md-nav__link">
     fetch()
   </a>
@@ -474,6 +598,305 @@
 
 
 
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="semanticscholar_source.SemanticScholarSource" class="doc doc-heading">
+        <code>
+SemanticScholarSource        </code>
+
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="semanticscholar_source.SemanticScholarSource.add_data_to_publication" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">add_data_to_publication</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publication</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>add data to a given publication using the doi to fetch a response and map the data </p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/semanticscholar_source.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_data_to_publication</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; add data to a given publication using the doi to fetch a response and map the data &quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_limit_watcher</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">publication</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="semanticscholar_source.SemanticScholarSource.api_limit_watcher" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">api_limit_watcher</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doi</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>ensure api limits are kept and if the limit is reached wait for reset </p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/semanticscholar_source.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">api_limit_watcher</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doi</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; ensure api limits are kept and if the limit is reached wait for reset &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetched_counter</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_limit</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetched_counter</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fetched_counter</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">fetch</span><span class="p">(</span><span class="n">doi</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">wt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_time</span> <span class="o">-</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_reset_timestamp</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_time</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s1">&#39; api limit reached, wait &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">wt</span><span class="p">))</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">wt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_limit_watcher</span><span class="p">(</span><span class="n">doi</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="semanticscholar_source.SemanticScholarSource.map" class="doc doc-heading">
+<code class="highlight language-python"><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>map a xml response to the internal data structure </p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/semanticscholar_source.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; map a xml response to the internal data structure &quot;&quot;&quot;</span>
+    <span class="n">added_data</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">response_data</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">clean_title</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;normalized_title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
+            <span class="n">added_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
+            <span class="n">added_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="s1">&#39;venue&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;publisher&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;publisher&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;venue&#39;</span><span class="p">]</span>
+            <span class="n">added_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="s1">&#39;numCitedBy&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="s1">&#39;citation_count&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span> <span class="ow">or</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;citation_count&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;citation_count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;numCitedBy&#39;</span><span class="p">]</span>
+            <span class="n">added_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;authors&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;authors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_author</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;authors&#39;</span><span class="p">])</span>
+            <span class="n">added_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="s1">&#39;abstract&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="s1">&#39;abstract&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span>
+                <span class="ow">or</span> <span class="ow">not</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">valid_abstract</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">])):</span>
+            <span class="n">abstract</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">clean_abstract</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">valid_abstract</span><span class="p">(</span><span class="n">abstract</span><span class="p">):</span>
+                <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">abstract</span>
+                <span class="n">added_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;fields_of_study&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;fields_of_study&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_fields_of_study</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;fields_of_study&#39;</span><span class="p">])</span>
+            <span class="n">added_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">added_data</span><span class="p">:</span>
+        <span class="n">source_ids</span> <span class="o">=</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span>
+        <span class="n">source_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;SemanticScholar&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://www.semanticscholar.org?utm_source=api&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;license&#39;</span><span class="p">:</span> <span class="s1">&#39;TODO&#39;</span><span class="p">})</span>
+        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source_ids</span>
+
+        <span class="k">return</span> <span class="n">publication</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="semanticscholar_source.SemanticScholarSource.map_author" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">map_author</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">authors</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>amp authors </p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/semanticscholar_source.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">map_author</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">authors</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; amp authors &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">author</span> <span class="ow">in</span> <span class="n">authors</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">author</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">author</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">normalized_name</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s1">&#39;normalized_name&#39;</span><span class="p">:</span> <span class="n">normalized_name</span>
+            <span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s1">&#39; no author name &#39;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">author</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="semanticscholar_source.SemanticScholarSource.map_fields_of_study" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">map_fields_of_study</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>map fields of study  </p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/semanticscholar_source.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">map_fields_of_study</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; map fields of study  &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">field</span>
+        <span class="n">normalized_name</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;normalized_name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">normalized_name</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="p">):</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;normalized_name&#39;</span><span class="p">:</span> <span class="n">normalized_name</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="semanticscholar_source.SemanticScholarSource.worker" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">worker</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>main work function, fetch items and add data </p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/semanticscholar_source.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; main work function, fetch items and add data &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">work_queue</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
+                <span class="n">publication</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">get_publication</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot; work on item &quot;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
+
+                <span class="n">publication_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_data_to_publication</span><span class="p">(</span><span class="n">publication</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">publication_temp</span><span class="p">:</span>
+                    <span class="n">publication</span> <span class="o">=</span> <span class="n">publication_temp</span>
+
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Event</span><span class="p">:</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publication</span>
+
+                <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span> <span class="s1">&#39;tag&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result_deque</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
 
 
 

@@ -281,7 +281,7 @@
   
   
     <li class="md-nav__item">
-      <a href="base_source_ref/" class="md-nav__link">
+      <a href="base_source_ref.md" class="md-nav__link">
         base source
       </a>
     </li>
@@ -359,6 +359,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pubfinder_helper_ref/" class="md-nav__link">
+        pubfinder helper
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -402,7 +416,176 @@
                 
                 
                 <h1 id="amba-analysis-worker-pubfinder">amba-analysis-worker-pubfinder</h1>
-<p>Worker to try and find publication for unknown events</p>
+<p>The Pubfinder component retrieves publication metadata and, if possible, abstracts for publications that are linked to an event.
+The Pubfinder component is implemented in python by using the amba-event-streams package.</p>
+<p>The process of retrieving publication data can be seen in Figure 1. The Pubfinder is built around its main worker utilizing individual sources which are integrated similar. This architecture allows adding, remove or modify sources since their only difference is in the source retrieval and transformation. This means the Kafka and database connections are maintained by the main worker, while the sources are separated to only retrieve information for a given DOI.</p>
+<p><img alt="pubfinder" src="https://user-images.githubusercontent.com/84507772/142741031-69ee7265-1411-4612-805c-5e1ea93823a1.png" />
+Process Overview of Retrieving Publication Data</p>
+<p>All sources have their own retrieval mechanisms and data
+transformations, as well as API limits that must be regarded. The
+following sources are used: ambalytics , CrossRef , OpenAIRE , Semantic
+Scholar and Meta Tags. CrossRef, OpenAIRE and Semantic Scholar are
+service that offer APIs, while Meta Tags are Dublin Core HTML header
+meta tags that may be embedded in the respective publication web page of
+the publisher. Table 1 shows the
+individual fields that can be retrieved by a source, as well as their
+rate limit and URL. Ambalytics is the internal database (see
+Figure 1), is technically not a real source and therefore
+not listed in the table. Even though CrossRef and Meta Tags are not rate
+limited, the number of requests per time unit is limited to comply with
+the recommended usage of the respective APIs.</p>
+<p>Since all sources are needed for a full check, the maximum throughput is
+limited by the slowest source or in this case, the source with the
+lowest rate limit. However, using this rate limit as base for the
+worst-case calculation 100 publications per 5 minutes will amount to
+28800 per 24h period. Each source is integrated similarly to the main
+python program, but runs it own threads independently. In order to allow
+fast and parallel workloads, the process can either be implemented
+asynchronously allowing to use the await syntax to avoid blocking the
+thread or using queues and multi-threading. Unfortunately, the support
+of asynchronous python libraries is still limited and running blocking
+functions in asynchronous environment would defeat its workings.
+Following, the Pubfinder is developed based on the <em>queue architecture
+pattern</em>.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Source</th>
+<th align="center">CrossRef</th>
+<th align="center">OpenAIRE</th>
+<th align="center">Semantic Scholar</th>
+<th align="center">Meta Tags</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">URL</td>
+<td align="center">api.crossref.org</td>
+<td align="center">develop.openaire.eu</td>
+<td align="center">api.semanticscholar.org</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">Rate Limit</td>
+<td align="center">-</td>
+<td align="center">3600/h</td>
+<td align="center">100/5m</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">Title</td>
+<td align="center">x</td>
+<td align="center">x</td>
+<td align="center">x</td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="left">Authors</td>
+<td align="center">x</td>
+<td align="center">x</td>
+<td align="center">x</td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="left">Year</td>
+<td align="center">x</td>
+<td align="center">x</td>
+<td align="center">x</td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="left">Type</td>
+<td align="center">x</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">Citation Count</td>
+<td align="center">x</td>
+<td align="center">-</td>
+<td align="center">x</td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="left">Pub Date</td>
+<td align="center">x</td>
+<td align="center">x</td>
+<td align="center">-</td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="left">Abstract</td>
+<td align="center">x</td>
+<td align="center">x</td>
+<td align="center">x</td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="left">References</td>
+<td align="center">x</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="left">Citations</td>
+<td align="center">x</td>
+<td align="center">-</td>
+<td align="center">x</td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="left">Publisher</td>
+<td align="center">x</td>
+<td align="center">x</td>
+<td align="center">x</td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="left">Field Of Study</td>
+<td align="center">x</td>
+<td align="center">x</td>
+<td align="center">x</td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="left">License</td>
+<td align="center">x</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+</tbody>
+</table>
+<p>Publication Meta Data Sources</p>
+<p>Queues allow each source to run indecently and multi-threaded while
+reading and writing events into and from queues. A worker queue for each
+source contains all events, and all sources share a result queue. The
+queue is implemented as <em>deque</em> allowing for thread-safe operation and
+adding references and citations. Using a deque allows to add new DOI’s
+to the front while adding references and citations to the end, resulting
+in earlier retrieval for the more important event publications. The
+management of the queues is done in the Pubfinder, checking for finished
+publications and adding an element to the correct source if more data is
+required.</p>
+<p>Since a publication resolution runs through each source until it is
+complete and implements different limits and speeds, the order is
+critical for overall speed. The API with the lowest rate limit should be
+last. This order of sources reduces the total request count affecting
+the limit since publications are more likely to be complete before and
+therefore reducing the count.</p>
+<p>Further, it will not slow down the processing. Each source uses the same
+base way of finding data. The given DOI will request the data in a
+defined way while ensuring API limits are kept. Once data is retrieved,
+the needed data is extracted and mapped into the internal publication
+structure. If a source adds data, it will also add its source. Finally,
+the publication data is added to the event, and the event is added to
+the result queue.</p>
+<p>Once a publication is complete or run through all sources and contains
+enough data, it is stored in PostgreSQL. Then publication data is added
+to the event, the event state is changed to <em>linked</em>, and finally, the
+event is sent to Kafka.</p>
                 
               
               

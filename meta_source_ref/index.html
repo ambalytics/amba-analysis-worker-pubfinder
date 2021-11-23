@@ -273,7 +273,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base_source_ref/" class="md-nav__link">
+      <a href="../base_source_ref.md" class="md-nav__link">
         base source
       </a>
     </li>
@@ -445,6 +445,20 @@
     <li class="md-nav__item">
       <a href="../pubfinder_worker_ref/" class="md-nav__link">
         pubfinder worker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pubfinder_helper_ref/" class="md-nav__link">
+        pubfinder helper
       </a>
     </li>
   
@@ -880,7 +894,7 @@ Example Output
 
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abstract_tags</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
-            <span class="n">abstract</span> <span class="o">=</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">clean_abstract</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+            <span class="n">abstract</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">clean_abstract</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
             <span class="k">if</span> <span class="s1">&#39;abstract&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">abstract</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">]):</span>
                 <span class="n">data</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
@@ -990,41 +1004,37 @@ Example Output
 
     <span class="k">if</span> <span class="s1">&#39;abstract&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> \
             <span class="p">(</span><span class="s1">&#39;abstract&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span>
-             <span class="ow">or</span> <span class="ow">not</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">valid_abstract</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">])):</span>
-        <span class="n">abstract</span> <span class="o">=</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">clean_abstract</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">valid_abstract</span><span class="p">(</span><span class="n">abstract</span><span class="p">):</span>
+             <span class="ow">or</span> <span class="ow">not</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">valid_abstract</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">])):</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">clean_abstract</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">valid_abstract</span><span class="p">(</span><span class="n">abstract</span><span class="p">):</span>
             <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">abstract</span>
 
     <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;title&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;title&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">):</span>
-        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">clean_title</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
-        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;normalized_title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
+        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">clean_title</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
+        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;normalized_title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;pub_date&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;pub_date&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
         <span class="n">pub</span> <span class="o">=</span> <span class="n">MetaSource</span><span class="o">.</span><span class="n">format_date</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;pub_date&#39;</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">pub</span><span class="p">:</span>
             <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;pub_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pub</span>
             <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pub</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;publisher&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;publisher&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;publisher&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;publisher&#39;</span><span class="p">]</span>
 
-    <span class="c1"># todo mappings, license?</span>
-    <span class="c1"># if pubfinder_worker.PubFinderWorker.should_update(&#39;type&#39;, response_data, publication):</span>
-    <span class="c1">#     publication[&#39;type&#39;] = response_data[&#39;type&#39;]</span>
-
-    <span class="k">if</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;authors&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;authors&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;authors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;authors&#39;</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;fields_of_study&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;fields_of_study&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;fields_of_study&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;fields_of_study&#39;</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;citations&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="p">(</span>
             <span class="s1">&#39;citation_count&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span> <span class="ow">or</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;citation_count&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;citation_count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;citations&#39;</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;citations&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;citations&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;citations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;citations&#39;</span><span class="p">]</span>
     <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div>
@@ -1065,28 +1075,24 @@ it will sleep for 0.1s if no item is in the queue to reduce cpu usage</p>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
-                <span class="c1"># logging.warning(self.log + &quot; item &quot; + str(item.get_json()))</span>
-                <span class="n">publication</span> <span class="o">=</span> <span class="n">pubfinder_worker</span><span class="o">.</span><span class="n">PubFinderWorker</span><span class="o">.</span><span class="n">get_publication</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="n">publication</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">get_publication</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot; work on item &quot;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
-                <span class="c1"># logging.warning(self.log + &quot; q &quot; + str(queue))x</span>
 
-                <span class="c1"># source stuff</span>
                 <span class="n">publication_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_data_to_publication</span><span class="p">(</span><span class="n">publication</span><span class="p">)</span>
 
                 <span class="c1"># only if we have any data we set it</span>
                 <span class="k">if</span> <span class="n">publication_temp</span><span class="p">:</span>
                     <span class="n">publication</span> <span class="o">=</span> <span class="n">publication_temp</span>
 
-                <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>
-                <span class="c1"># no meta since link already present</span>
-                <span class="n">source_ids</span> <span class="o">=</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span>
-                <span class="c1"># todo check if actually anything was added</span>
-                <span class="n">source_ids</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-                    <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Meta&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://doi.org/&#39;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">],</span>
-                    <span class="s1">&#39;license&#39;</span><span class="p">:</span> <span class="s1">&#39;TODO&#39;</span>
-                <span class="p">})</span>
-                <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source_ids</span>
+                    <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>
+                    <span class="c1"># no meta since link already present</span>
+                    <span class="n">source_ids</span> <span class="o">=</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span>
+                    <span class="n">source_ids</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Meta&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://doi.org/&#39;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">],</span>
+                        <span class="s1">&#39;license&#39;</span><span class="p">:</span> <span class="s1">&#39;TODO&#39;</span>
+                    <span class="p">})</span>
+                    <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source_ids</span>
 
                 <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Event</span><span class="p">:</span>
                     <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publication</span>

@@ -273,7 +273,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base_source_ref/" class="md-nav__link">
+      <a href="../base_source_ref.md" class="md-nav__link">
         base source
       </a>
     </li>
@@ -389,22 +389,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#pubfinder_worker.PubFinderWorker.clean_abstract" class="md-nav__link">
-    clean_abstract()
+  <a href="#pubfinder_worker.PubFinderWorker.consume" class="md-nav__link">
+    consume()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#pubfinder_worker.PubFinderWorker.clean_fos" class="md-nav__link">
-    clean_fos()
+  <a href="#pubfinder_worker.PubFinderWorker.create_consumer" class="md-nav__link">
+    create_consumer()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#pubfinder_worker.PubFinderWorker.clean_title" class="md-nav__link">
-    clean_title()
+  <a href="#pubfinder_worker.PubFinderWorker.finish_work" class="md-nav__link">
+    finish_work()
   </a>
   
 </li>
@@ -412,6 +412,20 @@
           <li class="md-nav__item">
   <a href="#pubfinder_worker.PubFinderWorker.start" class="md-nav__link">
     start()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pubfinder_worker.PubFinderWorker.worker_db" class="md-nav__link">
+    worker_db()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pubfinder_worker.PubFinderWorker.worker_results" class="md-nav__link">
+    worker_results()
   </a>
   
 </li>
@@ -425,6 +439,20 @@
   
 </nav>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pubfinder_helper_ref/" class="md-nav__link">
+        pubfinder helper
+      </a>
     </li>
   
 
@@ -477,22 +505,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#pubfinder_worker.PubFinderWorker.clean_abstract" class="md-nav__link">
-    clean_abstract()
+  <a href="#pubfinder_worker.PubFinderWorker.consume" class="md-nav__link">
+    consume()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#pubfinder_worker.PubFinderWorker.clean_fos" class="md-nav__link">
-    clean_fos()
+  <a href="#pubfinder_worker.PubFinderWorker.create_consumer" class="md-nav__link">
+    create_consumer()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#pubfinder_worker.PubFinderWorker.clean_title" class="md-nav__link">
-    clean_title()
+  <a href="#pubfinder_worker.PubFinderWorker.finish_work" class="md-nav__link">
+    finish_work()
   </a>
   
 </li>
@@ -500,6 +528,20 @@
           <li class="md-nav__item">
   <a href="#pubfinder_worker.PubFinderWorker.start" class="md-nav__link">
     start()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pubfinder_worker.PubFinderWorker.worker_db" class="md-nav__link">
+    worker_db()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pubfinder_worker.PubFinderWorker.worker_results" class="md-nav__link">
+    worker_results()
   </a>
   
 </li>
@@ -596,139 +638,224 @@ PubFinderWorker            (<span title="event_stream.event_stream_producer.Even
 
 
 
-<h3 id="pubfinder_worker.PubFinderWorker.clean_abstract" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">clean_abstract</span><span class="p">(</span><span class="n">abstract</span><span class="p">)</span></code>
+<h3 id="pubfinder_worker.PubFinderWorker.consume" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">consume</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
 
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
-  </span>
 
 </h3>
 
     <div class="doc doc-contents ">
 
-      <p>cleans the title and removes unnecessary spaces and line breaks</p>
+      <p>consume new events from kafka using a thread pool</p>
 
         <details class="quote">
           <summary>Source code in <code>src/pubfinder_worker.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">clean_abstract</span><span class="p">(</span><span class="n">abstract</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;cleans the title and removes unnecessary spaces and line breaks</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">abstract</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&lt;.*?&gt;|&amp;([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">abstract</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-        <span class="c1"># logging.exception(abstract)</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">consume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; consume new events from kafka using a thread pool&quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;start consume&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_consumer</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_pool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_db</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_queue</span><span class="p">,))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dao</span> <span class="o">=</span> <span class="n">DAO</span><span class="p">()</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;wait for messages&quot;</span><span class="p">)</span>
+    <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="p">:</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+                <span class="n">e</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)))</span>
+                <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">db_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s1">&#39;stream Consumer generated an exception: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">exc</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;Consumer closed&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+    <span class="c1"># keep alive</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">consume</span><span class="p">()</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">result_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">db_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;Consumer shutdown&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="pubfinder_worker.PubFinderWorker.create_consumer" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">create_consumer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>create and setup all needed sources and connectinos</p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/pubfinder_worker.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">create_consumer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; create and setup all needed sources and connectinos&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_topic_list</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relation_type</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relation_type</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">relation_type</span><span class="p">]</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_pool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result_pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_results</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">,))</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">amba_source</span> <span class="o">=</span> <span class="n">AmbaSource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">crossref_source</span> <span class="o">=</span> <span class="n">CrossrefSource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">meta_source</span> <span class="o">=</span> <span class="n">MetaSource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">openaire_source</span> <span class="o">=</span> <span class="n">OpenAireSource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">semanticscholar_source</span> <span class="o">=</span> <span class="n">SemanticScholarSource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topics</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">relation_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">relation_type</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_topic_name</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span> <span class="n">relation_type</span><span class="o">=</span><span class="n">relation_type</span><span class="p">))</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;get consumer for topic: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span> <span class="o">=</span> <span class="n">KafkaConsumer</span><span class="p">(</span><span class="n">group_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">group_id</span><span class="p">,</span>
+                                  <span class="n">bootstrap_servers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_servers</span><span class="p">,</span> <span class="n">api_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api_version</span><span class="p">,</span>
+                                  <span class="n">consumer_timeout_ms</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">consumer_timeout_ms</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;consumer subscribe: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">topic</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">topic</span><span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;consumer subscribed to: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="o">.</span><span class="n">topics</span><span class="p">())</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="pubfinder_worker.PubFinderWorker.finish_work" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">finish_work</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>check if a publication is finished or needs further processing</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>item</code></td>
+        <td></td>
+        <td><p>the item to work on (publication)</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>source</code></td>
+        <td></td>
+        <td><p>the source specifies the last used source</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>src/pubfinder_worker.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">finish_work</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; check if a publication is finished or needs further processing</span>
+<span class="sd">     Arguments:</span>
+<span class="sd">         item: the item to work on (publication)</span>
+<span class="sd">         source: the source specifies the last used source</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+    <span class="n">publication</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">get_publication</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="n">pub_is_done</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">is_publication_done</span><span class="p">(</span><span class="n">publication</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pub_is_done</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;publication done &quot;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">source</span> <span class="o">!=</span> <span class="s1">&#39;db&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">save_publication</span><span class="p">(</span><span class="n">publication</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Event</span><span class="p">:</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;linked&#39;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;publish &quot;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">abstract</span> <span class="o">=</span> <span class="n">abstract</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="c1"># put it in next queue or stop</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">:</span>
 
-        <span class="n">remove_words</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">,</span> <span class="s1">&#39;background&#39;</span><span class="p">,</span> <span class="s1">&#39;background:&#39;</span><span class="p">,</span> <span class="s1">&#39;introduction&#39;</span><span class="p">,</span> <span class="s1">&#39;objective&#39;</span><span class="p">,</span> <span class="s1">&#39;nature&#39;</span><span class="p">]</span>
-        <span class="c1"># logging.warning(&#39;dirty %s&#39;, abstract[:100])</span>
+            <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s1">&#39;db&#39;</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;db -&gt; amba &#39;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">amba_source</span><span class="o">.</span><span class="n">work_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">removed_word</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">remove_words</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">abstract</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">):</span>
-                    <span class="n">abstract</span> <span class="o">=</span> <span class="n">abstract</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">word</span><span class="p">):]</span>
-                    <span class="n">removed_word</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">removed_word</span><span class="p">:</span>
-                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s1">&#39;amba&#39;</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;amba -&gt; crossref &#39;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">crossref_source</span><span class="o">.</span><span class="n">work_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
-        <span class="n">abstract</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39; +&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">abstract</span><span class="p">)</span>
-        <span class="n">abstract</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39; \. &#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">abstract</span><span class="p">)</span>
-        <span class="n">abstract</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39; *: &#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">abstract</span><span class="p">)</span>
-        <span class="n">abstract</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39; - &#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">abstract</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s1">&#39;crossref&#39;</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;crossref -&gt; openaire &#39;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">openaire_source</span><span class="o">.</span><span class="n">work_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
-        <span class="c1"># clean_abstract = re.sub(r&#39;(\s*)Abstract(\s*)&#39;, &#39;&#39;, clean_abstract, flags=re.IGNORECASE)</span>
-        <span class="c1"># logging.warning(&#39;clean %s&#39;, abstract[:100])</span>
-        <span class="k">return</span> <span class="n">abstract</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-</code></pre></div>
-        </details>
-    </div>
+            <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s1">&#39;openaire&#39;</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;openaire -&gt; semanticscholar &#39;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">semanticscholar_source</span><span class="o">.</span><span class="n">work_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
-  </div>
+            <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s1">&#39;semanticscholar&#39;</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;semanticscholar -&gt; meta &#39;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">meta_source</span><span class="o">.</span><span class="n">work_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
-
-
-  <div class="doc doc-object doc-method">
-
-
-
-<h3 id="pubfinder_worker.PubFinderWorker.clean_fos" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">clean_fos</span><span class="p">(</span><span class="n">fos</span><span class="p">)</span></code>
-
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
-  </span>
-
-</h3>
-
-    <div class="doc doc-contents ">
-
-      <p>cleans the title and removes unnecessary spaces and line breaks</p>
-
-        <details class="quote">
-          <summary>Source code in <code>src/pubfinder_worker.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">clean_fos</span><span class="p">(</span><span class="n">fos</span><span class="p">):</span>
-    <span class="c1"># todo where</span>
-    <span class="sd">&quot;&quot;&quot;cleans the title and removes unnecessary spaces and line breaks</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fos</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;;&#39;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
-            <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">done_now</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">is_publication_done</span><span class="p">(</span><span class="n">publication</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">done_now</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;publication done &quot;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
 
-    <span class="k">return</span> <span class="n">results</span>
+                <span class="k">if</span> <span class="n">source</span> <span class="o">!=</span> <span class="s1">&#39;db&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">save_publication</span><span class="p">(</span><span class="n">publication</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">save_publication_not_found</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">],</span> <span class="n">pub_is_done</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;unable to find publication data for &#39;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; - &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">done_now</span><span class="p">))</span>
 </code></pre></div>
         </details>
     </div>
 
   </div>
-
-
-
-  <div class="doc doc-object doc-method">
-
-
-
-<h3 id="pubfinder_worker.PubFinderWorker.clean_title" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">clean_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span></code>
-
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
-  </span>
-
-</h3>
-
-    <div class="doc doc-contents ">
-
-      <p>cleans the title and removes unnecessary spaces and line breaks</p>
-
-        <details class="quote">
-          <summary>Source code in <code>src/pubfinder_worker.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">clean_title</span><span class="p">(</span><span class="n">title</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;cleans the title and removes unnecessary spaces and line breaks</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">title</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39; +&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
-
-
-
-
-
 
 
 
@@ -766,6 +893,87 @@ PubFinderWorker            (<span title="event_stream.event_stream_producer.Even
 
 
 
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="pubfinder_worker.PubFinderWorker.worker_db" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">worker_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>worker function to retrieve publication data from the postgreSQL </p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/pubfinder_worker.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">worker_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; worker function to retrieve publication data from the postgreSQL &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">publication</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">get_publication</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+            <span class="n">publication_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">get_publication</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">publication_temp</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">publication</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot; found in db &quot;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
+                <span class="n">publication</span> <span class="o">=</span> <span class="n">publication_temp</span>
+
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;db&#39;</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;DB&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://ambalytics.com/&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;license&#39;</span><span class="p">:</span> <span class="s1">&#39;MIT&#39;</span><span class="p">}]</span>
+
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Event</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publication</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">finish_work</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s1">&#39;db&#39;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="pubfinder_worker.PubFinderWorker.worker_results" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">worker_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>worker functions to handle resulting  </p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/pubfinder_worker.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">worker_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; worker functions to handle resulting  &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;worker results&quot;</span><span class="p">)</span>
+    <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="ow">and</span> <span class="s1">&#39;item&#39;</span> <span class="ow">in</span> <span class="n">result</span> <span class="ow">and</span> <span class="s1">&#39;tag&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">finish_work</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;tag&#39;</span><span class="p">])</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
@@ -821,6 +1029,21 @@ PubFinderWorker            (<span title="event_stream.event_stream_producer.Even
           </div>
         </a>
       
+      
+        
+        <a href="../pubfinder_helper_ref/" class="md-footer__link md-footer__link--next" aria-label="Next: pubfinder helper" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              pubfinder helper
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
       
     </nav>
   

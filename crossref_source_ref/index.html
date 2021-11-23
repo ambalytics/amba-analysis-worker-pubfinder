@@ -273,7 +273,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base_source_ref/" class="md-nav__link">
+      <a href="../base_source_ref.md" class="md-nav__link">
         base source
       </a>
     </li>
@@ -321,6 +321,61 @@
   <a href="#crossref_source" class="md-nav__link">
     crossref_source
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossref_source.CrossrefSource" class="md-nav__link">
+    CrossrefSource
+  </a>
+  
+    <nav class="md-nav" aria-label="CrossrefSource">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crossref_source.CrossrefSource.add_data_to_publication" class="md-nav__link">
+    add_data_to_publication()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crossref_source.CrossrefSource.map" class="md-nav__link">
+    map()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crossref_source.CrossrefSource.map_author" class="md-nav__link">
+    map_author()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crossref_source.CrossrefSource.map_fields_of_study" class="md-nav__link">
+    map_fields_of_study()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crossref_source.CrossrefSource.map_refs" class="md-nav__link">
+    map_refs()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crossref_source.CrossrefSource.worker" class="md-nav__link">
+    worker()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -396,6 +451,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pubfinder_helper_ref/" class="md-nav__link">
+        pubfinder helper
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -431,6 +500,61 @@
   <a href="#crossref_source" class="md-nav__link">
     crossref_source
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crossref_source.CrossrefSource" class="md-nav__link">
+    CrossrefSource
+  </a>
+  
+    <nav class="md-nav" aria-label="CrossrefSource">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crossref_source.CrossrefSource.add_data_to_publication" class="md-nav__link">
+    add_data_to_publication()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crossref_source.CrossrefSource.map" class="md-nav__link">
+    map()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crossref_source.CrossrefSource.map_author" class="md-nav__link">
+    map_author()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crossref_source.CrossrefSource.map_fields_of_study" class="md-nav__link">
+    map_fields_of_study()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crossref_source.CrossrefSource.map_refs" class="md-nav__link">
+    map_refs()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crossref_source.CrossrefSource.worker" class="md-nav__link">
+    worker()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -475,6 +599,332 @@
 
 
 
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="crossref_source.CrossrefSource" class="doc doc-heading">
+        <code>
+CrossrefSource        </code>
+
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="crossref_source.CrossrefSource.add_data_to_publication" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">add_data_to_publication</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publication</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>fetch and map to add data</p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/crossref_source.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_data_to_publication</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    fetch and map to add data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">publication</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="crossref_source.CrossrefSource.map" class="doc doc-heading">
+<code class="highlight language-python"><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>map given data from a response to a publication object</p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/crossref_source.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    map given data from a response to a publication object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">added_data</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">response_data</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="s1">&#39;type&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">publication_type_translation</span><span class="p">:</span>
+                <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">publication_type_translation</span><span class="p">[</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">publication_type_translation</span><span class="p">[</span><span class="s1">&#39;unknown&#39;</span><span class="p">]</span>
+            <span class="n">added_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="s1">&#39;published&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;date-parts&#39;</span> <span class="ow">in</span> <span class="n">response_data</span><span class="p">[</span>
+            <span class="s1">&#39;published&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="s1">&#39;pub_date&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;published&#39;</span><span class="p">][</span><span class="s1">&#39;date-parts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;pub_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">-</span><span class="si">{1}</span><span class="s1">-</span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;published&#39;</span><span class="p">][</span><span class="s1">&#39;date-parts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+                                                               <span class="nb">str</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;published&#39;</span><span class="p">][</span><span class="s1">&#39;date-parts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span>
+                                                               <span class="nb">str</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;published&#39;</span><span class="p">][</span><span class="s1">&#39;date-parts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;published&#39;</span><span class="p">][</span><span class="s1">&#39;date-parts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;publisher&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;publisher&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;publisher&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;is-referenced-by-count&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="s1">&#39;citation_count&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span> <span class="ow">or</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;citation_count&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;citation_count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;is-referenced-by-count&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">should_update</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="n">response_data</span><span class="p">,</span> <span class="n">publication</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">clean_title</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;normalized_title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">publication</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s1">&#39;reference&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;refs&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;refs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_refs</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;reference&#39;</span><span class="p">])</span>
+            <span class="n">added_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="s1">&#39;abstract&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="s1">&#39;abstract&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">valid_abstract</span><span class="p">(</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">])):</span>
+            <span class="n">abstract</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">clean_abstract</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">valid_abstract</span><span class="p">(</span><span class="n">abstract</span><span class="p">):</span>
+                <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">abstract</span>
+                <span class="n">added_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="s1">&#39;author&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;authors&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;authors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_author</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;author&#39;</span><span class="p">])</span>
+            <span class="n">added_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="s1">&#39;subject&#39;</span> <span class="ow">in</span> <span class="n">response_data</span> <span class="ow">and</span> <span class="s1">&#39;fields_of_study&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">publication</span><span class="p">:</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;fields_of_study&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_fields_of_study</span><span class="p">(</span><span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">])</span>
+            <span class="n">added_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="s1">&#39;license&#39;</span> <span class="ow">in</span> <span class="n">response_data</span><span class="p">:</span>
+            <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;license&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s1">&#39;license&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;URL&#39;</span><span class="p">]</span>
+            <span class="n">added_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">added_data</span><span class="p">:</span>
+        <span class="n">source_ids</span> <span class="o">=</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span>
+        <span class="n">source_ids</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Crossref&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://www.crossref.org/&#39;</span><span class="p">,</span> <span class="s1">&#39;license&#39;</span><span class="p">:</span> <span class="s1">&#39;TODO&#39;</span><span class="p">})</span>
+        <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source_ids</span>
+
+    <span class="k">return</span> <span class="n">publication</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="crossref_source.CrossrefSource.map_author" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">map_author</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">authors</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>map authors and add normalized</p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/crossref_source.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">map_author</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">authors</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    map authors and add normalized</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">author</span> <span class="ow">in</span> <span class="n">authors</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="s1">&#39;given&#39;</span> <span class="ow">in</span> <span class="n">author</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">author</span><span class="p">[</span><span class="s1">&#39;given&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s1">&#39; no author given &#39;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">author</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s1">&#39;family&#39;</span> <span class="ow">in</span> <span class="n">author</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="n">author</span><span class="p">[</span><span class="s1">&#39;family&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s1">&#39; no author family &#39;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">author</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">normalized_name</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s1">&#39;normalized_name&#39;</span><span class="p">:</span> <span class="n">normalized_name</span>
+            <span class="p">})</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="crossref_source.CrossrefSource.map_fields_of_study" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">map_fields_of_study</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>map field of study and add normalized</p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/crossref_source.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">map_fields_of_study</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    map field of study and add normalized</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[\(\[].*?[\)\]]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+        <span class="n">normalized_name</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;normalized_name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">normalized_name</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="p">):</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;normalized_name&#39;</span><span class="p">:</span> <span class="n">normalized_name</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="crossref_source.CrossrefSource.map_refs" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">map_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refs</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>map references</p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/crossref_source.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">map_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    map references</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;DOI&#39;</span> <span class="ow">in</span> <span class="n">ref</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;doi&#39;</span><span class="p">:</span> <span class="n">ref</span><span class="p">[</span><span class="s1">&#39;DOI&#39;</span><span class="p">]})</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="crossref_source.CrossrefSource.worker" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">worker</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>worker function run in thread pool adding publication data</p>
+
+        <details class="quote">
+          <summary>Source code in <code>src/crossref_source.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    worker function run in thread pool adding publication data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">work_queue</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
+                <span class="n">publication</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">get_publication</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot; work on item &quot;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
+                <span class="n">publication_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_data_to_publication</span><span class="p">(</span><span class="n">publication</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">publication_temp</span><span class="p">:</span>
+                    <span class="n">publication</span> <span class="o">=</span> <span class="n">publication_temp</span>
+
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Event</span><span class="p">:</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publication</span>
+
+                <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span> <span class="s1">&#39;tag&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result_deque</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
 
 
 
@@ -523,7 +973,7 @@ cache up to 100 since we should not have doi be occurring multiple times</p>
 <span class="sd">    Arguments:</span>
 <span class="sd">        doi: the doi to be fetched</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CrossrefSource</span><span class="o">.</span><span class="n">base_url</span> <span class="o">+</span> <span class="n">requests</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">doi</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;&amp;mailto=lukas.jesche.se@gmail.com&#39;</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CrossrefSource</span><span class="o">.</span><span class="n">base_url</span> <span class="o">+</span> <span class="n">requests</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">doi</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;?mailto=lukas.jesche.se@gmail.com&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
         <span class="n">json_response</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">if</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">json_response</span><span class="p">:</span>
@@ -566,7 +1016,7 @@ cache up to 100 since we should not have doi be occurring multiple times</p>
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../base_source_ref/" class="md-footer__link md-footer__link--prev" aria-label="Previous: base source" rel="prev">
+        <a href="../amba_source_ref/" class="md-footer__link md-footer__link--prev" aria-label="Previous: amba source" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -575,7 +1025,7 @@ cache up to 100 since we should not have doi be occurring multiple times</p>
               <span class="md-footer__direction">
                 Previous
               </span>
-              base source
+              amba source
             </div>
           </div>
         </a>
