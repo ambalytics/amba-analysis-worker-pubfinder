@@ -8,7 +8,7 @@ from collections import deque
 from multiprocessing.pool import ThreadPool
 from multiprocessing import Value
 from event_stream.event import Event
-from . import pubfinder_helper
+from .pubfinder_helper import PubFinderHelper
 
 
 @lru_cache(maxsize=10)
@@ -69,7 +69,7 @@ class SemanticScholarSource(object):
                 pass
             else:
                 if item:
-                    publication = pubfinder_helper.PubFinderHelper.get_publication(item)
+                    publication = PubFinderHelper.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
 
                     publication_temp = self.add_data_to_publication(publication)
@@ -93,7 +93,7 @@ class SemanticScholarSource(object):
         result = []
         for field in fields:
             name = field
-            normalized_name = pubfinder_helper.PubFinderHelper.normalize(name)
+            normalized_name = PubFinderHelper.normalize(name)
             if not any(d['normalized_name'] == normalized_name for d in result):
                 result.append({'name': name, 'normalized_name': normalized_name})
         return result
@@ -103,12 +103,12 @@ class SemanticScholarSource(object):
         added_data = False
         if response_data:
 
-            if pubfinder_helper.PubFinderHelper.should_update('title', response_data, publication):
-                publication['title'] = pubfinder_helper.PubFinderHelper.clean_title(response_data['title'])
-                publication['normalized_title'] = pubfinder_helper.PubFinderHelper.normalize(publication['title'])
+            if PubFinderHelper.should_update('title', response_data, publication):
+                publication['title'] = PubFinderHelper.clean_title(response_data['title'])
+                publication['normalized_title'] = PubFinderHelper.normalize(publication['title'])
                 added_data = True
 
-            if pubfinder_helper.PubFinderHelper.should_update('year', response_data, publication):
+            if PubFinderHelper.should_update('year', response_data, publication):
                 publication['year'] = response_data['year']
                 added_data = True
 
@@ -121,19 +121,19 @@ class SemanticScholarSource(object):
                 publication['citation_count'] = response_data['numCitedBy']
                 added_data = True
 
-            if pubfinder_helper.PubFinderHelper.should_update('authors', response_data, publication):
+            if PubFinderHelper.should_update('authors', response_data, publication):
                 publication['authors'] = self.map_author(response_data['authors'])
                 added_data = True
 
             if 'abstract' in response_data and (
                     'abstract' not in publication
-                    or not pubfinder_helper.PubFinderHelper.valid_abstract(publication['abstract'])):
-                abstract = pubfinder_helper.PubFinderHelper.clean_abstract(response_data['abstract'])
-                if pubfinder_helper.PubFinderHelper.valid_abstract(abstract):
+                    or not PubFinderHelper.valid_abstract(publication['abstract'])):
+                abstract = PubFinderHelper.clean_abstract(response_data['abstract'])
+                if PubFinderHelper.valid_abstract(abstract):
                     publication['abstract'] = abstract
                     added_data = True
 
-            if pubfinder_helper.PubFinderHelper.should_update('fields_of_study', response_data, publication):
+            if PubFinderHelper.should_update('fields_of_study', response_data, publication):
                 publication['fields_of_study'] = self.map_fields_of_study(response_data['fields_of_study'])
                 added_data = True
 
@@ -164,7 +164,7 @@ class SemanticScholarSource(object):
         for author in authors:
             if 'name' in author:
                 name = author['name']
-                normalized_name = pubfinder_helper.PubFinderHelper.normalize(name)
+                normalized_name = PubFinderHelper.normalize(name)
                 result.append({
                     'name': name,
                     'normalized_name': normalized_name
