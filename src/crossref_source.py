@@ -24,8 +24,8 @@ def fetch(doi):
     Arguments:
         doi: the doi to be fetched
     """
-    logging.warning(CrossrefSource.base_url + requests.utils.quote(doi) + '&mailto=lukas.jesche.se@gmail.com')
-    r = requests.get(CrossrefSource.base_url + requests.utils.quote(doi) + '&mailto=lukas.jesche.se@gmail.com')
+    logging.warning(CrossrefSource.base_url + requests.utils.quote(doi) + '?mailto=lukas.jesche.se@gmail.com')
+    r = requests.get(CrossrefSource.base_url + requests.utils.quote(doi) + '?mailto=lukas.jesche.se@gmail.com')
     if r.status_code == 200:
         json_response = r.json()
         if 'status' in json_response:
