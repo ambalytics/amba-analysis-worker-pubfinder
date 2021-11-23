@@ -38,8 +38,7 @@ def get_publication_from_amba(doi, amba_client):
     """)
 
     params = {"doi": doi}
-    logging.warning(query)
-    logging.warning(params)
+    logging.basicConfig(level=logging.DEBUG)
     result = amba_client.execute(query, variable_values=params)
     if 'publicationsByDoi' in result and len(result['publicationsByDoi']) > 0:
         publication = result['publicationsByDoi'][0]
