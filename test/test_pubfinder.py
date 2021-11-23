@@ -66,15 +66,14 @@ class TestPubfinder(unittest.TestCase):
                 logging.warning('sleep')
                 pass
             else:
-                logging.warning(item['item'].data['obj']['data'])
                 self.assertEqual(item['tag'], 'semanticscholar')
                 self.assertEqual(item['item'].data['obj']['data']['title'],
                                  'The origin of extracellular fields and currents — EEG, ECoG, LFP and spikes')
                 self.assertEqual(item['item'].data['obj']['data']['normalized_title'],
                                  'the origin of extracellular fields and currents  eeg ecog lfp and spikes')
                 self.assertEqual(item['item'].data['obj']['data']['publisher'], 'Nature Reviews Neuroscience')
-                self.assertEqual(item['item'].data['obj']['data']['year'], '2012')
-                self.assertEqual(item['item'].data['obj']['data']['citation_count'], '2659')
+                self.assertEqual(str(item['item'].data['obj']['data']['year']), '2012')
+                self.assertEqual(str(item['item'].data['obj']['data']['citation_count']), '2659')
                 self.assertEqual(item['item'].data['obj']['data']['authors'][0]['normalized_name'], 'g buzski"')
                 self.assertEqual(item['item'].data['obj']['data']['abstract'],
                                  'Neuronal activity in the brain gives rise to transmembrane currents that can be '
@@ -108,7 +107,7 @@ class TestPubfinder(unittest.TestCase):
                 pass
             else:
                 logging.warning(item['item'].data['obj']['data'])
-                self.assertEqual(item['tag'], 'semanticscholar')
+                self.assertEqual(item['tag'], 'crossref')
                 self.assertEqual(item['item'].data['obj']['data']['title'],
                                  'The origin of extracellular fields and currents — EEG, ECoG, LFP and spikes')
                 self.assertEqual(item['item'].data['obj']['data']['normalized_title'],
@@ -146,7 +145,7 @@ class TestPubfinder(unittest.TestCase):
                 pass
             else:
                 logging.warning(item['item'].data['obj']['data'])
-                self.assertEqual(item['tag'], 'semanticscholar')
+                self.assertEqual(item['tag'], 'meta')
                 self.assertEqual(item['item'].data['obj']['data']['title'],
                                  'The origin of extracellular fields and currents — EEG, ECoG, LFP and spikes')
                 self.assertEqual(item['item'].data['obj']['data']['normalized_title'],
@@ -184,7 +183,7 @@ class TestPubfinder(unittest.TestCase):
                 pass
             else:
                 logging.warning(item['item'].data['obj']['data'])
-                self.assertEqual(item['tag'], 'semanticscholar')
+                self.assertEqual(item['tag'], 'amba')
                 self.assertEqual(item['item'].data['obj']['data']['title'],
                                  'The origin of extracellular fields and currents — EEG, ECoG, LFP and spikes')
                 self.assertEqual(item['item'].data['obj']['data']['normalized_title'],
