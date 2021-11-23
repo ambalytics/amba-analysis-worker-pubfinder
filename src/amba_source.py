@@ -8,6 +8,7 @@ import logging
 from event_stream.event import Event
 from .pubfinder_worker import PubFinderWorker
 
+
 def get_publication_from_amba(doi, amba_client):
     query = gql(
         """
@@ -50,7 +51,9 @@ def get_publication_from_amba(doi, amba_client):
 
         for f in publication['fieldsOfStudy']:
             f['normalized_name'] = f['normalizedName']
-        publication['field_of_study'] = publication['fieldsOfStudy']
+        publication['fields_of_study'] = publication['fieldsOfStudy']
+        return publication
+    return None
 
 
 # base source, to be extended for use

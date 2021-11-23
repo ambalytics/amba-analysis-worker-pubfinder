@@ -5,7 +5,7 @@ import time
 from multiprocessing.pool import ThreadPool
 from collections import deque
 import os
-import sentry_sdk
+# import sentry_sdk
 from event_stream.dao import DAO
 from event_stream.event_stream_consumer import EventStreamConsumer
 from event_stream.event_stream_producer import EventStreamProducer
