@@ -27,10 +27,11 @@ def reset_api_limit(v, time_delta):
     logging.warning('reset openaire api limit ' + str(v.value))
     with v.get_lock():
         v.value = 0
-    threading.Timer(time_delta, reset_api_limit, args=[v, time_delta]).start()
+    api_limit_thread = threading.Timer(time_delta, reset_api_limit, args=[v, time_delta]).start()
+    api_limit_thread.daemon = True
+    api_limit_thread.start()
 
 
-# based on crossref
 class OpenAireSource(object):
     base_url = "https://api.openaire.eu/search/publications?doi="
 
@@ -51,7 +52,9 @@ class OpenAireSource(object):
         self.result_deque = result_deque
 
         self.fetched_counter = Value('i', 0)
-        threading.Timer(self.api_time, reset_api_limit, args=[self.fetched_counter, self.api_time]).start()
+        api_limit_thread = threading.Timer(self.api_time, reset_api_limit, args=[self.fetched_counter, self.api_time])
+        api_limit_thread.daemon = True
+        api_limit_thread.start()
         self.api_reset_timestamp = int(time.time())
 
     def worker(self):
