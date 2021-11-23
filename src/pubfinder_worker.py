@@ -8,13 +8,13 @@ import os
 import sentry_sdk
 from event_stream.event_stream_producer import EventStreamProducer
 from event_stream.event import Event
-from .pubfinder_helper import PubFinderHelper
+from pubfinder_helper import PubFinderHelper
 from event_stream.dao import DAO
-from . import amba_source
-from . import crossref_source
-from . import meta_source
-from . import openaire_source
-from . import semanticscholar_source
+from amba_source import AmbaSource
+from crossref_source import  CrossrefSource
+from meta_source import MetaSource
+from openaire_source import OpenAireSource
+from semanticscholar_source import SemanticScholarSource
 
 from kafka import KafkaConsumer
 from kafka.vendor import six
@@ -68,11 +68,11 @@ class PubFinderWorker(EventStreamProducer):
         if not self.result_pool:
             self.result_pool = ThreadPool(1, self.worker_results, (self.results,))
 
-        self.amba_source = amba_source.AmbaSource(self.results)
-        self.crossref_source = crossref_source.CrossrefSource(self.results)
-        self.meta_source = meta_source.MetaSource(self.results)
-        self.openaire_source = openaire_source.OpenAireSource(self.results)
-        self.semanticscholar_source = semanticscholar_source.SemanticScholarSource(self.results)
+        self.amba_source = AmbaSource(self.results)
+        self.crossref_source = CrossrefSource(self.results)
+        self.meta_source = MetaSource(self.results)
+        self.openaire_source = OpenAireSource(self.results)
+        self.semanticscholar_source = SemanticScholarSource(self.results)
 
         if not self.topics:
             self.topics = list()

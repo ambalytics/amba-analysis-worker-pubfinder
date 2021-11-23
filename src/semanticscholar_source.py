@@ -8,7 +8,7 @@ from collections import deque
 from multiprocessing.pool import ThreadPool
 from multiprocessing import Value
 from event_stream.event import Event
-from .pubfinder_helper import PubFinderHelper
+from pubfinder_helper import PubFinderHelper
 
 
 @lru_cache(maxsize=10)

@@ -7,7 +7,7 @@ from dateutil.parser import parse
 from lxml import html
 from collections import deque
 from event_stream.event import Event
-from .pubfinder_helper import PubFinderHelper
+from pubfinder_helper import PubFinderHelper
 from requests import Session, ConnectTimeout
 from urllib3.exceptions import ReadTimeoutError, SSLError, NewConnectionError
 
