@@ -8,7 +8,7 @@ import os
 import sentry_sdk
 from event_stream.event_stream_producer import EventStreamProducer
 from event_stream.event import Event
-from . import pubfinder_helper
+from .pubfinder_helper import PubFinderHelper
 from event_stream.dao import DAO
 from . import amba_source
 from . import crossref_source
@@ -150,7 +150,7 @@ class PubFinderWorker(EventStreamProducer):
                 time.sleep(0.1)
                 pass
             else:
-                publication = pubfinder_helper.PubFinderHelper.get_publication(item)
+                publication = PubFinderHelper.get_publication(item)
 
                 publication_temp = self.dao.get_publication(publication['doi'])
                 if publication_temp and isinstance(publication, dict):
@@ -172,9 +172,9 @@ class PubFinderWorker(EventStreamProducer):
              item: the item to work on (publication)
              source: the source specifies the last used source
          """
-        publication = pubfinder_helper.PubFinderHelper.get_publication(item)
+        publication = PubFinderHelper.get_publication(item)
 
-        pub_is_done = pubfinder_helper.PubFinderHelper.is_publication_done(publication)
+        pub_is_done = PubFinderHelper.is_publication_done(publication)
         if pub_is_done is True:
             logging.warning(self.log + "publication done " + publication['doi'])
 
@@ -211,7 +211,7 @@ class PubFinderWorker(EventStreamProducer):
                     self.meta_source.work_queue.append(item)
 
             else:
-                done_now = pubfinder_helper.PubFinderHelper.is_publication_done(publication, True)
+                done_now = PubFinderHelper.is_publication_done(publication, True)
                 if done_now is True:
                     logging.warning(self.log + "publication done " + publication['doi'])
 

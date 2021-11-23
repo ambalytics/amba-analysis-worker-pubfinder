@@ -5,7 +5,7 @@ from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 import logging
 from event_stream.event import Event
-from . import pubfinder_helper
+from .pubfinder_helper import PubFinderHelper
 
 
 def get_publication_from_amba(doi, amba_client):
@@ -84,7 +84,7 @@ class AmbaSource(object):
                 pass
             else:
                 if item:
-                    publication = pubfinder_helper.PubFinderHelper.get_publication(item)
+                    publication = PubFinderHelper.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
 
                     publication_temp = self.add_data_to_publication(publication, amba_client)
