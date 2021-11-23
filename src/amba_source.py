@@ -2,7 +2,7 @@ import time
 from collections import deque
 from multiprocessing.pool import ThreadPool
 from gql import gql, Client
-from gql.transport.aiohttp import AIOHTTPTransport
+from gql.transport.requests import RequestsHTTPTransport
 from functools import lru_cache
 import logging
 from event_stream.event import Event
@@ -123,5 +123,5 @@ class AmbaSource(object):
 
     def prepare_amba_connection(self):
         """prepare the connection to amba"""
-        transport = AIOHTTPTransport(url=self.url)
+        transport = RequestsHTTPTransport(url=self.url, verify=True, retries=3)
         return Client(transport=transport, fetch_schema_from_transport=True)

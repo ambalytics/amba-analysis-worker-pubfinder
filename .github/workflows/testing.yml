@@ -18,7 +18,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install --upgrade sentry-sdk
-          pip install gql[all]==3.0.0a6
+          pip install --pre gql[all]
           pip install -r src/requirements.txt
       - name: Run Tests
         run: python -m unittest test/test_pubfinder.py
