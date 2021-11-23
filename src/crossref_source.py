@@ -1,17 +1,11 @@
 import json
 import logging
 import re
-import threading
 import time
 from functools import lru_cache
-# from gql import gql, Client
-# from gql.transport.aiohttp import AIOHTTPTransport
-# import logging
 import requests
 from collections import deque
 from multiprocessing.pool import ThreadPool
-from multiprocessing import Value
-# from base_source import BaseSource
 from event_stream.event import Event
 from .pubfinder_worker import PubFinderWorker
 
@@ -24,7 +18,6 @@ def fetch(doi):
     Arguments:
         doi: the doi to be fetched
     """
-    logging.warning(CrossrefSource.base_url + requests.utils.quote(doi) + '?mailto=lukas.jesche.se@gmail.com')
     r = requests.get(CrossrefSource.base_url + requests.utils.quote(doi) + '?mailto=lukas.jesche.se@gmail.com')
     if r.status_code == 200:
         json_response = r.json()
@@ -35,11 +28,6 @@ def fetch(doi):
     return None
 
 
-def cleanhtml(raw_html, cleanr):
-    return re.sub(cleanr, '', raw_html)
-
-
-# based on crossref
 class CrossrefSource(object):
     base_url = "https://api.crossref.org/works/"
 
@@ -69,20 +57,19 @@ class CrossrefSource(object):
         self.cleanr = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
 
     def worker(self):
+        """
+        worker function run in thread pool adding publication data
+        """
         while self.running:
             try:
                 item = self.work_queue.pop()
             except IndexError:
                 time.sleep(0.1)
-                # logging.warning(self.log + "sleep worker mongo")
                 pass
             else:
                 if item:
-                    # logging.warning(self.log + " item " + str(item.get_json()))
                     publication = PubFinderWorker.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
-                    # logging.warning(self.log + " q " + str(queue))x
-
                     publication_temp = self.add_data_to_publication(publication)
 
                     if publication_temp:
@@ -95,11 +82,16 @@ class CrossrefSource(object):
                     self.result_deque.append(result)
 
     def add_data_to_publication(self, publication):
+        """
+        fetch and map to add data
+        """
         response = fetch(publication['doi'])
         return self.map(response, publication)
 
-    # map response data to publication
     def map(self, response_data, publication):
+        """
+        map given data from a response to a publication object
+        """
         added_data = False
         if response_data:
 
@@ -153,7 +145,6 @@ class CrossrefSource(object):
             # content-version
             if 'license' in response_data:
                 publication['license'] = response_data['license'][0]['URL']
-                logging.warning(publication['license'])
                 added_data = True
 
         if added_data:
@@ -164,6 +155,9 @@ class CrossrefSource(object):
         return publication
 
     def map_author(self, authors):
+        """
+        map authors and add normalized
+        """
         result = []
         for author in authors:
             name = ''
@@ -185,6 +179,9 @@ class CrossrefSource(object):
         return result
 
     def map_refs(self, refs):
+        """
+        map references
+        """
         result = []
         for ref in refs:
             if 'DOI' in ref:
@@ -192,6 +189,9 @@ class CrossrefSource(object):
         return result
 
     def map_fields_of_study(self, fields):
+        """
+        map field of study and add normalized
+        """
         result = []
         for field in fields:
             name = re.sub(r"[\(\[].*?[\)\]]", "", field)

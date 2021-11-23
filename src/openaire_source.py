@@ -121,8 +121,6 @@ class OpenAireSource(object):
                 added_data = True
 
             if PubFinderWorker.should_update('fields_of_study', response_data, publication):
-                # logging.warning("response_data['fields_of_study']")
-                # logging.warning(response_data['fields_of_study'])
                 publication['fields_of_study'] = self.map_fields_of_study(response_data['fields_of_study'])
                 added_data = True
 

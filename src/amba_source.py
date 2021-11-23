@@ -56,7 +56,6 @@ def get_publication_from_amba(doi, amba_client):
     return None
 
 
-# base source, to be extended for use
 class AmbaSource(object):
     tag = 'amba'
     log = 'SourceAmba'
@@ -112,7 +111,7 @@ class AmbaSource(object):
                     self.result_deque.append(result)
 
     def add_data_to_publication(self, publication, ac):
-        """ add data to publication """
+        """ add data from amba to publication using a supplied amba client """
         amba_publication = self.get_publication_wrapper(publication['doi'], ac)
         if not amba_publication:
             return publication
