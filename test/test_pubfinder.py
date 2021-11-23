@@ -1,3 +1,4 @@
+import logging
 import time
 import unittest
 from collections import deque
@@ -9,7 +10,7 @@ from src import openaire_source
 class TestPubfinder(unittest.TestCase):
 
     def test_open_aire_source(self):
-        print('start testing')
+        logging.warning('start testing')
         result_queue = deque()
         os = openaire_source.OpenAireSource(result_queue)
         e = Event()
@@ -21,12 +22,14 @@ class TestPubfinder(unittest.TestCase):
                 item = result_queue.pop()
             except IndexError:
                 time.sleep(1)
-                print('sleep')
+                logging.warning('sleep')
                 pass
             else:
+                logging.warning(item)
                 self.assertEqual(item, '10.1016/j.yjmcc.2021.05.007')
                 break
             finally:
+                logging.warning('break')
                 break
 
 
