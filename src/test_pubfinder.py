@@ -4,11 +4,12 @@ import unittest
 from collections import deque
 
 from event_stream.event import Event
-from . import openaire_source
-from . import semanticscholar_source
-from . import crossref_source
-from . import meta_source
-from . import amba_source
+
+from openaire_source import OpenAireSource
+from semanticscholar_source import SemanticScholarSource
+from crossref_source import CrossrefSource
+from meta_source import MetaAource
+from amba_source import AmbaAource
 
 
 class TestPubfinder(unittest.TestCase):
@@ -16,7 +17,7 @@ class TestPubfinder(unittest.TestCase):
     def test_open_aire_source(self):
         logging.warning('start testing open aire')
         result_queue = deque()
-        os = openaire_source.OpenAireSource(result_queue)
+        os = OpenAireSource(result_queue)
         e = Event()
         e.data['obj']['data'] = {'doi': '10.1038/nrn3241', 'source_id': [{'title': 'test'}]}
         os.work_queue.append(e)

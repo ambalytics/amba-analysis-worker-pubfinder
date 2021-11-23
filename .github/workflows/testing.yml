@@ -25,6 +25,4 @@ jobs:
           pip install --pre gql[all]
           pip install -r src/requirements.txt
       - name: Run Tests
-        run: |
-          coverage run unittest discover
-          coverage report
+        run: python -m unittest test/test_pubfinder.py
