@@ -5,7 +5,7 @@ from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 import logging
 from event_stream.event import Event
-import pubfinder_helper
+from . import pubfinder_helper
 
 
 def get_publication_from_amba(doi, amba_client):

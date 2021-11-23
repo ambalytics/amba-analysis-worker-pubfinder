@@ -7,7 +7,7 @@ import requests
 from collections import deque
 from multiprocessing.pool import ThreadPool
 from event_stream.event import Event
-import pubfinder_helper
+from . import pubfinder_helper
 
 
 @lru_cache(maxsize=10)

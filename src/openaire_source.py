@@ -7,7 +7,7 @@ from collections import deque
 from multiprocessing.pool import ThreadPool
 from multiprocessing import Value
 from event_stream.event import Event
-import pubfinder_helper
+from . import pubfinder_helper
 from lxml import html
 
 

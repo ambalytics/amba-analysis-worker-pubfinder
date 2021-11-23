@@ -8,13 +8,13 @@ import os
 import sentry_sdk
 from event_stream.event_stream_producer import EventStreamProducer
 from event_stream.event import Event
-import pubfinder_helper
+from . import pubfinder_helper
 from event_stream.dao import DAO
-import amba_source
-import crossref_source
-import meta_source
-import openaire_source
-import semanticscholar_source
+from . import amba_source
+from . import crossref_source
+from . import meta_source
+from . import openaire_source
+from . import semanticscholar_source
 
 from kafka import KafkaConsumer
 from kafka.vendor import six
@@ -183,7 +183,7 @@ class PubFinderWorker(EventStreamProducer):
 
             if type(item) is Event:
                 item.set('state', 'linked')
-                logging.warning(publication['doi'])
+                logging.info(self.log + "publish " + publication['doi'])
                 self.publish(item)
 
         else:
