@@ -98,7 +98,7 @@ class MetaSource(object):
                 pass
             else:
                 if item:
-                    publication =pubfinder_helper.PubFinderHelper.get_publication(item)
+                    publication = pubfinder_helper.PubFinderHelper.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
 
                     publication_temp = self.add_data_to_publication(publication)
@@ -161,14 +161,14 @@ class MetaSource(object):
 
         if 'abstract' in response_data and \
                 ('abstract' not in publication
-                 or notpubfinder_helper.PubFinderHelper.valid_abstract(publication['abstract'])):
-            abstract =pubfinder_helper.PubFinderHelper.clean_abstract(response_data['abstract'])
+                 or not pubfinder_helper.PubFinderHelper.valid_abstract(publication['abstract'])):
+            abstract = pubfinder_helper.PubFinderHelper.clean_abstract(response_data['abstract'])
             if pubfinder_helper.PubFinderHelper.valid_abstract(abstract):
                 publication['abstract'] = abstract
 
         if response_data and 'title' in response_data and ('title' not in publication or len(publication['title']) < 5):
-            publication['title'] =pubfinder_helper.PubFinderHelper.clean_title(response_data['title'])
-            publication['normalized_title'] =pubfinder_helper.PubFinderHelper.normalize(publication['title'])
+            publication['title'] = pubfinder_helper.PubFinderHelper.clean_title(response_data['title'])
+            publication['normalized_title'] = pubfinder_helper.PubFinderHelper.normalize(publication['title'])
 
         if pubfinder_helper.PubFinderHelper.should_update('pub_date', response_data, publication):
             pub = MetaSource.format_date(response_data['pub_date'])
@@ -199,7 +199,7 @@ class MetaSource(object):
         result = []
         for field in fields:
             name = field
-            normalized_name =pubfinder_helper.PubFinderHelper.normalize(name)
+            normalized_name = pubfinder_helper.PubFinderHelper.normalize(name)
             if not any(d['normalized_name'] == normalized_name for d in result) and len(normalized_name) < 150:
                 result.append({'name': name, 'normalized_name': normalized_name})
         return result
@@ -275,7 +275,7 @@ class MetaSource(object):
 
         for key in self.abstract_tags:
             if key in result:
-                abstract =pubfinder_helper.PubFinderHelper.clean_abstract(result[key])
+                abstract = pubfinder_helper.PubFinderHelper.clean_abstract(result[key])
                 if 'abstract' not in data or len(abstract) > len(data['abstract']):
                     data['abstract'] = result[key]
 

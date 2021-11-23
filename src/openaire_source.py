@@ -67,7 +67,7 @@ class OpenAireSource(object):
                 pass
             else:
                 if item:
-                    publication =pubfinder_helper.PubFinderHelper.get_publication(item)
+                    publication = pubfinder_helper.PubFinderHelper.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
 
                     publication_temp = self.add_data_to_publication(publication)
@@ -93,16 +93,16 @@ class OpenAireSource(object):
         if response_data:
 
             if pubfinder_helper.PubFinderHelper.should_update('title', response_data, publication):
-                publication['title'] =pubfinder_helper.PubFinderHelper.clean_title(response_data['title'])
-                publication['normalized_title'] =pubfinder_helper.PubFinderHelper.normalize(publication['title'])
+                publication['title'] = pubfinder_helper.PubFinderHelper.clean_title(response_data['title'])
+                publication['normalized_title'] = pubfinder_helper.PubFinderHelper.normalize(publication['title'])
                 added_data = True
 
             if pubfinder_helper.PubFinderHelper.should_update('year', response_data, publication):
-                publication['year'] =pubfinder_helper.PubFinderHelper.clean_title(response_data['year'])
+                publication['year'] = pubfinder_helper.PubFinderHelper.clean_title(response_data['year'])
                 added_data = True
 
             if pubfinder_helper.PubFinderHelper.should_update('pub_date', response_data, publication):
-                publication['pub_date'] =pubfinder_helper.PubFinderHelper.clean_title(response_data['pub_date'])
+                publication['pub_date'] = pubfinder_helper.PubFinderHelper.clean_title(response_data['pub_date'])
                 added_data = True
 
             if pubfinder_helper.PubFinderHelper.should_update('publisher', response_data, publication):
@@ -112,7 +112,7 @@ class OpenAireSource(object):
             if 'abstract' in response_data and \
                     ('abstract' not in publication
                      or not pubfinder_helper.PubFinderHelper.valid_abstract(publication['abstract'])):
-                abstract =pubfinder_helper.PubFinderHelper.clean_abstract(response_data['abstract'])
+                abstract = pubfinder_helper.PubFinderHelper.clean_abstract(response_data['abstract'])
                 if pubfinder_helper.PubFinderHelper.valid_abstract(abstract):
                     publication['abstract'] = abstract
                     added_data = True
@@ -150,7 +150,7 @@ class OpenAireSource(object):
         result = []
         for field in fields:
             name = field
-            normalized_name =pubfinder_helper.PubFinderHelper.normalize(name)
+            normalized_name = pubfinder_helper.PubFinderHelper.normalize(name)
             if not any(d['normalized_name'] == normalized_name for d in result):
                 result.append({'name': name, 'normalized_name': normalized_name})
         return result

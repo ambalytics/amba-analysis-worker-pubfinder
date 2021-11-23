@@ -69,7 +69,7 @@ class SemanticScholarSource(object):
                 pass
             else:
                 if item:
-                    publication =pubfinder_helper.PubFinderHelper.get_publication(item)
+                    publication = pubfinder_helper.PubFinderHelper.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
 
                     publication_temp = self.add_data_to_publication(publication)
@@ -93,7 +93,7 @@ class SemanticScholarSource(object):
         result = []
         for field in fields:
             name = field
-            normalized_name =pubfinder_helper.PubFinderHelper.normalize(name)
+            normalized_name = pubfinder_helper.PubFinderHelper.normalize(name)
             if not any(d['normalized_name'] == normalized_name for d in result):
                 result.append({'name': name, 'normalized_name': normalized_name})
         return result
@@ -104,8 +104,8 @@ class SemanticScholarSource(object):
         if response_data:
 
             if pubfinder_helper.PubFinderHelper.should_update('title', response_data, publication):
-                publication['title'] =pubfinder_helper.PubFinderHelper.clean_title(response_data['title'])
-                publication['normalized_title'] =pubfinder_helper.PubFinderHelper.normalize(publication['title'])
+                publication['title'] = pubfinder_helper.PubFinderHelper.clean_title(response_data['title'])
+                publication['normalized_title'] = pubfinder_helper.PubFinderHelper.normalize(publication['title'])
                 added_data = True
 
             if pubfinder_helper.PubFinderHelper.should_update('year', response_data, publication):
@@ -127,8 +127,8 @@ class SemanticScholarSource(object):
 
             if 'abstract' in response_data and (
                     'abstract' not in publication
-                    or notpubfinder_helper.PubFinderHelper.valid_abstract(publication['abstract'])):
-                abstract =pubfinder_helper.PubFinderHelper.clean_abstract(response_data['abstract'])
+                    or not pubfinder_helper.PubFinderHelper.valid_abstract(publication['abstract'])):
+                abstract = pubfinder_helper.PubFinderHelper.clean_abstract(response_data['abstract'])
                 if pubfinder_helper.PubFinderHelper.valid_abstract(abstract):
                     publication['abstract'] = abstract
                     added_data = True
@@ -164,7 +164,7 @@ class SemanticScholarSource(object):
         for author in authors:
             if 'name' in author:
                 name = author['name']
-                normalized_name =pubfinder_helper.PubFinderHelper.normalize(name)
+                normalized_name = pubfinder_helper.PubFinderHelper.normalize(name)
                 result.append({
                     'name': name,
                     'normalized_name': normalized_name

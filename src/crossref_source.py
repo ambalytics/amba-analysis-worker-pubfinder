@@ -38,9 +38,9 @@ class CrossrefSource(object):
         'proceedings-article': 'CONFERENCE_PAPER',
         'dataset': 'DATASET',
         'journal-article': 'JOURNAL_ARTICLE',
-        'patent': 'PATENT',  
-        'repository': 'REPOSITORY',  
-        'reference-book': 'BOOK_REFERENCE_ENTRY'  
+        'patent': 'PATENT',
+        'repository': 'REPOSITORY',
+        'reference-book': 'BOOK_REFERENCE_ENTRY'
     }
 
     tag = 'crossref'
@@ -68,7 +68,7 @@ class CrossrefSource(object):
                 pass
             else:
                 if item:
-                    publication =pubfinder_helper.PubFinderHelper.get_publication(item)
+                    publication = pubfinder_helper.PubFinderHelper.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
                     publication_temp = self.add_data_to_publication(publication)
 
@@ -119,17 +119,17 @@ class CrossrefSource(object):
 
             if pubfinder_helper.PubFinderHelper.should_update('title', response_data, publication):
                 if len(response_data['title']) > 0:
-                    publication['title'] =pubfinder_helper.PubFinderHelper.clean_title(response_data['title'][0])
-                    publication['normalized_title'] =pubfinder_helper.PubFinderHelper.normalize(publication['title'])
+                    publication['title'] = pubfinder_helper.PubFinderHelper.clean_title(response_data['title'][0])
+                    publication['normalized_title'] = pubfinder_helper.PubFinderHelper.normalize(publication['title'])
 
             if 'reference' in response_data and 'refs' not in publication:
                 publication['refs'] = self.map_refs(response_data['reference'])
                 added_data = True
 
             if 'abstract' in response_data and (
-                    'abstract' not in publication or notpubfinder_helper.PubFinderHelper.valid_abstract(
+                    'abstract' not in publication or not pubfinder_helper.PubFinderHelper.valid_abstract(
                 publication['abstract'])):
-                abstract =pubfinder_helper.PubFinderHelper.clean_abstract(response_data['abstract'])
+                abstract = pubfinder_helper.PubFinderHelper.clean_abstract(response_data['abstract'])
                 if pubfinder_helper.PubFinderHelper.valid_abstract(abstract):
                     publication['abstract'] = abstract
                     added_data = True
@@ -170,7 +170,7 @@ class CrossrefSource(object):
                 logging.warning(self.log + ' no author family ' + json.dumps(author))
 
             if len(name.strip()) > 1:
-                normalized_name =pubfinder_helper.PubFinderHelper.normalize(name)
+                normalized_name = pubfinder_helper.PubFinderHelper.normalize(name)
                 result.append({
                     'name': name,
                     'normalized_name': normalized_name
@@ -194,7 +194,7 @@ class CrossrefSource(object):
         result = []
         for field in fields:
             name = re.sub(r"[\(\[].*?[\)\]]", "", field)
-            normalized_name =pubfinder_helper.PubFinderHelper.normalize(name)
+            normalized_name = pubfinder_helper.PubFinderHelper.normalize(name)
             if not any(d['normalized_name'] == normalized_name for d in result):
                 result.append({'name': name, 'normalized_name': normalized_name})
         return result

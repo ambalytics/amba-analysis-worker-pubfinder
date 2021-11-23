@@ -84,7 +84,7 @@ class AmbaSource(object):
                 pass
             else:
                 if item:
-                    publication =pubfinder_helper.PubFinderHelper.get_publication(item)
+                    publication = pubfinder_helper.PubFinderHelper.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
 
                     publication_temp = self.add_data_to_publication(publication, amba_client)
