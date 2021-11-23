@@ -12,7 +12,7 @@ from dateutil.parser import parse
 from lxml import html
 from collections import deque
 from event_stream.event import Event
-import pubfinder_worker
+from .pubfinder_worker import PubFinderWorker
 
 # using meta tags
 from requests import Session, ConnectTimeout
@@ -106,7 +106,7 @@ class MetaSource(object):
             else:
                 if item:
                     # logging.warning(self.log + " item " + str(item.get_json()))
-                    publication = pubfinder_worker.PubFinderWorker.get_publication(item)
+                    publication = PubFinderWorker.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
                     # logging.warning(self.log + " q " + str(queue))x
 
@@ -171,37 +171,37 @@ class MetaSource(object):
 
         if 'abstract' in response_data and \
                 ('abstract' not in publication
-                 or not pubfinder_worker.PubFinderWorker.valid_abstract(publication['abstract'])):
-            abstract = pubfinder_worker.PubFinderWorker.clean_abstract(response_data['abstract'])
-            if pubfinder_worker.PubFinderWorker.valid_abstract(abstract):
+                 or not PubFinderWorker.valid_abstract(publication['abstract'])):
+            abstract = PubFinderWorker.clean_abstract(response_data['abstract'])
+            if PubFinderWorker.valid_abstract(abstract):
                 publication['abstract'] = abstract
 
         if response_data and 'title' in response_data and ('title' not in publication or len(publication['title']) < 5):
-            publication['title'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['title'])
-            publication['normalized_title'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
+            publication['title'] = PubFinderWorker.clean_title(response_data['title'])
+            publication['normalized_title'] = PubFinderWorker.normalize(publication['title'])
 
-        if pubfinder_worker.PubFinderWorker.should_update('pub_date', response_data, publication):
+        if PubFinderWorker.should_update('pub_date', response_data, publication):
             pub = MetaSource.format_date(response_data['pub_date'])
             if pub:
                 publication['pub_date'] = pub
                 publication['year'] = pub.split('-')[0]
-        elif pubfinder_worker.PubFinderWorker.should_update('year', response_data, publication):
+        elif PubFinderWorker.should_update('year', response_data, publication):
             publication['year'] = response_data['year']
 
-        if pubfinder_worker.PubFinderWorker.should_update('publisher', response_data, publication):
+        if PubFinderWorker.should_update('publisher', response_data, publication):
             publication['publisher'] = response_data['publisher']
 
-        if pubfinder_worker.PubFinderWorker.should_update('authors', response_data, publication):
+        if PubFinderWorker.should_update('authors', response_data, publication):
             publication['authors'] = self.map_object(response_data['authors'])
 
-        if pubfinder_worker.PubFinderWorker.should_update('fields_of_study', response_data, publication):
+        if PubFinderWorker.should_update('fields_of_study', response_data, publication):
             publication['fields_of_study'] = self.map_object(response_data['fields_of_study'])
 
         if response_data and 'citations' in response_data and (
                 'citation_count' not in publication or publication['citation_count'] == 0):
             publication['citation_count'] = len(response_data['citations'])
 
-        if pubfinder_worker.PubFinderWorker.should_update('citations', response_data, publication):
+        if PubFinderWorker.should_update('citations', response_data, publication):
             publication['citations'] = response_data['citations']
         return None
 
@@ -209,7 +209,7 @@ class MetaSource(object):
         result = []
         for field in fields:
             name = field
-            normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
+            normalized_name = PubFinderWorker.normalize(name)
             if not any(d['normalized_name'] == normalized_name for d in result) and len(normalized_name) < 150:
                 result.append({'name': name, 'normalized_name': normalized_name})
         return result
@@ -285,7 +285,7 @@ class MetaSource(object):
 
         for key in self.abstract_tags:
             if key in result:
-                abstract = pubfinder_worker.PubFinderWorker.clean_abstract(result[key])
+                abstract = PubFinderWorker.clean_abstract(result[key])
                 if 'abstract' not in data or len(abstract) > len(data['abstract']):
                     data['abstract'] = result[key]
 

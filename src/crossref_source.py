@@ -13,7 +13,7 @@ from multiprocessing.pool import ThreadPool
 from multiprocessing import Value
 # from base_source import BaseSource
 from event_stream.event import Event
-import pubfinder_worker
+from .pubfinder_worker import PubFinderWorker
 
 
 @lru_cache(maxsize=10)
@@ -78,7 +78,7 @@ class CrossrefSource(object):
             else:
                 if item:
                     # logging.warning(self.log + " item " + str(item.get_json()))
-                    publication = pubfinder_worker.PubFinderWorker.get_publication(item)
+                    publication = PubFinderWorker.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
                     # logging.warning(self.log + " q " + str(queue))x
 
@@ -117,27 +117,27 @@ class CrossrefSource(object):
                                                                    str(response_data['published']['date-parts'][0][2]))
                 publication['year'] = response_data['published']['date-parts'][0][0]
 
-            if pubfinder_worker.PubFinderWorker.should_update('publisher', response_data, publication):
+            if PubFinderWorker.should_update('publisher', response_data, publication):
                 publication['publisher'] = response_data['publisher']
 
             if 'is-referenced-by-count' in response_data and (
                     'citation_count' not in publication or publication['citation_count'] == 0):
                 publication['citation_count'] = response_data['is-referenced-by-count']
 
-            if pubfinder_worker.PubFinderWorker.should_update('title', response_data, publication):
+            if PubFinderWorker.should_update('title', response_data, publication):
                 if len(response_data['title']) > 0:
-                    publication['title'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['title'][0])
-                    publication['normalized_title'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
+                    publication['title'] = PubFinderWorker.clean_title(response_data['title'][0])
+                    publication['normalized_title'] = PubFinderWorker.normalize(publication['title'])
 
             if 'reference' in response_data and 'refs' not in publication:
                 publication['refs'] = self.map_refs(response_data['reference'])
                 added_data = True
 
             if 'abstract' in response_data and (
-                    'abstract' not in publication or not pubfinder_worker.PubFinderWorker.valid_abstract(
+                    'abstract' not in publication or not PubFinderWorker.valid_abstract(
                 publication['abstract'])):
-                abstract = pubfinder_worker.PubFinderWorker.clean_abstract(response_data['abstract'])
-                if pubfinder_worker.PubFinderWorker.valid_abstract(abstract):
+                abstract = PubFinderWorker.clean_abstract(response_data['abstract'])
+                if PubFinderWorker.valid_abstract(abstract):
                     publication['abstract'] = abstract
                     added_data = True
 
@@ -176,7 +176,7 @@ class CrossrefSource(object):
                 logging.warning(self.log + ' no author family ' + json.dumps(author))
 
             if len(name.strip()) > 1:
-                normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
+                normalized_name = PubFinderWorker.normalize(name)
                 result.append({
                     'name': name,
                     'normalized_name': normalized_name
@@ -194,7 +194,7 @@ class CrossrefSource(object):
         result = []
         for field in fields:
             name = re.sub(r"[\(\[].*?[\)\]]", "", field)
-            normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
+            normalized_name = PubFinderWorker.normalize(name)
             if not any(d['normalized_name'] == normalized_name for d in result):
                 result.append({'name': name, 'normalized_name': normalized_name})
         return result

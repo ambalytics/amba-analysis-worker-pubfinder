@@ -6,7 +6,7 @@ from gql.transport.aiohttp import AIOHTTPTransport
 from functools import lru_cache
 import logging
 from event_stream.event import Event
-import pubfinder_worker
+from .pubfinder_worker import PubFinderWorker
 
 def get_publication_from_amba(doi, amba_client):
     query = gql(
@@ -83,7 +83,7 @@ class AmbaSource(object):
                 pass
             else:
                 if item:
-                    publication = pubfinder_worker.PubFinderWorker.get_publication(item)
+                    publication = PubFinderWorker.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
                     # logging.warning(self.log + " q " + str(queue))x
 
