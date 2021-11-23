@@ -59,7 +59,7 @@ def get_publication_from_amba(doi, amba_client):
 class AmbaSource(object):
     tag = 'amba'
     log = 'SourceAmba'
-    threads = 4
+    threads = 1
 
     url = "https://api.ambalytics.cloud/entities"
     work_queue = deque()
