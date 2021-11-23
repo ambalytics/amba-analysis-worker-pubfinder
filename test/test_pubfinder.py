@@ -28,9 +28,6 @@ class TestPubfinder(unittest.TestCase):
                 logging.warning(item)
                 self.assertEqual(item, '10.1016/j.yjmcc.2021.05.007')
                 break
-            finally:
-                logging.warning('break')
-                break
 
 
 if __name__ == '__main__':
