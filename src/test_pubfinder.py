@@ -5,11 +5,11 @@ from collections import deque
 
 from event_stream.event import Event
 
+from amba_source import AmbaSource
+from crossref_source import  CrossrefSource
+from meta_source import MetaSource
 from openaire_source import OpenAireSource
 from semanticscholar_source import SemanticScholarSource
-from crossref_source import CrossrefSource
-from meta_source import MetaAource
-from amba_source import AmbaAource
 
 
 class TestPubfinder(unittest.TestCase):
@@ -55,7 +55,7 @@ class TestPubfinder(unittest.TestCase):
     def test_semanticscholar_source(self):
         logging.warning('start testing semantic scholar')
         result_queue = deque()
-        os = semanticscholar_source.SemanticScholarSource(result_queue)
+        os = SemanticScholarSource(result_queue)
         e = Event()
         e.data['obj']['data'] = {'doi': '10.1038/nrn3241', 'source_id': [{'title': 'test'}]}
         os.work_queue.append(e)
@@ -96,7 +96,7 @@ class TestPubfinder(unittest.TestCase):
     def test_crossref_source(self):
         logging.warning('start testing crossref')
         result_queue = deque()
-        os = crossref_source.CrossrefSource(result_queue)
+        os = CrossrefSource(result_queue)
         e = Event()
         e.data['obj']['data'] = {'doi': '10.1038/nrn3241', 'source_id': [{'title': 'test'}]}
         os.work_queue.append(e)
@@ -127,7 +127,7 @@ class TestPubfinder(unittest.TestCase):
     def test_meta_source(self):
         logging.warning('start testing meta')
         result_queue = deque()
-        os = meta_source.MetaSource(result_queue)
+        os = MetaSource(result_queue)
         e = Event()
         e.data['obj']['data'] = {'doi': '10.1038/d41586-021-03470-x', 'source_id': [{'title': 'test'}]}
         os.work_queue.append(e)
@@ -161,7 +161,7 @@ class TestPubfinder(unittest.TestCase):
     def test_amba_source(self):
         logging.warning('start testing amba')
         result_queue = deque()
-        os = amba_source.AmbaSource(result_queue)
+        os = AmbaSource(result_queue)
         e = Event()
         e.data['obj']['data'] = {'doi': '10.1145/2330784.2330822', 'source_id': [{'title': 'test'}]}
         os.work_queue.append(e)
