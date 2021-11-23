@@ -27,4 +27,4 @@ jobs:
       - name: Run Tests
         run: python -m unittest test/test_pubfinder.py
       - name: "Convert coverage"
-        run: "python -m coverage xml"
+        run: "coverage run -m unittest discover"
