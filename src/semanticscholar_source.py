@@ -8,7 +8,6 @@ from collections import deque
 from multiprocessing.pool import ThreadPool
 from multiprocessing import Value
 from event_stream.event import Event
-
 import pubfinder_helper
 
 
@@ -104,12 +103,12 @@ class SemanticScholarSource(object):
         added_data = False
         if response_data:
 
-            ifpubfinder_helper.PubFinderHelper.should_update('title', response_data, publication):
+            if pubfinder_helper.PubFinderHelper.should_update('title', response_data, publication):
                 publication['title'] =pubfinder_helper.PubFinderHelper.clean_title(response_data['title'])
                 publication['normalized_title'] =pubfinder_helper.PubFinderHelper.normalize(publication['title'])
                 added_data = True
 
-            ifpubfinder_helper.PubFinderHelper.should_update('year', response_data, publication):
+            if pubfinder_helper.PubFinderHelper.should_update('year', response_data, publication):
                 publication['year'] = response_data['year']
                 added_data = True
 
@@ -122,7 +121,7 @@ class SemanticScholarSource(object):
                 publication['citation_count'] = response_data['numCitedBy']
                 added_data = True
 
-            ifpubfinder_helper.PubFinderHelper.should_update('authors', response_data, publication):
+            if pubfinder_helper.PubFinderHelper.should_update('authors', response_data, publication):
                 publication['authors'] = self.map_author(response_data['authors'])
                 added_data = True
 
@@ -130,11 +129,11 @@ class SemanticScholarSource(object):
                     'abstract' not in publication
                     or notpubfinder_helper.PubFinderHelper.valid_abstract(publication['abstract'])):
                 abstract =pubfinder_helper.PubFinderHelper.clean_abstract(response_data['abstract'])
-                ifpubfinder_helper.PubFinderHelper.valid_abstract(abstract):
+                if pubfinder_helper.PubFinderHelper.valid_abstract(abstract):
                     publication['abstract'] = abstract
                     added_data = True
 
-            ifpubfinder_helper.PubFinderHelper.should_update('fields_of_study', response_data, publication):
+            if pubfinder_helper.PubFinderHelper.should_update('fields_of_study', response_data, publication):
                 publication['fields_of_study'] = self.map_fields_of_study(response_data['fields_of_study'])
                 added_data = True
 

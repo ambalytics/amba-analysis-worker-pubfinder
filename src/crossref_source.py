@@ -7,7 +7,6 @@ import requests
 from collections import deque
 from multiprocessing.pool import ThreadPool
 from event_stream.event import Event
-
 import pubfinder_helper
 
 
@@ -111,14 +110,14 @@ class CrossrefSource(object):
                                                                    str(response_data['published']['date-parts'][0][2]))
                 publication['year'] = response_data['published']['date-parts'][0][0]
 
-            ifpubfinder_helper.PubFinderHelper.should_update('publisher', response_data, publication):
+            if pubfinder_helper.PubFinderHelper.should_update('publisher', response_data, publication):
                 publication['publisher'] = response_data['publisher']
 
             if 'is-referenced-by-count' in response_data and (
                     'citation_count' not in publication or publication['citation_count'] == 0):
                 publication['citation_count'] = response_data['is-referenced-by-count']
 
-            ifpubfinder_helper.PubFinderHelper.should_update('title', response_data, publication):
+            if pubfinder_helper.PubFinderHelper.should_update('title', response_data, publication):
                 if len(response_data['title']) > 0:
                     publication['title'] =pubfinder_helper.PubFinderHelper.clean_title(response_data['title'][0])
                     publication['normalized_title'] =pubfinder_helper.PubFinderHelper.normalize(publication['title'])
@@ -131,7 +130,7 @@ class CrossrefSource(object):
                     'abstract' not in publication or notpubfinder_helper.PubFinderHelper.valid_abstract(
                 publication['abstract'])):
                 abstract =pubfinder_helper.PubFinderHelper.clean_abstract(response_data['abstract'])
-                ifpubfinder_helper.PubFinderHelper.valid_abstract(abstract):
+                if pubfinder_helper.PubFinderHelper.valid_abstract(abstract):
                     publication['abstract'] = abstract
                     added_data = True
 

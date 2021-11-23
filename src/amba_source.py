@@ -5,7 +5,6 @@ from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 import logging
 from event_stream.event import Event
-
 import pubfinder_helper
 
 
