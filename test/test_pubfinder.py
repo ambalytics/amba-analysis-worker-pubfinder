@@ -108,6 +108,16 @@ class TestPubfinder(unittest.TestCase):
             else:
                 logging.warning(item['item'].data['obj']['data'])
                 self.assertEqual(item['tag'], 'crossref')
+                self.assertEqual(item['item'].data['obj']['data']['title'],
+                                 'The origin of extracellular fields and currents — EEG, ECoG, LFP and spikes')
+                self.assertEqual(item['item'].data['obj']['data']['normalized_title'],
+                                 'the origin of extracellular fields and currents  eeg ecog lfp and spikes')
+                self.assertEqual(item['item'].data['obj']['data']['publisher'],
+                                 'Springer Science and Business Media LLC')
+                self.assertEqual(str(item['item'].data['obj']['data']['year']), '2012')
+                self.assertEqual(str(item['item'].data['obj']['data']['citation_count']), '2012')
+                self.assertEqual(item['item'].data['obj']['data']['pub_date'], '2012-5-18')
+                self.assertEqual(item['item'].data['obj']['data']['type'], 'JOURNAL_ARTICLE')
                 os.running = False
                 break
 
@@ -129,6 +139,19 @@ class TestPubfinder(unittest.TestCase):
             else:
                 logging.warning(item['item'].data['obj']['data'])
                 self.assertEqual(item['tag'], 'meta')
+                self.assertEqual(item['item'].data['obj']['data']['title'],
+                                 'Cuba’s bet on home-grown COVID vaccines is paying off')
+                self.assertEqual(item['item'].data['obj']['data']['abstract'],
+                                 'Preprint data show that a three-dose combo of Soberana jabs has 92.4% efficacy in '
+                                 'clinical trials. Preprint data show that a three-dose combo of Soberana jabs has '
+                                 '92.4% efficacy in clinical trials.')
+                self.assertEqual(item['item'].data['obj']['data']['normalized_title'],
+                                 'cubas bet on homegrown covid vaccines is paying off')
+                self.assertEqual(item['item'].data['obj']['data']['pub_date'], '2021-11-22')
+                self.assertEqual(item['item'].data['obj']['data']['year'], '2021')
+                self.assertEqual(item['item'].data['obj']['data']['publisher'], 'Nature Publishing Group')
+                self.assertEqual(item['item'].data['obj']['data']['authors'][0]['normalized_name'], 'reardon sara')
+                self.assertEqual(item['item'].data['obj']['data']['fields_of_study'][0]['normalized_name'], 'vaccines')
                 os.running = False
                 break
 
@@ -137,7 +160,7 @@ class TestPubfinder(unittest.TestCase):
         result_queue = deque()
         os = amba_source.AmbaSource(result_queue)
         e = Event()
-        e.data['obj']['data'] = {'doi': '10.1109/CVPR.2016.90', 'source_id': [{'title': 'test'}]}
+        e.data['obj']['data'] = {'doi': '10.1145/2330784.2330822', 'source_id': [{'title': 'test'}]}
         os.work_queue.append(e)
         start = time.time()
         while time.time() - start < 10:
