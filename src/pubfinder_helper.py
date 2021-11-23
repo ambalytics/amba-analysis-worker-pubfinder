@@ -3,7 +3,7 @@ import re
 from event_stream.event import Event
 
 
-classpubfinder_helper.PubFinderHelper(object):
+class PubFinderHelper(object):
 
     @staticmethod
     def get_publication(item):
