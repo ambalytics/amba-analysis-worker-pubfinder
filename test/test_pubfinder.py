@@ -12,13 +12,11 @@ class TestPubfinder(unittest.TestCase):
         print('start testing')
         result_queue = deque()
         os = openaire_source.OpenAireSource(result_queue)
-        p = {'doi': '10.1038/nrn3241'}
         e = Event()
-        e.data['obj']['data'] = p
-        os.work_queue.append(p)
-        print('appended')
+        e.data['obj']['data'] = {'doi': '10.1038/nrn3241'}
+        os.work_queue.append(e)
         start = time.time()
-        while time.time() - start < 100:
+        while time.time() - start < 10:
             try:
                 item = result_queue.pop()
             except IndexError:
@@ -27,6 +25,8 @@ class TestPubfinder(unittest.TestCase):
                 pass
             else:
                 self.assertEqual(item, '10.1016/j.yjmcc.2021.05.007')
+                break
+            finally:
                 break
 
 
