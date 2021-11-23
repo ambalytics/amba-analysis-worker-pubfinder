@@ -8,7 +8,7 @@ from event_stream.event import Event
 from openaire_source import OpenAireSource
 from semanticscholar_source import SemanticScholarSource
 from crossref_source import CrossrefSource
-from meta_source import MetaAource
+from meta_source import MetaSource
 from amba_source import AmbaAource
 
 
