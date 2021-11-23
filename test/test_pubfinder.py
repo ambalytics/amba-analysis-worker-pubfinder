@@ -29,6 +29,7 @@ class TestPubfinder(unittest.TestCase):
                 logging.warning('sleep')
                 pass
             else:
+                # logging.warning(item['item'].data['obj']['data'])
                 self.assertEqual(item['tag'], 'openaire')
                 self.assertEqual(item['item'].data['obj']['data']['title'],
                                  'The origin of extracellular fields and currents — EEG, ECoG, LFP and spikes')
@@ -66,6 +67,7 @@ class TestPubfinder(unittest.TestCase):
                 logging.warning('sleep')
                 pass
             else:
+                # logging.warning(item['item'].data['obj']['data'])
                 self.assertEqual(item['tag'], 'semanticscholar')
                 self.assertEqual(item['item'].data['obj']['data']['title'],
                                  'The origin of extracellular fields and currents — EEG, ECoG, LFP and spikes')
@@ -106,7 +108,7 @@ class TestPubfinder(unittest.TestCase):
                 logging.warning('sleep')
                 pass
             else:
-                logging.warning(item['item'].data['obj']['data'])
+                # logging.warning(item['item'].data['obj']['data'])
                 self.assertEqual(item['tag'], 'crossref')
                 self.assertEqual(item['item'].data['obj']['data']['title'],
                                  'The origin of extracellular fields and currents — EEG, ECoG, LFP and spikes')
@@ -137,7 +139,7 @@ class TestPubfinder(unittest.TestCase):
                 logging.warning('sleep')
                 pass
             else:
-                logging.warning(item['item'].data['obj']['data'])
+                # logging.warning(item['item'].data['obj']['data'])
                 self.assertEqual(item['tag'], 'meta')
                 self.assertEqual(item['item'].data['obj']['data']['title'],
                                  'Cuba’s bet on home-grown COVID vaccines is paying off')
@@ -173,6 +175,7 @@ class TestPubfinder(unittest.TestCase):
             else:
                 logging.warning(item['item'].data['obj']['data'])
                 self.assertEqual(item['tag'], 'amba')
+                self.assertEqual(str(item['item'].data['obj']['data']['year']), '2012')
                 os.running = False
                 break
 
