@@ -12,11 +12,6 @@ from event_stream.event_stream_producer import EventStreamProducer
 from event_stream.event import Event
 from event_stream.dao import DAO
 
-from .crossref_source import CrossrefSource
-from .amba_source import AmbaSource
-from .meta_source import MetaSource
-from .openaire_source import OpenAireSource
-from .semanticscholar_source import SemanticScholarSource
 
 from kafka import KafkaConsumer
 from kafka.vendor import six
@@ -70,6 +65,11 @@ class PubFinderWorker(EventStreamProducer):
         if not self.result_pool:
             self.result_pool = ThreadPool(1, self.worker_results, (self.results,))
 
+        from .crossref_source import CrossrefSource
+        from .amba_source import AmbaSource
+        from .meta_source import MetaSource
+        from .openaire_source import OpenAireSource
+        from .semanticscholar_source import SemanticScholarSource
         self.amba_source = AmbaSource(self.results)
         self.crossref_source = CrossrefSource(self.results)
         self.meta_source = MetaSource(self.results)
