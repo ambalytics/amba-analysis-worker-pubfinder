@@ -25,8 +25,8 @@ class TestPubfinder(unittest.TestCase):
                 logging.warning('sleep')
                 pass
             else:
-                logging.warning(item.data)
-                self.assertEqual(item.data['obj'], '10.1016/j.yjmcc.2021.05.007')
+                logging.warning(item)
+                self.assertEqual(item, '10.1016/j.yjmcc.2021.05.007')
                 os.running = False
                 break
 
