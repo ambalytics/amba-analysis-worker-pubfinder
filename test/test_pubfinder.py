@@ -26,7 +26,8 @@ class TestPubfinder(unittest.TestCase):
                 pass
             else:
                 logging.warning(item)
-                self.assertEqual(item, '10.1016/j.yjmcc.2021.05.007')
+                self.assertEqual(item.data['obj']['data'], '10.1016/j.yjmcc.2021.05.007')
+                os.running = False
                 break
 
 
