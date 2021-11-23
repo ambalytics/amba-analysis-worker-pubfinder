@@ -1,19 +1,13 @@
 import json
 import logging
 import re
-import threading
 import time
 from functools import lru_cache
-# from gql import gql, Client
-# from gql.transport.aiohttp import AIOHTTPTransport
-# import logging
 import requests
 from collections import deque
 from multiprocessing.pool import ThreadPool
-from multiprocessing import Value
-# from base_source import BaseSource
 from event_stream.event import Event
-import pubfinder_worker
+from . import pubfinder_helper
 
 
 @lru_cache(maxsize=10)
@@ -24,7 +18,7 @@ def fetch(doi):
     Arguments:
         doi: the doi to be fetched
     """
-    r = requests.get(CrossrefSource.base_url + requests.utils.quote(doi) + '&mailto=lukas.jesche.se@gmail.com')
+    r = requests.get(CrossrefSource.base_url + requests.utils.quote(doi) + '?mailto=lukas.jesche.se@gmail.com')
     if r.status_code == 200:
         json_response = r.json()
         if 'status' in json_response:
@@ -34,11 +28,6 @@ def fetch(doi):
     return None
 
 
-def cleanhtml(raw_html, cleanr):
-    return re.sub(cleanr, '', raw_html)
-
-
-# based on crossref
 class CrossrefSource(object):
     base_url = "https://api.crossref.org/works/"
 
@@ -49,9 +38,9 @@ class CrossrefSource(object):
         'proceedings-article': 'CONFERENCE_PAPER',
         'dataset': 'DATASET',
         'journal-article': 'JOURNAL_ARTICLE',
-        'patent': 'PATENT',  # doesn't exist
-        'repository': 'REPOSITORY',  # doesn't exist
-        'reference-book': 'BOOK_REFERENCE_ENTRY'  # or reference-entry
+        'patent': 'PATENT',
+        'repository': 'REPOSITORY',
+        'reference-book': 'BOOK_REFERENCE_ENTRY'
     }
 
     tag = 'crossref'
@@ -68,21 +57,19 @@ class CrossrefSource(object):
         self.cleanr = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
 
     def worker(self):
+        """
+        worker function run in thread pool adding publication data
+        """
         while self.running:
             try:
                 item = self.work_queue.pop()
             except IndexError:
                 time.sleep(0.1)
-                # logging.warning(self.log + "sleep worker mongo")
                 pass
             else:
                 if item:
-                    # logging.warning(self.log + " item " + str(item.get_json()))
-                    publication = pubfinder_worker.PubFinderWorker.get_publication(item)
+                    publication = pubfinder_helper.PubFinderHelper.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
-                    # logging.warning(self.log + " q " + str(queue))x
-
-                    # todo source stuff
                     publication_temp = self.add_data_to_publication(publication)
 
                     if publication_temp:
@@ -95,11 +82,16 @@ class CrossrefSource(object):
                     self.result_deque.append(result)
 
     def add_data_to_publication(self, publication):
+        """
+        fetch and map to add data
+        """
         response = fetch(publication['doi'])
         return self.map(response, publication)
 
-    # map response data to publication
     def map(self, response_data, publication):
+        """
+        map given data from a response to a publication object
+        """
         added_data = False
         if response_data:
 
@@ -118,27 +110,27 @@ class CrossrefSource(object):
                                                                    str(response_data['published']['date-parts'][0][2]))
                 publication['year'] = response_data['published']['date-parts'][0][0]
 
-            if pubfinder_worker.PubFinderWorker.should_update('publisher', response_data, publication):
+            if pubfinder_helper.PubFinderHelper.should_update('publisher', response_data, publication):
                 publication['publisher'] = response_data['publisher']
 
             if 'is-referenced-by-count' in response_data and (
                     'citation_count' not in publication or publication['citation_count'] == 0):
                 publication['citation_count'] = response_data['is-referenced-by-count']
 
-            if pubfinder_worker.PubFinderWorker.should_update('title', response_data, publication):
+            if pubfinder_helper.PubFinderHelper.should_update('title', response_data, publication):
                 if len(response_data['title']) > 0:
-                    publication['title'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['title'][0])
-                    publication['normalized_title'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
+                    publication['title'] = pubfinder_helper.PubFinderHelper.clean_title(response_data['title'][0])
+                    publication['normalized_title'] = pubfinder_helper.PubFinderHelper.normalize(publication['title'])
 
             if 'reference' in response_data and 'refs' not in publication:
                 publication['refs'] = self.map_refs(response_data['reference'])
                 added_data = True
 
             if 'abstract' in response_data and (
-                    'abstract' not in publication or not pubfinder_worker.PubFinderWorker.valid_abstract(
+                    'abstract' not in publication or not pubfinder_helper.PubFinderHelper.valid_abstract(
                 publication['abstract'])):
-                abstract = pubfinder_worker.PubFinderWorker.clean_abstract(response_data['abstract'])
-                if pubfinder_worker.PubFinderWorker.valid_abstract(abstract):
+                abstract = pubfinder_helper.PubFinderHelper.clean_abstract(response_data['abstract'])
+                if pubfinder_helper.PubFinderHelper.valid_abstract(abstract):
                     publication['abstract'] = abstract
                     added_data = True
 
@@ -150,10 +142,8 @@ class CrossrefSource(object):
                 publication['fields_of_study'] = self.map_fields_of_study(response_data['subject'])
                 added_data = True
 
-            # content-version
             if 'license' in response_data:
                 publication['license'] = response_data['license'][0]['URL']
-                logging.warning(publication['license'])
                 added_data = True
 
         if added_data:
@@ -164,6 +154,9 @@ class CrossrefSource(object):
         return publication
 
     def map_author(self, authors):
+        """
+        map authors and add normalized
+        """
         result = []
         for author in authors:
             name = ''
@@ -177,7 +170,7 @@ class CrossrefSource(object):
                 logging.warning(self.log + ' no author family ' + json.dumps(author))
 
             if len(name.strip()) > 1:
-                normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
+                normalized_name = pubfinder_helper.PubFinderHelper.normalize(name)
                 result.append({
                     'name': name,
                     'normalized_name': normalized_name
@@ -185,6 +178,9 @@ class CrossrefSource(object):
         return result
 
     def map_refs(self, refs):
+        """
+        map references
+        """
         result = []
         for ref in refs:
             if 'DOI' in ref:
@@ -192,10 +188,13 @@ class CrossrefSource(object):
         return result
 
     def map_fields_of_study(self, fields):
+        """
+        map field of study and add normalized
+        """
         result = []
         for field in fields:
             name = re.sub(r"[\(\[].*?[\)\]]", "", field)
-            normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
+            normalized_name = pubfinder_helper.PubFinderHelper.normalize(name)
             if not any(d['normalized_name'] == normalized_name for d in result):
                 result.append({'name': name, 'normalized_name': normalized_name})
         return result

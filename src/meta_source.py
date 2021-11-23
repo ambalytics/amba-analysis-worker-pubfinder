@@ -1,10 +1,5 @@
-import datetime
-import json
-import re
 import time
 from functools import lru_cache
-# from gql import gql, Client
-# from gql.transport.aiohttp import AIOHTTPTransport
 import logging
 from multiprocessing.pool import ThreadPool
 import requests
@@ -12,9 +7,7 @@ from dateutil.parser import parse
 from lxml import html
 from collections import deque
 from event_stream.event import Event
-import pubfinder_worker
-
-# using meta tags
+from . import pubfinder_helper
 from requests import Session, ConnectTimeout
 from urllib3.exceptions import ReadTimeoutError, SSLError, NewConnectionError
 
@@ -105,28 +98,24 @@ class MetaSource(object):
                 pass
             else:
                 if item:
-                    # logging.warning(self.log + " item " + str(item.get_json()))
-                    publication = pubfinder_worker.PubFinderWorker.get_publication(item)
+                    publication = pubfinder_helper.PubFinderHelper.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
-                    # logging.warning(self.log + " q " + str(queue))x
 
-                    # source stuff
                     publication_temp = self.add_data_to_publication(publication)
 
                     # only if we have any data we set it
                     if publication_temp:
                         publication = publication_temp
 
-                    publication['source'] = self.tag
-                    # no meta since link already present
-                    source_ids = publication['source_id']
-                    # todo check if actually anything was added
-                    source_ids.append({
-                        'title': 'Meta',
-                        'url': 'https://doi.org/' + publication['doi'],
-                        'license': 'TODO'
-                    })
-                    publication['source_id'] = source_ids
+                        publication['source'] = self.tag
+                        # no meta since link already present
+                        source_ids = publication['source_id']
+                        source_ids.append({
+                            'title': 'Meta',
+                            'url': 'https://doi.org/' + publication['doi'],
+                            'license': 'TODO'
+                        })
+                        publication['source_id'] = source_ids
 
                     if type(item) is Event:
                         item.data['obj']['data'] = publication
@@ -172,41 +161,37 @@ class MetaSource(object):
 
         if 'abstract' in response_data and \
                 ('abstract' not in publication
-                 or not pubfinder_worker.PubFinderWorker.valid_abstract(publication['abstract'])):
-            abstract = pubfinder_worker.PubFinderWorker.clean_abstract(response_data['abstract'])
-            if pubfinder_worker.PubFinderWorker.valid_abstract(abstract):
+                 or not pubfinder_helper.PubFinderHelper.valid_abstract(publication['abstract'])):
+            abstract = pubfinder_helper.PubFinderHelper.clean_abstract(response_data['abstract'])
+            if pubfinder_helper.PubFinderHelper.valid_abstract(abstract):
                 publication['abstract'] = abstract
 
         if response_data and 'title' in response_data and ('title' not in publication or len(publication['title']) < 5):
-            publication['title'] = pubfinder_worker.PubFinderWorker.clean_title(response_data['title'])
-            publication['normalized_title'] = pubfinder_worker.PubFinderWorker.normalize(publication['title'])
+            publication['title'] = pubfinder_helper.PubFinderHelper.clean_title(response_data['title'])
+            publication['normalized_title'] = pubfinder_helper.PubFinderHelper.normalize(publication['title'])
 
-        if pubfinder_worker.PubFinderWorker.should_update('pub_date', response_data, publication):
+        if pubfinder_helper.PubFinderHelper.should_update('pub_date', response_data, publication):
             pub = MetaSource.format_date(response_data['pub_date'])
             if pub:
                 publication['pub_date'] = pub
                 publication['year'] = pub.split('-')[0]
-        elif pubfinder_worker.PubFinderWorker.should_update('year', response_data, publication):
+        elif pubfinder_helper.PubFinderHelper.should_update('year', response_data, publication):
             publication['year'] = response_data['year']
 
-        if pubfinder_worker.PubFinderWorker.should_update('publisher', response_data, publication):
+        if pubfinder_helper.PubFinderHelper.should_update('publisher', response_data, publication):
             publication['publisher'] = response_data['publisher']
 
-        # todo mappings, license?
-        # if pubfinder_worker.PubFinderWorker.should_update('type', response_data, publication):
-        #     publication['type'] = response_data['type']
-
-        if pubfinder_worker.PubFinderWorker.should_update('authors', response_data, publication):
+        if pubfinder_helper.PubFinderHelper.should_update('authors', response_data, publication):
             publication['authors'] = self.map_object(response_data['authors'])
 
-        if pubfinder_worker.PubFinderWorker.should_update('fields_of_study', response_data, publication):
+        if pubfinder_helper.PubFinderHelper.should_update('fields_of_study', response_data, publication):
             publication['fields_of_study'] = self.map_object(response_data['fields_of_study'])
 
         if response_data and 'citations' in response_data and (
                 'citation_count' not in publication or publication['citation_count'] == 0):
             publication['citation_count'] = len(response_data['citations'])
 
-        if pubfinder_worker.PubFinderWorker.should_update('citations', response_data, publication):
+        if pubfinder_helper.PubFinderHelper.should_update('citations', response_data, publication):
             publication['citations'] = response_data['citations']
         return None
 
@@ -214,7 +199,7 @@ class MetaSource(object):
         result = []
         for field in fields:
             name = field
-            normalized_name = pubfinder_worker.PubFinderWorker.normalize(name)
+            normalized_name = pubfinder_helper.PubFinderHelper.normalize(name)
             if not any(d['normalized_name'] == normalized_name for d in result) and len(normalized_name) < 150:
                 result.append({'name': name, 'normalized_name': normalized_name})
         return result
@@ -290,7 +275,7 @@ class MetaSource(object):
 
         for key in self.abstract_tags:
             if key in result:
-                abstract = pubfinder_worker.PubFinderWorker.clean_abstract(result[key])
+                abstract = pubfinder_helper.PubFinderHelper.clean_abstract(result[key])
                 if 'abstract' not in data or len(abstract) > len(data['abstract']):
                     data['abstract'] = result[key]
 
