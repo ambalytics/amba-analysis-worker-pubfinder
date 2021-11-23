@@ -5,13 +5,16 @@ import time
 from multiprocessing.pool import ThreadPool
 from collections import deque
 import os
-# import sentry_sdk
-from event_stream.dao import DAO
-from event_stream.event_stream_consumer import EventStreamConsumer
+import sentry_sdk
 from event_stream.event_stream_producer import EventStreamProducer
 from event_stream.event import Event
+from .pubfinder_helper import PubFinderHelper
 from event_stream.dao import DAO
-
+import amba_source
+import crossref_source
+import meta_source
+import openaire_source
+import semanticscholar_source
 
 from kafka import KafkaConsumer
 from kafka.vendor import six
@@ -65,16 +68,11 @@ class PubFinderWorker(EventStreamProducer):
         if not self.result_pool:
             self.result_pool = ThreadPool(1, self.worker_results, (self.results,))
 
-        from .crossref_source import CrossrefSource
-        from .amba_source import AmbaSource
-        from .meta_source import MetaSource
-        from .openaire_source import OpenAireSource
-        from .semanticscholar_source import SemanticScholarSource
-        self.amba_source = AmbaSource(self.results)
-        self.crossref_source = CrossrefSource(self.results)
-        self.meta_source = MetaSource(self.results)
-        self.openaire_source = OpenAireSource(self.results)
-        self.semanticscholar_source = SemanticScholarSource(self.results)
+        self.amba_source = amba_source.AmbaSource(self.results)
+        self.crossref_source = crossref_source.CrossrefSource(self.results)
+        self.meta_source = meta_source.MetaSource(self.results)
+        self.openaire_source = openaire_source.OpenAireSource(self.results)
+        self.semanticscholar_source = semanticscholar_source.SemanticScholarSource(self.results)
 
         if not self.topics:
             self.topics = list()
@@ -152,7 +150,7 @@ class PubFinderWorker(EventStreamProducer):
                 time.sleep(0.1)
                 pass
             else:
-                publication = PubFinderWorker.get_publication(item)
+                publication = PubFinderHelper.get_publication(item)
 
                 publication_temp = self.dao.get_publication(publication['doi'])
                 if publication_temp and isinstance(publication, dict):
@@ -174,9 +172,9 @@ class PubFinderWorker(EventStreamProducer):
              item: the item to work on (publication)
              source: the source specifies the last used source
          """
-        publication = PubFinderWorker.get_publication(item)
+        publication = PubFinderHelper.get_publication(item)
 
-        pub_is_done = self.is_publication_done(publication)
+        pub_is_done = PubFinderHelper.is_publication_done(publication)
         if pub_is_done is True:
             logging.warning(self.log + "publication done " + publication['doi'])
 
@@ -213,7 +211,7 @@ class PubFinderWorker(EventStreamProducer):
                     self.meta_source.work_queue.append(item)
 
             else:
-                done_now = self.is_publication_done(publication, True)
+                done_now = PubFinderHelper.is_publication_done(publication, True)
                 if done_now is True:
                     logging.warning(self.log + "publication done " + publication['doi'])
 
@@ -222,112 +220,6 @@ class PubFinderWorker(EventStreamProducer):
                 else:
                     self.dao.save_publication_not_found(publication['doi'], pub_is_done)
                     logging.warning('unable to find publication data for ' + publication['doi'] + ' - ' + str(done_now))
-
-    @staticmethod
-    def get_publication(item):
-        """return the publication from an event"""
-        publication = None
-
-        if type(item) is Event:
-            publication = item.data['obj']['data']
-
-        return publication
-
-    @staticmethod
-    def is_publication_done(publication, save_mode=False):
-        """check if a publication is either done or at least worth to be saved"""
-        if not publication:
-            return False
-
-        if save_mode:
-            keys = ("doi", "publisher","abstract", "title", "normalized_title", "year",
-                    "authors", "fields_of_study", "source_id")
-        else:
-            keys = ("type", "doi", "abstract", "publisher", "title", "normalized_title", "year", "pub_date",
-                    "authors", "fields_of_study", "source_id", "citation_count")
-
-        if all(key in publication for key in keys):
-            logging.debug('publication done ' + publication['doi'])
-
-            if 'pub_date' not in publication:
-                publication['pub_date'] = None
-            if 'type' not in publication:
-                publication['type'] = 'UNKNOWN'
-            if 'abstract' not in publication:
-                publication['abstract'] = None
-            if 'citation_count' not in publication:
-                publication['citation_count'] = 0
-            if 'license' not in publication:
-                publication['license'] = None
-            return True
-
-        logging.debug('publication missing ' + str(set(keys) - publication.keys()))
-        return str(set(keys) - publication.keys())
-
-    @staticmethod
-    def clean_fos(fos):
-        """cleans the title and removes unnecessary spaces and line breaks
-        """
-        results = []
-        for f in fos:
-            if ';' in f:
-                d = f.split('f')
-                results.extend(d)
-            else:
-                results.append(f)
-
-        return results
-
-    @staticmethod
-    def clean_title(title):
-        """cleans the title and removes unnecessary spaces and line breaks
-        """
-        title.replace('\n', ' ')
-        return re.sub(' +', ' ', title).strip()
-
-    @staticmethod
-    def clean_abstract(abstract):
-        """cleans the title and removes unnecessary spaces and line breaks
-        """
-        try:
-            abstract = re.sub('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});', '', abstract)
-        except TypeError:
-            return ''
-        else:
-            abstract = abstract.strip()
-
-            remove_words = ['abstract', 'background', 'background:', 'introduction', 'objective', 'nature']
-
-            while True:
-                removed_word = False
-                for word in remove_words:
-                    if re.match(word, abstract, re.I):
-                        abstract = abstract[len(word):]
-                        removed_word = True
-                if not removed_word:
-                    break
-
-            abstract = re.sub(r' +', ' ', abstract)
-            abstract = re.sub(r' \. ', ' ', abstract)
-            abstract = re.sub(r' *: ', ' ', abstract)
-            abstract = re.sub(r' - ', ' ', abstract)
-
-            return abstract.strip()
-
-    @staticmethod
-    def valid_abstract(abstract):
-        """ check if an abstract is valid depending on its length """
-        return abstract and len(abstract) > 100
-
-    @staticmethod
-    def normalize(string):
-        """ normalize a given string"""
-        return (re.sub('[^a-zA-Z ]+', '', string)).casefold().strip()
-
-    @staticmethod
-    def should_update(field, data, publication):
-        """ check if field is in need of an update"""
-        return data and field in data and field not in publication
 
     @staticmethod
     def start(i=0):

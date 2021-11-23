@@ -7,7 +7,7 @@ from collections import deque
 from multiprocessing.pool import ThreadPool
 from multiprocessing import Value
 from event_stream.event import Event
-from .pubfinder_worker import PubFinderWorker
+from .pubfinder_helper import PubFinderHelper
 from lxml import html
 
 
@@ -58,6 +58,7 @@ class OpenAireSource(object):
         self.api_reset_timestamp = int(time.time())
 
     def worker(self):
+        """ main work function, fetch items and add data """
         while self.running:
             try:
                 item = self.work_queue.pop()
@@ -66,7 +67,7 @@ class OpenAireSource(object):
                 pass
             else:
                 if item:
-                    publication = PubFinderWorker.get_publication(item)
+                    publication = PubFinderHelper.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
 
                     publication_temp = self.add_data_to_publication(publication)
@@ -91,36 +92,36 @@ class OpenAireSource(object):
         added_data = False
         if response_data:
 
-            if PubFinderWorker.should_update('title', response_data, publication):
-                publication['title'] = PubFinderWorker.clean_title(response_data['title'])
-                publication['normalized_title'] = PubFinderWorker.normalize(publication['title'])
+            if PubFinderHelper.should_update('title', response_data, publication):
+                publication['title'] = PubFinderHelper.clean_title(response_data['title'])
+                publication['normalized_title'] = PubFinderHelper.normalize(publication['title'])
                 added_data = True
 
-            if PubFinderWorker.should_update('year', response_data, publication):
-                publication['year'] = PubFinderWorker.clean_title(response_data['year'])
+            if PubFinderHelper.should_update('year', response_data, publication):
+                publication['year'] = PubFinderHelper.clean_title(response_data['year'])
                 added_data = True
 
-            if PubFinderWorker.should_update('pub_date', response_data, publication):
-                publication['pub_date'] = PubFinderWorker.clean_title(response_data['pub_date'])
+            if PubFinderHelper.should_update('pub_date', response_data, publication):
+                publication['pub_date'] = PubFinderHelper.clean_title(response_data['pub_date'])
                 added_data = True
 
-            if PubFinderWorker.should_update('publisher', response_data, publication):
+            if PubFinderHelper.should_update('publisher', response_data, publication):
                 publication['publisher'] = response_data['publisher']
                 added_data = True
 
             if 'abstract' in response_data and \
                     ('abstract' not in publication
-                     or not PubFinderWorker.valid_abstract(publication['abstract'])):
-                abstract = PubFinderWorker.clean_abstract(response_data['abstract'])
-                if PubFinderWorker.valid_abstract(abstract):
+                     or not PubFinderHelper.valid_abstract(publication['abstract'])):
+                abstract = PubFinderHelper.clean_abstract(response_data['abstract'])
+                if PubFinderHelper.valid_abstract(abstract):
                     publication['abstract'] = abstract
                     added_data = True
 
-            if PubFinderWorker.should_update('authors', response_data, publication):
+            if PubFinderHelper.should_update('authors', response_data, publication):
                 publication['authors'] = response_data['authors']
                 added_data = True
 
-            if PubFinderWorker.should_update('fields_of_study', response_data, publication):
+            if PubFinderHelper.should_update('fields_of_study', response_data, publication):
                 publication['fields_of_study'] = self.map_fields_of_study(response_data['fields_of_study'])
                 added_data = True
 
@@ -149,7 +150,7 @@ class OpenAireSource(object):
         result = []
         for field in fields:
             name = field
-            normalized_name = PubFinderWorker.normalize(name)
+            normalized_name = PubFinderHelper.normalize(name)
             if not any(d['normalized_name'] == normalized_name for d in result):
                 result.append({'name': name, 'normalized_name': normalized_name})
         return result

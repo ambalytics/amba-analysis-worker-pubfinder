@@ -3,10 +3,9 @@ from collections import deque
 from multiprocessing.pool import ThreadPool
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
-from functools import lru_cache
 import logging
 from event_stream.event import Event
-from .pubfinder_worker import PubFinderWorker
+from .pubfinder_helper import PubFinderHelper
 
 
 def get_publication_from_amba(doi, amba_client):
@@ -59,7 +58,7 @@ def get_publication_from_amba(doi, amba_client):
 class AmbaSource(object):
     tag = 'amba'
     log = 'SourceAmba'
-    threads = 1
+    threads = 2
 
     url = "https://api.ambalytics.cloud/entities"
     work_queue = deque()
@@ -85,7 +84,7 @@ class AmbaSource(object):
                 pass
             else:
                 if item:
-                    publication = PubFinderWorker.get_publication(item)
+                    publication = PubFinderHelper.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
 
                     publication_temp = self.add_data_to_publication(publication, amba_client)

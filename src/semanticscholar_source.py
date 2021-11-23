@@ -1,19 +1,14 @@
 import json
 import logging
-import re
 import threading
 import time
 from functools import lru_cache
-# from gql import gql, Client
-# from gql.transport.aiohttp import AIOHTTPTransport
-# import logging
 import requests
 from collections import deque
 from multiprocessing.pool import ThreadPool
 from multiprocessing import Value
-# from base_source import BaseSource
 from event_stream.event import Event
-from .pubfinder_worker import PubFinderWorker
+from .pubfinder_helper import PubFinderHelper
 
 
 @lru_cache(maxsize=10)
@@ -65,6 +60,7 @@ class SemanticScholarSource(object):
         self.api_reset_timestamp = int(time.time())
 
     def worker(self):
+        """ main work function, fetch items and add data """
         while self.running:
             try:
                 item = self.work_queue.pop()
@@ -73,7 +69,7 @@ class SemanticScholarSource(object):
                 pass
             else:
                 if item:
-                    publication = PubFinderWorker.get_publication(item)
+                    publication = PubFinderHelper.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
 
                     publication_temp = self.add_data_to_publication(publication)
@@ -88,29 +84,31 @@ class SemanticScholarSource(object):
                     self.result_deque.append(result)
 
     def add_data_to_publication(self, publication):
+        """ add data to a given publication using the doi to fetch a response and map the data """
         response = self.api_limit_watcher(publication['doi'])
         return self.map(response, publication)
 
     def map_fields_of_study(self, fields):
+        """ map fields of study  """
         result = []
         for field in fields:
             name = field
-            normalized_name = PubFinderWorker.normalize(name)
+            normalized_name = PubFinderHelper.normalize(name)
             if not any(d['normalized_name'] == normalized_name for d in result):
                 result.append({'name': name, 'normalized_name': normalized_name})
         return result
 
-    # map response data to publication
     def map(self, response_data, publication):
+        """ map a xml response to the internal data structure """
         added_data = False
         if response_data:
 
-            if PubFinderWorker.should_update('title', response_data, publication):
-                publication['title'] = PubFinderWorker.clean_title(response_data['title'])
-                publication['normalized_title'] = PubFinderWorker.normalize(publication['title'])
+            if PubFinderHelper.should_update('title', response_data, publication):
+                publication['title'] = PubFinderHelper.clean_title(response_data['title'])
+                publication['normalized_title'] = PubFinderHelper.normalize(publication['title'])
                 added_data = True
 
-            if PubFinderWorker.should_update('year', response_data, publication):
+            if PubFinderHelper.should_update('year', response_data, publication):
                 publication['year'] = response_data['year']
                 added_data = True
 
@@ -123,31 +121,33 @@ class SemanticScholarSource(object):
                 publication['citation_count'] = response_data['numCitedBy']
                 added_data = True
 
-            if PubFinderWorker.should_update('authors', response_data, publication):
+            if PubFinderHelper.should_update('authors', response_data, publication):
                 publication['authors'] = self.map_author(response_data['authors'])
                 added_data = True
 
             if 'abstract' in response_data and (
                     'abstract' not in publication
-                    or not PubFinderWorker.valid_abstract(publication['abstract'])):
-                abstract = PubFinderWorker.clean_abstract(response_data['abstract'])
-                if PubFinderWorker.valid_abstract(abstract):
+                    or not PubFinderHelper.valid_abstract(publication['abstract'])):
+                abstract = PubFinderHelper.clean_abstract(response_data['abstract'])
+                if PubFinderHelper.valid_abstract(abstract):
                     publication['abstract'] = abstract
                     added_data = True
 
-            if PubFinderWorker.should_update('fields_of_study', response_data, publication):
+            if PubFinderHelper.should_update('fields_of_study', response_data, publication):
                 publication['fields_of_study'] = self.map_fields_of_study(response_data['fields_of_study'])
                 added_data = True
 
         if added_data:
             source_ids = publication['source_id']
             source_ids.append(
-                {'title': 'SemanticScholar', 'url': 'https://www.semanticscholar.org?utm_source=api', 'license': 'TODO'})
+                {'title': 'SemanticScholar', 'url': 'https://www.semanticscholar.org?utm_source=api',
+                 'license': 'TODO'})
             publication['source_id'] = source_ids
 
             return publication
 
     def api_limit_watcher(self, doi):
+        """ ensure api limits are kept and if the limit is reached wait for reset """
         if self.fetched_counter.value < self.api_limit:
             with self.fetched_counter.get_lock():
                 self.fetched_counter.value += 1
@@ -159,11 +159,12 @@ class SemanticScholarSource(object):
             self.api_limit_watcher(doi)
 
     def map_author(self, authors):
+        """ amp authors """
         result = []
         for author in authors:
             if 'name' in author:
                 name = author['name']
-                normalized_name = PubFinderWorker.normalize(name)
+                normalized_name = PubFinderHelper.normalize(name)
                 result.append({
                     'name': name,
                     'normalized_name': normalized_name
