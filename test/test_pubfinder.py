@@ -75,7 +75,7 @@ class TestPubfinder(unittest.TestCase):
                                  'the origin of extracellular fields and currents  eeg ecog lfp and spikes')
                 self.assertEqual(item['item'].data['obj']['data']['publisher'], 'Nature Reviews Neuroscience')
                 self.assertEqual(str(item['item'].data['obj']['data']['year']), '2012')
-                self.assertNotEqual(item['item'].data['obj']['data']['citationCount'], 0)
+                self.assertNotEqual(item['item'].data['obj']['data']['citation_count'], 0)
                 self.assertEqual(item['item'].data['obj']['data']['authors'][0]['normalized_name'], 'g buzski')
                 self.assertEqual(item['item'].data['obj']['data']['abstract'],
                                  'Neuronal activity in the brain gives rise to transmembrane currents that can be '
@@ -117,7 +117,7 @@ class TestPubfinder(unittest.TestCase):
                 self.assertEqual(item['item'].data['obj']['data']['publisher'],
                                  'Springer Science and Business Media LLC')
                 self.assertEqual(str(item['item'].data['obj']['data']['year']), '2012')
-                self.assertNotEqual(item['item'].data['obj']['data']['citationCount'], 0)
+                self.assertNotEqual(item['item'].data['obj']['data']['citation_count'], 0)
                 self.assertEqual(item['item'].data['obj']['data']['pub_date'], '2012-5-18')
                 self.assertEqual(item['item'].data['obj']['data']['type'], 'JOURNAL_ARTICLE')
                 os.running = False
@@ -181,7 +181,7 @@ class TestPubfinder(unittest.TestCase):
                 self.assertEqual(item['item'].data['obj']['data']['normalizedTitle'],
                                  'black box optimization benchmarking of ipop saacm es on the bbob 2012 noisy testbed')
                 self.assertEqual(item['item'].data['obj']['data']['type'], 'CONFERENCE_PAPER')
-                self.assertNotEqual(item['item'].data['obj']['data']['citationCount'], 0)
+                self.assertNotEqual(item['item'].data['obj']['data']['citation_count'], 0)
                 self.assertEqual(item['item'].data['obj']['data']['publisher'], 'ACM')
                 self.assertEqual(item['item'].data['obj']['data']['pubDate'], '2012-07-07')
                 self.assertEqual(item['item'].data['obj']['data']['abstract'],
