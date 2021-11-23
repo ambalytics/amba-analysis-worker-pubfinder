@@ -8,7 +8,7 @@ from collections import deque
 from multiprocessing.pool import ThreadPool
 from multiprocessing import Value
 from event_stream.event import Event
-from .pubfinder_helper import PubFinderHelper
+from pubfinder_helper import PubFinderHelper
 
 
 @lru_cache(maxsize=10)
@@ -31,7 +31,7 @@ def reset_api_limit(v, time_delta):
     logging.warning('reset semanticscholar api limit ' + str(v.value))
     with v.get_lock():
         v.value = 0
-    api_limit_thread = threading.Timer(time_delta, reset_api_limit, args=[v, time_delta]).start()
+    api_limit_thread = threading.Timer(time_delta, reset_api_limit, args=[v, time_delta])
     api_limit_thread.daemon = True
     api_limit_thread.start()
 
