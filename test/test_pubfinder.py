@@ -13,7 +13,7 @@ class TestPubfinder(unittest.TestCase):
         result_queue = deque()
         os = openaire_source.OpenAireSource(result_queue)
         e = Event()
-        e.data['obj']['data'] = {'doi': '10.1038/nrn3241'}
+        e.data['obj']['data'] = {'doi': '10.1038/nrn3241', 'source_id': [{'title': 'test'}]}
         os.work_queue.append(e)
         start = time.time()
         while time.time() - start < 10:
