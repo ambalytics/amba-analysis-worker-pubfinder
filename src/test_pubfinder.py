@@ -33,9 +33,9 @@ class TestPubfinder(unittest.TestCase):
                 # logging.warning(item['item'].data['obj']['data'])
                 self.assertEqual(item['tag'], 'openaire')
                 self.assertEqual(item['item'].data['obj']['data']['title'],
-                                 'The origin of extracellular fields and currents — EEG, ECoG, LFP and spikes')
+                                 'Origin of extracellular fields and currents — EEG, ECoG, LFP and spikes')
                 self.assertEqual(item['item'].data['obj']['data']['normalized_title'],
-                                 'the origin of extracellular fields and currents  eeg ecog lfp and spikes')
+                                 'origin of extracellular fields and currents  eeg ecog lfp and spikes')
                 self.assertEqual(item['item'].data['obj']['data']['publisher'], 'Nature Publishing Group')
                 self.assertEqual(item['item'].data['obj']['data']['abstract'],
                                  'Neuronal activity in the brain gives rise to transmembrane currents that can be '
