@@ -60,7 +60,7 @@ class AmbaSource(object):
     log = 'SourceAmba'
     threads = 2
 
-    url = "https://api.ambalytics.cloud/entities"
+    url = "http://api.ambalytics.cloud/entities"
     work_queue = deque()
     work_pool = None
     running = True
