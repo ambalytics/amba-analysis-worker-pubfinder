@@ -58,7 +58,7 @@ def get_publication_from_amba(doi, amba_client):
 class AmbaSource(object):
     tag = 'amba'
     log = 'SourceAmba'
-    threads = 2
+    threads = 3
 
     url = "https://api.ambalytics.cloud/entities"
     work_queue = deque()
@@ -124,5 +124,5 @@ class AmbaSource(object):
 
     def prepare_amba_connection(self):
         """prepare the connection to amba"""
-        transport = RequestsHTTPTransport(url=self.url, verify=True, retries=3)
+        transport = RequestsHTTPTransport(url=self.url, verify=False, retries=1)
         return Client(transport=transport, fetch_schema_from_transport=True)
