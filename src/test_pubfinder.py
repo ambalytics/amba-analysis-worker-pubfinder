@@ -152,7 +152,7 @@ class TestPubfinder(unittest.TestCase):
                                  'cubas bet on homegrown covid vaccines is paying off')
                 self.assertEqual(item['item'].data['obj']['data']['pub_date'], '2021-11-22')
                 self.assertEqual(item['item'].data['obj']['data']['year'], '2021')
-                self.assertEqual(item['item'].data['obj']['data']['publisher'], 'Springer Science and Business Media LLC')
+                self.assertEqual(item['item'].data['obj']['data']['publisher'], 'Nature Publishing Group')
                 self.assertEqual(item['item'].data['obj']['data']['authors'][0]['normalized_name'], 'reardon sara')
                 self.assertEqual(item['item'].data['obj']['data']['fields_of_study'][0]['normalized_name'], 'vaccines')
                 os.running = False
