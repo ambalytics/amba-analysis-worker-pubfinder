@@ -32,8 +32,7 @@ class TestPubfinder(unittest.TestCase):
             else:
                 # logging.warning(item['item'].data['obj']['data'])
                 self.assertEqual(item['tag'], 'openaire')
-                self.assertEqual(item['item'].data['obj']['data']['title'],
-                                 'Origin of extracellular fields and currents – EEG, ECoG, LFP and spikes')
+                self.assertEqual(item['item'].data['obj']['data']['title'], 'Origin of extracellular fields and currents – EEG, ECoG, LFP and spikes')
                 self.assertEqual(item['item'].data['obj']['data']['normalized_title'],
                                  'origin of extracellular fields and currents  eeg ecog lfp and spikes')
                 self.assertEqual(item['item'].data['obj']['data']['publisher'], 'Springer Science and Business Media LLC')
