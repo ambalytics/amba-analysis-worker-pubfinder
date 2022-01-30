@@ -103,7 +103,7 @@ class AmbaSource(object):
                         })
                         publication['source_id'] = source_ids
 
-                    if False: type(item) is Event:
+                    if False: # type(item) is Event:
                         item.data['obj']['data'] = publication
 
                     result = {'item': item, 'tag': self.tag}
