@@ -13,7 +13,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.6">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.9">
     
     
       
@@ -21,7 +21,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.cd566b2a.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.2b4465f4.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
@@ -600,9 +600,9 @@ AmbaSource        </code>
                     <span class="n">publication</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">get_publication</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
                     <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot; work on item &quot;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
 
-                    <span class="n">publication_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_data_to_publication</span><span class="p">(</span><span class="n">publication</span><span class="p">,</span> <span class="n">amba_client</span><span class="p">)</span>
+                    <span class="c1"># publication_temp = self.add_data_to_publication(publication, amba_client)</span>
 
-                    <span class="k">if</span> <span class="n">publication_temp</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="kc">False</span><span class="p">:</span> <span class="c1"># publication_temp:</span>
                         <span class="n">publication</span> <span class="o">=</span> <span class="n">publication_temp</span>
 
                         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>
@@ -616,7 +616,7 @@ AmbaSource        </code>
                         <span class="p">})</span>
                         <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source_ids</span>
 
-                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Event</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="kc">False</span><span class="p">:</span> <span class="c1"># type(item) is Event:</span>
                         <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publication</span>
 
                     <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span> <span class="s1">&#39;tag&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">}</span>
@@ -785,9 +785,9 @@ AmbaSource        </code>
                 <span class="n">publication</span> <span class="o">=</span> <span class="n">PubFinderHelper</span><span class="o">.</span><span class="n">get_publication</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot; work on item &quot;</span> <span class="o">+</span> <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">])</span>
 
-                <span class="n">publication_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_data_to_publication</span><span class="p">(</span><span class="n">publication</span><span class="p">,</span> <span class="n">amba_client</span><span class="p">)</span>
+                <span class="c1"># publication_temp = self.add_data_to_publication(publication, amba_client)</span>
 
-                <span class="k">if</span> <span class="n">publication_temp</span><span class="p">:</span>
+                <span class="k">if</span> <span class="kc">False</span><span class="p">:</span> <span class="c1"># publication_temp:</span>
                     <span class="n">publication</span> <span class="o">=</span> <span class="n">publication_temp</span>
 
                     <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>
@@ -801,7 +801,7 @@ AmbaSource        </code>
                     <span class="p">})</span>
                     <span class="n">publication</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source_ids</span>
 
-                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Event</span><span class="p">:</span>
+                <span class="k">if</span> <span class="kc">False</span><span class="p">:</span> <span class="c1"># type(item) is Event:</span>
                     <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publication</span>
 
                 <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span> <span class="s1">&#39;tag&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">}</span>
@@ -902,7 +902,7 @@ AmbaSource        </code>
     <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.22074ed6.min.js"}</script>
     
     
-      <script src="../assets/javascripts/bundle.1514a9a0.min.js"></script>
+      <script src="../assets/javascripts/bundle.960e086b.min.js"></script>
       
     
   </body>
