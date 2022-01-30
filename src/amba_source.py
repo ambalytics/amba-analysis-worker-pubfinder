@@ -87,9 +87,9 @@ class AmbaSource(object):
                     publication = PubFinderHelper.get_publication(item)
                     logging.warning(self.log + " work on item " + publication['doi'])
 
-                    publication_temp = self.add_data_to_publication(publication, amba_client)
-
-                    if publication_temp:
+                    # publication_temp = self.add_data_to_publication(publication, amba_client)
+                    
+                    if False: # publication_temp:
                         publication = publication_temp
 
                         publication['source'] = self.tag
@@ -103,7 +103,7 @@ class AmbaSource(object):
                         })
                         publication['source_id'] = source_ids
 
-                    if type(item) is Event:
+                    if False: # type(item) is Event:
                         item.data['obj']['data'] = publication
 
                     result = {'item': item, 'tag': self.tag}
